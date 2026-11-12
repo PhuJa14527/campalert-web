@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useSyncExternalStore } from "react";
+import type { ReactNode } from "react";
 import type { Camp } from "@/lib/camps";
 import {
   formatDayFull,
@@ -13,8 +14,9 @@ import {
 } from "@/lib/date";
 
 type View = "list" | "calendar";
+type Status = "all" | "open" | "closed";
 
-const ALL = "ทั้งหมด";
+const BOOKMARK_KEY = "campalert.bookmarks.v1";
 
 const typeStyles: Record<string, string> = {
   "พัฒนาทักษะ/เวิร์กชอป": "bg-sky-50 text-sky-700 border-sky-200",
@@ -23,13 +25,191 @@ const typeStyles: Record<string, string> = {
   "เสวนา/สัมมนา": "bg-amber-50 text-amber-700 border-amber-200",
   "ประกวดแข่งขัน": "bg-rose-50 text-rose-700 border-rose-200",
   "อาสา/อนุรักษ์": "bg-lime-50 text-lime-700 border-lime-200",
+  "ติวสอบ/ทำพอร์ต": "bg-indigo-50 text-indigo-700 border-indigo-200",
+  "จำลองสนามสอบ": "bg-teal-50 text-teal-700 border-teal-200",
 };
 
 function typeBadge(type: string) {
   return typeStyles[type] ?? "bg-zinc-100 text-zinc-700 border-zinc-200";
 }
 
-function CampCard({ camp, today }: { camp: Camp; today: string | null }) {
+function toggleValue(list: string[], value: string) {
+  return list.includes(value) ? list.filter((item) => item !== value) : [...list, value];
+}
+
+function matchPrice(id: string, price?: number | null) {
+  const known = price !== null && price !== undefined;
+  if (id === "free") return price === 0;
+  if (id === "unknown") return !known;
+  if (!known) return false;
+  if (id === "low") return price > 0 && price <= 500;
+  if (id === "mid") return price > 500 && price <= 1500;
+  if (id === "high") return price > 1500;
+  return false;
+}
+
+function matchFormat(id: string, camp: Camp) {
+  if (id === "online") return Boolean(camp.online);
+  if (id === "overnight") return Boolean(camp.overnight);
+  if (id === "onsite") return !camp.online;
+  return true;
+}
+
+const BOOKMARK_EVENT = "campalert:bookmarks-changed";
+const EMPTY_IDS: string[] = [];
+
+function readBookmarkRaw() {
+  try {
+    return window.localStorage.getItem(BOOKMARK_KEY) ?? "[]";
+  } catch {
+    return "[]";
+  }
+}
+
+function subscribeBookmarks(callback: () => void) {
+  window.addEventListener("storage", callback);
+  window.addEventListener(BOOKMARK_EVENT, callback);
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener(BOOKMARK_EVENT, callback);
+  };
+}
+
+// อ่านค่ายที่มาร์กจาก localStorage แบบ external store
+// เพื่อไม่ให้ HTML ตอน prerender กับตอนเปิดหน้าไม่ตรงกัน
+function useBookmarks() {
+  const raw = useSyncExternalStore(subscribeBookmarks, readBookmarkRaw, () => "[]");
+  const ids = useMemo(() => {
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? (parsed as string[]) : EMPTY_IDS;
+    } catch {
+      return EMPTY_IDS;
+    }
+  }, [raw]);
+
+  function toggleBookmark(id: string) {
+    const next = new Set(ids);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    try {
+      window.localStorage.setItem(BOOKMARK_KEY, JSON.stringify([...next]));
+    } catch {
+      // โหมดส่วนตัวบางตัวเขียนไม่ได้ ก็ยังใช้ในหน้านี้ได้
+    }
+    window.dispatchEvent(new Event(BOOKMARK_EVENT));
+  }
+
+  return { ids, toggleBookmark };
+}
+
+function Chip({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+        active
+          ? "border-zinc-900 bg-zinc-900 text-white"
+          : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-500"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function FilterGroup({
+  title,
+  options,
+  selected,
+  onToggle,
+  limit = 8,
+}: {
+  title: string;
+  options: string[];
+  selected: string[];
+  onToggle: (value: string) => void;
+  limit?: number;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  if (options.length === 0) return null;
+  const visible = expanded ? options : options.slice(0, limit);
+
+  return (
+    <div>
+      <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">{title}</p>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {visible.map((option) => (
+          <Chip
+            key={option}
+            active={selected.includes(option)}
+            onClick={() => onToggle(option)}
+          >
+            {option}
+          </Chip>
+        ))}
+        {options.length > limit ? (
+          <button
+            type="button"
+            onClick={() => setExpanded((value) => !value)}
+            className="rounded-full px-2 py-1.5 text-sm text-emerald-700 underline"
+          >
+            {expanded ? "ย่อลง" : `เพิ่มเติม (${options.length - limit})`}
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function BookmarkButton({
+  saved,
+  onClick,
+  title,
+}: {
+  saved: boolean;
+  onClick: () => void;
+  title: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={saved}
+      aria-label={saved ? `เลิกมาร์ก ${title}` : `มาร์ก ${title}`}
+      title={saved ? "เลิกมาร์ก" : "มาร์กค่ายนี้"}
+      className={`rounded-full border px-2.5 py-1 text-sm leading-none ${
+        saved
+          ? "border-amber-300 bg-amber-50 text-amber-600"
+          : "border-zinc-200 bg-white text-zinc-400 hover:text-amber-500"
+      }`}
+    >
+      {saved ? "★" : "☆"}
+    </button>
+  );
+}
+
+function CampCard({
+  camp,
+  today,
+  saved,
+  onBookmark,
+}: {
+  camp: Camp;
+  today: string | null;
+  saved: boolean;
+  onBookmark: () => void;
+}) {
   const closed = isPast(camp.deadline, today);
   return (
     <article className="flex h-full flex-col rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
@@ -42,13 +222,19 @@ function CampCard({ camp, today }: { camp: Camp; today: string | null }) {
         <span className="rounded-full border border-zinc-200 px-2.5 py-1 text-xs text-zinc-600">
           {camp.field}
         </span>
-        {camp.deadline ? (
+        {camp.certificate ? (
+          <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs text-emerald-700">
+            มีเกียรติบัตร
+          </span>
+        ) : null}
+        <div className="ml-auto flex items-center gap-2">
           <span
-            className={`ml-auto text-xs font-medium ${closed ? "text-zinc-400" : "text-emerald-600"}`}
+            className={`text-xs font-medium ${closed ? "text-zinc-400" : "text-emerald-600"}`}
           >
             {closed ? "ปิดรับแล้ว" : "เปิดรับสมัคร"}
           </span>
-        ) : null}
+          <BookmarkButton saved={saved} onClick={onBookmark} title={camp.title} />
+        </div>
       </div>
 
       <h3 className="mt-3 text-base font-semibold leading-snug">{camp.title}</h3>
@@ -56,20 +242,30 @@ function CampCard({ camp, today }: { camp: Camp; today: string | null }) {
 
       <dl className="mt-3 space-y-1.5 text-sm text-zinc-600">
         <div className="flex gap-2">
-          <dt className="w-16 shrink-0 text-zinc-400">วันที่</dt>
+          <dt className="w-16 shrink-0 text-zinc-400">วันจัด</dt>
           <dd>
-            {formatRange(camp.startDate, camp.endDate)}
-            {camp.dateIsDeadline ? " (วันปิดรับสมัคร)" : ""}
+            {camp.startDate && camp.endDate
+              ? formatRange(camp.startDate, camp.endDate)
+              : "ยังไม่ระบุวันจัด (ดูที่ Camphub)"}
           </dd>
         </div>
         <div className="flex gap-2">
           <dt className="w-16 shrink-0 text-zinc-400">สถานที่</dt>
-          <dd>{camp.location || "ไม่ระบุ"}</dd>
+          <dd>
+            {camp.location || "ไม่ระบุ"}
+            {camp.online ? " · ออนไลน์" : ""}
+          </dd>
         </div>
         <div className="flex gap-2">
           <dt className="w-16 shrink-0 text-zinc-400">ค่าใช้จ่าย</dt>
           <dd>{camp.fee || "ไม่ระบุ"}</dd>
         </div>
+        {camp.levels && camp.levels.length > 0 ? (
+          <div className="flex gap-2">
+            <dt className="w-16 shrink-0 text-zinc-400">ระดับชั้น</dt>
+            <dd>{camp.levels.join(", ")}</dd>
+          </div>
+        ) : null}
       </dl>
 
       <div className="mt-auto flex items-center justify-between gap-3 pt-4">
@@ -82,7 +278,7 @@ function CampCard({ camp, today }: { camp: Camp; today: string | null }) {
           target="_blank"
           rel="noreferrer noopener"
         >
-          ดูที่ Camphub
+          ดูรายละเอียดที่ Camphub
         </a>
       </div>
     </article>
@@ -92,17 +288,41 @@ function CampCard({ camp, today }: { camp: Camp; today: string | null }) {
 export default function CampExplorer({
   camps,
   types,
+  fields,
+  levels,
+  provinces,
+  formats,
+  prices,
+  fetchedLabel,
+  stats,
 }: {
   camps: Camp[];
   types: string[];
+  fields: string[];
+  levels: string[];
+  provinces: string[];
+  formats: { id: string; label: string }[];
+  prices: { id: string; label: string }[];
+  fetchedLabel: string;
+  stats: { sourcePages: number; foundLinks: number; keptCamps: number };
 }) {
   const [query, setQuery] = useState("");
-  const [type, setType] = useState(ALL);
+  const [type, setType] = useState("ทั้งหมด");
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [selectedFields, setSelectedFields] = useState<string[]>([]);
+  const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
+  const [selectedProvinces, setSelectedProvinces] = useState<string[]>([]);
+  const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
+  const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
+  const [status, setStatus] = useState<Status>("all");
+  const [bookmarkedOnly, setBookmarkedOnly] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const [view, setView] = useState<View>("list");
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
+  const { ids: bookmarked, toggleBookmark } = useBookmarks();
+
   // อ่านเวลาปัจจุบันฝั่งเบราว์เซอร์เท่านั้น เพื่อให้หน้าเว็บยัง prerender ได้
-  // (ช่วง prerender จะได้ null แล้วค่อยเติมวันที่จริงหลังเปิดหน้า)
   const today = useSyncExternalStore<string | null>(
     () => () => {},
     () => todayISO(),
@@ -110,7 +330,7 @@ export default function CampExplorer({
   );
 
   const firstMonth = useMemo(() => {
-    const first = camps[0];
+    const first = camps.find((camp) => camp.startDate);
     const [year, month] = (first?.startDate ?? "2026-01-01").split("-").map(Number);
     return { year, month: month - 1 };
   }, [camps]);
@@ -120,27 +340,100 @@ export default function CampExplorer({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return camps.filter((camp) => {
-      if (type !== ALL && camp.type !== type) return false;
+      if (type !== "ทั้งหมด" && camp.type !== type) return false;
+      if (selectedTypes.length && !selectedTypes.includes(camp.type)) return false;
+      if (selectedFields.length && !selectedFields.includes(camp.field)) return false;
+      if (
+        selectedLevels.length &&
+        !selectedLevels.some((level) => (camp.levels ?? []).includes(level))
+      )
+        return false;
+      if (selectedProvinces.length && !selectedProvinces.includes(camp.province ?? ""))
+        return false;
+      if (selectedPrices.length && !selectedPrices.some((id) => matchPrice(id, camp.price)))
+        return false;
+      if (selectedFormats.length && !selectedFormats.some((id) => matchFormat(id, camp)))
+        return false;
+      if (status !== "all") {
+        const closed = isPast(camp.deadline, today);
+        if (status === "open" && closed) return false;
+        if (status === "closed" && !closed) return false;
+      }
+      if (bookmarkedOnly && !bookmarked.includes(camp.id)) return false;
       if (!q) return true;
-      return [camp.title, camp.organizer, camp.location, camp.field, camp.type, camp.level]
+      return [
+        camp.title,
+        camp.organizer,
+        camp.location,
+        camp.field,
+        camp.type,
+        camp.level,
+        camp.province,
+      ]
         .join(" ")
         .toLowerCase()
         .includes(q);
     });
-  }, [camps, query, type]);
+  }, [
+    camps,
+    query,
+    type,
+    selectedTypes,
+    selectedFields,
+    selectedLevels,
+    selectedProvinces,
+    selectedPrices,
+    selectedFormats,
+    status,
+    bookmarkedOnly,
+    bookmarked,
+    today,
+  ]);
+
+  const activeFilterCount =
+    selectedTypes.length +
+    selectedFields.length +
+    selectedLevels.length +
+    selectedProvinces.length +
+    selectedPrices.length +
+    selectedFormats.length +
+    (status !== "all" ? 1 : 0) +
+    (type !== "ทั้งหมด" ? 1 : 0) +
+    (bookmarkedOnly ? 1 : 0);
+
+  function clearFilters() {
+    setType("ทั้งหมด");
+    setSelectedTypes([]);
+    setSelectedFields([]);
+    setSelectedLevels([]);
+    setSelectedProvinces([]);
+    setSelectedPrices([]);
+    setSelectedFormats([]);
+    setStatus("all");
+    setBookmarkedOnly(false);
+    setQuery("");
+  }
 
   const monthCamps = useMemo(() => {
     const startOfMonth = toISO(month.year, month.month, 1);
     const endOfMonth = toISO(month.year, month.month + 1, 0);
     return filtered.filter(
-      (camp) => camp.startDate <= endOfMonth && camp.endDate >= startOfMonth,
+      (camp) =>
+        camp.startDate &&
+        camp.endDate &&
+        camp.startDate <= endOfMonth &&
+        camp.endDate >= startOfMonth,
     );
   }, [filtered, month]);
 
   const dayCamps = useMemo(() => {
     if (!selectedDay) return [];
     return filtered.filter(
-      (camp) => camp.startDate <= selectedDay && camp.endDate >= selectedDay,
+      (camp) =>
+        camp.startDate &&
+        camp.endDate &&
+        camp.startDate <= selectedDay &&
+        camp.endDate >= selectedDay,
     );
   }, [filtered, selectedDay]);
 
@@ -159,45 +452,145 @@ export default function CampExplorer({
     setSelectedDay(null);
   }
 
-  function markedDates(iso: string) {
+  function dayCampsOn(iso: string) {
     return filtered.filter(
-      (camp) => camp.startDate <= iso && camp.endDate >= iso,
-    ).length;
+      (camp) =>
+        camp.startDate &&
+        camp.endDate &&
+        camp.startDate <= iso &&
+        camp.endDate >= iso,
+    );
   }
+
+  const bookmarkedCamps = camps.filter((camp) => bookmarked.includes(camp.id));
 
   return (
     <div>
-      <section className="space-y-3">
-        <label className="block">
-          <span className="sr-only">ค้นหาค่าย</span>
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="ค้นหาชื่อค่าย ผู้จัด จังหวัด หรือสาย"
-            className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-base outline-none focus:border-zinc-900"
-          />
-        </label>
-
-        <div className="flex flex-wrap gap-2">
-          {[ALL, ...types].map((item) => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => setType(item)}
-              aria-pressed={type === item}
-              className={`rounded-full border px-3 py-1.5 text-sm ${
-                type === item
-                  ? "border-zinc-900 bg-zinc-900 text-white"
-                  : "border-zinc-300 bg-white text-zinc-700"
-              }`}
-            >
-              {item}
-            </button>
-          ))}
+      <section className="space-y-4">
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <label className="block flex-1">
+            <span className="sr-only">ค้นหาค่าย</span>
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="ค้นหาชื่อค่าย ผู้จัด จังหวัด หรือสาย"
+              className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-base outline-none focus:border-zinc-900"
+            />
+          </label>
+          <button
+            type="button"
+            onClick={() => setShowFilters((value) => !value)}
+            className="rounded-xl border border-zinc-300 bg-white px-4 py-3 text-sm font-medium"
+          >
+            ตัวกรอง{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+          </button>
         </div>
 
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-sm text-zinc-500">พบ {filtered.length} ค่าย</p>
+        {/* ประเภทกิจกรรมแบบแถบเมนู เหมือนหมวดหลักของ CAMPHUB */}
+        <div className="-mx-5 overflow-x-auto px-5">
+          <div className="flex w-max gap-2">
+            {["ทั้งหมด", ...types].map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => setType(item)}
+                aria-pressed={type === item}
+                className={`whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm ${
+                  type === item
+                    ? "border-zinc-900 bg-zinc-900 text-white"
+                    : "border-zinc-300 bg-white text-zinc-700"
+                }`}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {showFilters ? (
+          <div className="space-y-4 rounded-2xl border border-zinc-200 bg-white p-4">
+            <FilterGroup
+              title="สาย / คณะ"
+              options={fields}
+              selected={selectedFields}
+              onToggle={(value) => setSelectedFields((prev) => toggleValue(prev, value))}
+            />
+            <FilterGroup
+              title="ระดับชั้น"
+              options={levels}
+              selected={selectedLevels}
+              onToggle={(value) => setSelectedLevels((prev) => toggleValue(prev, value))}
+            />
+            <FilterGroup
+              title="จังหวัด"
+              options={provinces}
+              selected={selectedProvinces}
+              onToggle={(value) => setSelectedProvinces((prev) => toggleValue(prev, value))}
+            />
+            <FilterGroup
+              title="ค่าใช้จ่าย"
+              options={prices.map((item) => item.label)}
+              selected={selectedPrices.map(
+                (id) => prices.find((item) => item.id === id)?.label ?? id,
+              )}
+              onToggle={(label) => {
+                const found = prices.find((item) => item.label === label);
+                if (found) setSelectedPrices((prev) => toggleValue(prev, found.id));
+              }}
+            />
+            <FilterGroup
+              title="รูปแบบ"
+              options={formats.map((item) => item.label)}
+              selected={selectedFormats.map(
+                (id) => formats.find((item) => item.id === id)?.label ?? id,
+              )}
+              onToggle={(label) => {
+                const found = formats.find((item) => item.label === label);
+                if (found) setSelectedFormats((prev) => toggleValue(prev, found.id));
+              }}
+            />
+
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                สถานะ
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <Chip active={status === "all"} onClick={() => setStatus("all")}>
+                  ทั้งหมด
+                </Chip>
+                <Chip active={status === "open"} onClick={() => setStatus("open")}>
+                  เปิดรับสมัคร
+                </Chip>
+                <Chip active={status === "closed"} onClick={() => setStatus("closed")}>
+                  ปิดรับแล้ว
+                </Chip>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-3">
+              <Chip
+                active={bookmarkedOnly}
+                onClick={() => setBookmarkedOnly((value) => !value)}
+              >
+                ★ เฉพาะที่มาร์กไว้ ({bookmarked.length})
+              </Chip>
+              {activeFilterCount > 0 ? (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="rounded-full px-3 py-1.5 text-sm text-zinc-500 underline"
+                >
+                  ล้างตัวกรอง
+                </button>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-zinc-500">
+            พบ {filtered.length} ค่าย · ข้อมูล ณ {fetchedLabel}
+          </p>
           <div className="flex rounded-full border border-zinc-300 bg-white p-1 text-sm">
             <button
               type="button"
@@ -217,18 +610,30 @@ export default function CampExplorer({
             </button>
           </div>
         </div>
+
+        {bookmarkedCamps.length > 0 ? (
+          <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+            ★ มาร์กไว้ {bookmarkedCamps.length} ค่าย · จะขึ้นในปฏิทิน และใช้ส่งแจ้งเตือนใน Discord
+            (กำลังทำขั้นถัดไป)
+          </p>
+        ) : null}
       </section>
 
       {view === "list" ? (
         filtered.length === 0 ? (
           <p className="mt-8 rounded-2xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
-            ไม่พบค่ายที่ตรงกับเงื่อนไข ลองล้างคำค้นหรือเลือก &quot;ทั้งหมด&quot;
+            ไม่พบค่ายที่ตรงกับเงื่อนไข ลองล้างตัวกรองหรือเปลี่ยนคำค้น
           </p>
         ) : (
           <ul className="mt-6 grid gap-4 sm:grid-cols-2">
             {filtered.map((camp) => (
               <li key={camp.id}>
-                <CampCard camp={camp} today={today} />
+                <CampCard
+                  camp={camp}
+                  today={today}
+                  saved={bookmarked.includes(camp.id)}
+                  onBookmark={() => toggleBookmark(camp.id)}
+                />
               </li>
             ))}
           </ul>
@@ -268,7 +673,11 @@ export default function CampExplorer({
           <div className="grid grid-cols-7 gap-1">
             {cells.map((iso, index) => {
               if (!iso) return <div key={`blank-${index}`} />;
-              const count = markedDates(iso);
+              const dayList = dayCampsOn(iso);
+              const count = dayList.length;
+              const savedCount = dayList.filter((camp) =>
+                bookmarked.includes(camp.id),
+              ).length;
               const selected = selectedDay === iso;
               const isToday = today === iso;
               return (
@@ -276,21 +685,28 @@ export default function CampExplorer({
                   key={iso}
                   type="button"
                   onClick={() => setSelectedDay(selected ? null : iso)}
-                  className={`relative flex h-12 flex-col items-center justify-center rounded-lg border text-sm ${
+                  className={`relative flex h-14 flex-col items-center justify-center rounded-lg border text-sm ${
                     selected
                       ? "border-zinc-900 bg-zinc-900 text-white"
-                      : count > 0
-                        ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-                        : "border-zinc-200 bg-white text-zinc-700"
+                      : savedCount > 0
+                        ? "border-amber-300 bg-amber-50 text-amber-900"
+                        : count > 0
+                          ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                          : "border-zinc-200 bg-white text-zinc-700"
                   }`}
                 >
-                  <span className={isToday ? "font-bold" : ""}>{Number(iso.slice(-2))}</span>
+                  <span className={isToday ? "font-bold" : ""}>
+                    {Number(iso.slice(-2))}
+                  </span>
                   {count > 0 ? (
                     <span
                       className={`text-[10px] ${selected ? "text-white/80" : "text-emerald-700"}`}
                     >
                       {count} ค่าย
                     </span>
+                  ) : null}
+                  {savedCount > 0 ? (
+                    <span className="absolute right-1 top-1 text-[10px] text-amber-500">★</span>
                   ) : null}
                 </button>
               );
@@ -316,19 +732,32 @@ export default function CampExplorer({
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="font-medium">{camp.title}</p>
+                        <p className="font-medium">
+                          {bookmarked.includes(camp.id) ? "★ " : ""}
+                          {camp.title}
+                        </p>
                         <p className="mt-0.5 text-xs text-zinc-500">
-                          {formatRange(camp.startDate, camp.endDate)} · {camp.location || "ไม่ระบุสถานที่"}
+                          {camp.startDate && camp.endDate
+                            ? formatRange(camp.startDate, camp.endDate)
+                            : "ยังไม่ระบุวันจัด"}{" "}
+                          · {camp.location || "ไม่ระบุสถานที่"}
                         </p>
                       </div>
-                      <a
-                        href={camp.sourceUrl}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        className="shrink-0 text-xs font-medium text-emerald-700 underline"
-                      >
-                        ต้นฉบับ
-                      </a>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <BookmarkButton
+                          saved={bookmarked.includes(camp.id)}
+                          onClick={() => toggleBookmark(camp.id)}
+                          title={camp.title}
+                        />
+                        <a
+                          href={camp.sourceUrl}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          className="text-xs font-medium text-emerald-700 underline"
+                        >
+                          ต้นฉบับ
+                        </a>
+                      </div>
                     </div>
                   </li>
                 ))}
@@ -337,6 +766,11 @@ export default function CampExplorer({
           </div>
         </section>
       )}
+
+      <p className="mt-8 text-xs text-zinc-400">
+        รอบนี้ดึงจาก {stats.sourcePages} หน้า CAMPHUB พบลิงก์ {stats.foundLinks} รายการ
+        และเก็บเฉพาะที่ยังเปิดรับสมัคร {stats.keptCamps} ค่าย · รีเฟรชวันละครั้ง
+      </p>
     </div>
   );
 }

@@ -45,3 +45,6 @@ next-env.d.ts
 
 # bot state
 bot/data/
+
+# crawl diagnostics
+logs/

@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "fetch:camphub": "node scripts/fetch-camphub.mjs",
+    "refresh:daily": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/daily-refresh.ps1",
+    "task:setup": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-daily-task.ps1",
     "bot": "node --env-file-if-exists=.env.local bot/index.mjs",
     "bot:dry": "node bot/index.mjs --dry-run",
     "bot:register": "node --env-file-if-exists=.env.local bot/register-commands.mjs"

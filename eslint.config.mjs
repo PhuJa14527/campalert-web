@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // ไฟล์ของสกิล/เครื่องมือ ไม่ใช่โค้ดเว็บเรา
+    ".opencode/**",
+    "logs/**",
   ]),
 ]);
 

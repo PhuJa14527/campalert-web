@@ -62,9 +62,11 @@ function formatDay(iso) {
 
 export function messageBody(camp, reason, advance) {
   const dates =
-    camp.startDate === camp.endDate
-      ? formatDay(camp.startDate)
-      : `${formatDay(camp.startDate)} - ${formatDay(camp.endDate)}`;
+    !camp.startDate || !camp.endDate
+      ? "ยังไม่ระบุวันจัด"
+      : camp.startDate === camp.endDate
+        ? formatDay(camp.startDate)
+        : `${formatDay(camp.startDate)} - ${formatDay(camp.endDate)}`;
   const lines = [
     `**${camp.title}**`,
     `${camp.type} · ${camp.field}`,
