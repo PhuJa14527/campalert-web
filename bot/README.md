@@ -1,0 +1,46 @@
+# บอท Discord แจ้งเตือนค่าย (CampAlert)
+
+บอทนี้ส่งข้อความส่วนตัว (DM) ให้แต่ละคนตามที่ตัวเองตั้งไว้ ไม่ใช่ยิงทุกค่ายใส่ทุกคน
+
+## ตั้งค่าครั้งเดียว (ทำเองในเบราว์เซอร์)
+
+1. เปิด https://discord.com/developers/applications → **New Application** → ตั้งชื่อ เช่น CampAlert → Create
+2. แท็บ **General Information** → คัดลอก **Application ID**
+3. แท็บ **Bot** → กด **Reset Token** → คัดลอก token (เห็นครั้งเดียว ถ้าหายให้ reset ใหม่)
+4. แท็บ **Installation** → เลือก **Guild Install** → scopes: `bot` + `applications.commands` → คัดลอก install link ไปเปิดในเบราว์เซอร์ แล้วเลือกเซิร์ฟเวอร์ของคุณ
+5. เปิด Developer Mode ใน Discord (User Settings → Advanced → Developer Mode) → คลิกขวาที่ชื่อเซิร์ฟเวอร์ → **Copy Server ID**
+6. เปิดไฟล์ `.env.local` แล้วเติมค่าเอง (ห้ามส่งค่าเหล่านี้ในแชต)
+   ```
+   DISCORD_BOT_TOKEN=...
+   DISCORD_CLIENT_ID=...
+   DISCORD_GUILD_ID=...
+   ```
+   `DISCORD_GUILD_ID` ใส่หรือไม่ก็ได้ ถ้าใส่คำสั่งจะขึ้นทันที ถ้าไม่ใส่ต้องรอประมาณ 1 ชั่วโมง
+
+## รันบอท
+
+```
+npm run bot:register   # ลงทะเบียนคำสั่ง (ทำครั้งเดียว หรือเมื่อแก้คำสั่ง)
+npm run bot            # เปิดบอทค้างไว้
+```
+
+ถ้าอยากดูก่อนว่าจะส่งอะไร โดยไม่ส่งจริง: `npm run bot:dry`
+
+## คำสั่งใน Discord
+
+- `/notify mode:<ค่ายใหม่ | ใกล้ปิดรับสมัคร | ทั้งสองอย่าง> field:<สายค่าย> advance:<1-14>`
+- `/settings` ดูการตั้งค่าตัวเอง
+- `/stop` ปิดการแจ้งเตือน
+
+แต่ละคนตั้งเองได้ ไม่กระทบคนอื่น
+
+## ข้อมูลเก็บที่ไหน
+
+- `bot/data/settings.json` การตั้งค่าของแต่ละคน (อยู่ในเครื่อง ไม่ขึ้น git)
+- `bot/data/snapshot.json` รายชื่อค่ายรอบก่อน ใช้หาว่ามีค่ายใหม่ไหม
+
+## ข้อจำกัดตอนนี้
+
+- บอทต้องเปิดค้างไว้ (คอมเปิด + `npm run bot` รันอยู่) ถ้าปิดคอมจะไม่แจ้ง
+- ทุก 24 ชั่วโมงบอทจะดึงข้อมูล CAMPHUB ใหม่เอง (ปรับได้ที่ `REFRESH_HOURS` ใน `.env.local`, ใส่ 0 = ปิด)
+- ถ้าอยากให้ทำงานตลอดเวลาโดยไม่ต้องเปิดคอม ต้องย้ายไป host เช่น Railway หรือ VPS (ขั้นต่อไป)

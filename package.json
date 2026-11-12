@@ -7,9 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "fetch:camphub": "node scripts/fetch-camphub.mjs"
+    "fetch:camphub": "node scripts/fetch-camphub.mjs",
+    "bot": "node --env-file-if-exists=.env.local bot/index.mjs",
+    "bot:dry": "node bot/index.mjs --dry-run",
+    "bot:register": "node --env-file-if-exists=.env.local bot/register-commands.mjs"
   },
   "dependencies": {
+    "discord.js": "^14.28.1",
     "next": "16.4.6",
     "react": "19.3.0",
     "react-dom": "19.3.0"
