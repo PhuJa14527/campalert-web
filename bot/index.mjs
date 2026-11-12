@@ -147,8 +147,19 @@ async function handleCommand(interaction) {
       name: interaction.user.username,
       sent: settings.users[interaction.user.id]?.sent ?? {},
     });
+
+    let dmNote = "\n\nส่งข้อความทดสอบไปใน DM แล้ว";
+    try {
+      await interaction.user.send({
+        content: `ตั้งค่าการแจ้งเตือน CampAlert แล้ว ✅\n${summary(user)}\n\nข้อความนี้คือตัวอย่าง ว่ารูปแบบการแจ้งเตือนหน้าตาเป็นแบบไหน`,
+      });
+    } catch {
+      dmNote =
+        "\n\n⚠️ ส่ง DM ไม่ได้ ลองเปิด Privacy Settings → Direct Messages ของเซิร์ฟเวอร์นี้ให้อนุญาต";
+    }
+
     await interaction.reply({
-      content: `ตั้งค่าแล้ว ✅\n${summary(user)}\n\nจะส่งข้อความส่วนตัวมาหาคุณเมื่อมีค่ายตรงเงื่อนไข`,
+      content: `ตั้งค่าแล้ว ✅\n${summary(user)}${dmNote}`,
       flags: MessageFlags.Ephemeral,
     });
     return;
