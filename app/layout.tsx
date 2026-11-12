@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OpenCode Project",
-  description: "โปรเจกต์แรกที่สร้างด้วย SeedStack",
+  title: "ค่ายไหนดี · รวมค่ายสำหรับนักเรียน",
+  description:
+    "รวมค่ายวิทยาศาสตร์ เทคโนโลยี ดนตรี ภาษา และจิตอาสา พร้อมวันรับสมัครและค่าใช้จ่าย",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
