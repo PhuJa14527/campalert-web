@@ -160,16 +160,19 @@ function useBookmarks() {
     writeLocalBookmarks(next);
 
     const supabase = getSupabase();
-    if (!supabase || !remoteIds) return;
+    if (!supabase) return;
 
-    void supabase.auth.getSession().then(({ data }) => {
+    // เขียนลงฐานข้อมูลทุกครั้งถ้ามี session ค้างอยู่
+    // (ไม่ต้องรอ sync รอบแรกเสร็จก่อน กันกดดาวแล้วหาย)
+    void supabase.auth.getSession().then(async ({ data }) => {
       const userId = data.session?.user.id;
       if (!userId) return;
-      if (saved) {
-        void supabase.from("bookmarks").delete().eq("user_id", userId).eq("camp_id", id);
-      } else {
-        void supabase.from("bookmarks").insert({ user_id: userId, camp_id: id });
-      }
+
+      const { error } = saved
+        ? await supabase.from("bookmarks").delete().eq("user_id", userId).eq("camp_id", id)
+        : await supabase.from("bookmarks").insert({ user_id: userId, camp_id: id });
+
+      if (error) console.error("บันทึกค่ายที่มาร์กไม่สำเร็จ:", error.message);
     });
   }
 
