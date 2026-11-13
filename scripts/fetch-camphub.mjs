@@ -14,7 +14,7 @@
 //
 // รันด้วย: npm run fetch:camphub  (ตั้งค่า CAMPHUB_DELAY_MS เพื่อปรับจังหวะได้)
 
-import { writeFile, mkdir } from "node:fs/promises";
+import { writeFile, mkdir, readFile } from "node:fs/promises";
 import { setTimeout as sleep } from "node:timers/promises";
 
 const BASE = "https://www.camphub.in.th";
@@ -300,16 +300,23 @@ function pickPrice(feeText) {
   return match ? Number(match[1]) : null;
 }
 
-async function fetchText(url) {
-  const res = await fetch(url, {
-    headers: {
-      "user-agent":
-        "Mozilla/5.0 (compatible; SeedStackStudentProject/1.0; +https://campalert-puri-z.vercel.app)",
-      accept: "text/html",
-    },
-  });
-  if (!res.ok) throw new Error(`${res.status} ${url}`);
-  return res.text();
+async function fetchText(url, attempt = 0) {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "user-agent":
+          "Mozilla/5.0 (compatible; SeedStackStudentProject/1.0; +https://campalert-puri-z.vercel.app)",
+        accept: "text/html",
+      },
+    });
+    if (!res.ok) throw new Error(`${res.status} ${url}`);
+    return await res.text();
+  } catch (error) {
+    // เน็ตสะดุดบ่อย ลองซ้ำอีก 2 ครั้งก่อนยอมแพ้
+    if (attempt >= 2) throw error;
+    await sleep(700 * (attempt + 1));
+    return fetchText(url, attempt + 1);
+  }
 }
 
 function parseListing(html) {
@@ -477,6 +484,26 @@ async function main() {
   };
 
   await mkdir(new URL("../data/", import.meta.url), { recursive: true });
+
+  // กันข้อมูลแย่ทับของดี: ถ้ารอบนี้ได้ค่ายน้อยกว่ารอบก่อนมาก (เช่นเน็ตหลุดครึ่งทาง)
+  // ให้เก็บไฟล์เดิมไว้แล้วแจ้ง error เพื่อให้รอบถัดไปลองใหม่
+  let previousCount = 0;
+  try {
+    const previous = JSON.parse(
+      await readFile(new URL("../data/camps.json", import.meta.url), "utf8"),
+    );
+    previousCount = previous.camps?.length ?? 0;
+  } catch {
+    previousCount = 0;
+  }
+
+  if (previousCount >= 50 && camps.length < previousCount * 0.7) {
+    console.log(
+      `ยกเลิก: รอบนี้ได้ ${camps.length} ค่าย น้อยกว่ารอบก่อน (${previousCount}) เกิน 30% จึงไม่เขียนทับ`,
+    );
+    process.exit(2);
+  }
+
   await writeFile(
     new URL("../data/camps.json", import.meta.url),
     JSON.stringify({ ...summary, camps }, null, 2) + "\n",
