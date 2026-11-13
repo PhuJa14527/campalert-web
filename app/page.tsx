@@ -1,7 +1,6 @@
 import CampExplorer from "@/app/camp-explorer";
 import SiteHeader from "@/app/site-header";
 import {
-  campFields,
   campFormats,
   campLevels,
   campProvinces,
@@ -10,7 +9,10 @@ import {
   dataFetchedAt,
   dataSource,
   dataStats,
+  organizerCounts,
+  organizerKinds,
   priceRanges,
+  topicGroups,
 } from "@/lib/camps";
 
 const fetchedLabel = new Intl.DateTimeFormat("th-TH", {
@@ -53,11 +55,13 @@ export default function Home() {
         <CampExplorer
           camps={camps}
           types={campTypes}
-          fields={campFields}
           levels={campLevels}
           provinces={campProvinces}
           formats={campFormats.map(({ id, label }) => ({ id, label }))}
           prices={priceRanges.map(({ id, label }) => ({ id, label }))}
+          topicGroups={topicGroups}
+          organizerKinds={organizerKinds.map(({ id, label }) => ({ id, label }))}
+          organizerCounts={organizerCounts}
           fetchedLabel={fetchedLabel}
           stats={dataStats}
         />

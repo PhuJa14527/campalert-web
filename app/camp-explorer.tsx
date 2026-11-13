@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
 import type { Camp } from "@/lib/camps";
+import { organizerKind, topicLabels } from "@/lib/camps";
 import { getSupabase } from "@/lib/supabase";
 import {
   formatDayFull,
@@ -373,28 +374,32 @@ function CampCard({
 export default function CampExplorer({
   camps,
   types,
-  fields,
   levels,
   provinces,
   formats,
   prices,
+  topicGroups,
+  organizerKinds,
+  organizerCounts,
   fetchedLabel,
   stats,
 }: {
   camps: Camp[];
   types: string[];
-  fields: string[];
   levels: string[];
   provinces: string[];
   formats: { id: string; label: string }[];
   prices: { id: string; label: string }[];
+  topicGroups: { id: string; label: string; options: { slug: string; label: string; count: number }[] }[];
+  organizerKinds: { id: string; label: string }[];
+  organizerCounts: Record<string, number>;
   fetchedLabel: string;
   stats: { sourcePages: number; foundLinks: number; keptCamps: number };
 }) {
   const [query, setQuery] = useState("");
   const [type, setType] = useState("ทั้งหมด");
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedFields, setSelectedFields] = useState<string[]>([]);
+  const [topics, setTopics] = useState<string[]>([]);
+  const [organizer, setOrganizer] = useState("all");
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [selectedProvinces, setSelectedProvinces] = useState<string[]>([]);
   const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
@@ -426,8 +431,11 @@ export default function CampExplorer({
     const q = query.trim().toLowerCase();
     return camps.filter((camp) => {
       if (type !== "ทั้งหมด" && camp.type !== type) return false;
-      if (selectedTypes.length && !selectedTypes.includes(camp.type)) return false;
-      if (selectedFields.length && !selectedFields.includes(camp.field)) return false;
+      if (topics.length > 0) {
+        const slugs = camp.slugs ?? [];
+        if (!topics.some((slug) => slugs.includes(slug))) return false;
+      }
+      if (organizer !== "all" && organizerKind(camp) !== organizer) return false;
       if (
         selectedLevels.length &&
         !selectedLevels.some((level) => (camp.levels ?? []).includes(level))
@@ -463,8 +471,8 @@ export default function CampExplorer({
     camps,
     query,
     type,
-    selectedTypes,
-    selectedFields,
+    topics,
+    organizer,
     selectedLevels,
     selectedProvinces,
     selectedPrices,
@@ -476,20 +484,20 @@ export default function CampExplorer({
   ]);
 
   const activeFilterCount =
-    selectedTypes.length +
-    selectedFields.length +
+    topics.length +
     selectedLevels.length +
     selectedProvinces.length +
     selectedPrices.length +
     selectedFormats.length +
     (status !== "all" ? 1 : 0) +
     (type !== "ทั้งหมด" ? 1 : 0) +
+    (organizer !== "all" ? 1 : 0) +
     (bookmarkedOnly ? 1 : 0);
 
   function clearFilters() {
     setType("ทั้งหมด");
-    setSelectedTypes([]);
-    setSelectedFields([]);
+    setTopics([]);
+    setOrganizer("all");
     setSelectedLevels([]);
     setSelectedProvinces([]);
     setSelectedPrices([]);
@@ -551,55 +559,117 @@ export default function CampExplorer({
 
   return (
     <div>
-      <section className="space-y-4">
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <label className="block flex-1">
-            <span className="sr-only">ค้นหาค่าย</span>
+      <section className="space-y-3">
+        {/* แถบตัวกรองแบบ CAMPHUB: ค้นหา + dropdown แยกตามกลุ่ม */}
+        <div className="flex flex-wrap items-stretch overflow-hidden rounded-xl border border-zinc-300 bg-white">
+          <label className="flex min-w-[180px] flex-1 items-center gap-2 px-3">
+            <span className="sr-only">ค้นหาค่ายและกิจกรรม</span>
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="ค้นหาชื่อค่าย ผู้จัด จังหวัด หรือสาย"
-              className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-base outline-none focus:border-zinc-900"
+              placeholder="ค้นหาค่ายและกิจกรรม"
+              className="w-full bg-transparent py-3 text-base outline-none"
             />
           </label>
+
+          {topicGroups.map((group) => {
+            const picked = group.options.find((option) => topics.includes(option.slug));
+            return (
+              <label
+                key={group.id}
+                className={`flex items-center border-l border-zinc-200 px-2 text-sm ${
+                  picked ? "font-medium text-emerald-700" : "text-zinc-700"
+                }`}
+              >
+                <select
+                  value={picked?.slug ?? ""}
+                  onChange={(event) => {
+                    const slug = event.target.value;
+                    setTopics((prev) => {
+                      const others = prev.filter(
+                        (item) => !group.options.some((option) => option.slug === item),
+                      );
+                      return slug ? [...others, slug] : others;
+                    });
+                  }}
+                  className="bg-transparent py-3 pr-1 outline-none"
+                >
+                  <option value="">{group.label}</option>
+                  {group.options.map((option) => (
+                    <option key={option.slug} value={option.slug}>
+                      {option.label} ({option.count})
+                    </option>
+                  ))}
+                </select>
+              </label>
+            );
+          })}
+
+          <label
+            className={`flex items-center border-l border-zinc-200 px-2 text-sm ${
+              type !== "ทั้งหมด" ? "font-medium text-emerald-700" : "text-zinc-700"
+            }`}
+          >
+            <select
+              value={type === "ทั้งหมด" ? "" : type}
+              onChange={(event) => setType(event.target.value || "ทั้งหมด")}
+              className="bg-transparent py-3 pr-1 outline-none"
+            >
+              <option value="">รูปแบบค่าย</option>
+              {types.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label
+            className={`flex items-center border-l border-zinc-200 px-2 text-sm ${
+              organizer !== "all" ? "font-medium text-emerald-700" : "text-zinc-700"
+            }`}
+          >
+            <select
+              value={organizer === "all" ? "" : organizer}
+              onChange={(event) => setOrganizer(event.target.value || "all")}
+              className="bg-transparent py-3 pr-1 outline-none"
+            >
+              <option value="">ผู้จัด</option>
+              {organizerKinds.map((kind) => (
+                <option key={kind.id} value={kind.id}>
+                  {kind.label} ({organizerCounts[kind.id] ?? 0})
+                </option>
+              ))}
+            </select>
+          </label>
+
           <button
             type="button"
             onClick={() => setShowFilters((value) => !value)}
-            className="rounded-xl border border-zinc-300 bg-white px-4 py-3 text-sm font-medium"
+            className="border-l border-zinc-200 px-4 py-3 text-sm font-medium text-zinc-700"
           >
             ตัวกรอง{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
           </button>
         </div>
 
-        {/* ประเภทกิจกรรมแบบแถบเมนู เหมือนหมวดหลักของ CAMPHUB */}
-        <div className="-mx-5 overflow-x-auto px-5">
-          <div className="flex w-max gap-2">
-            {["ทั้งหมด", ...types].map((item) => (
+        {/* ป้ายที่เลือกอยู่ กดกากบาทเพื่อเอาออกทีละอัน */}
+        {topics.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {topics.map((slug) => (
               <button
-                key={item}
+                key={slug}
                 type="button"
-                onClick={() => setType(item)}
-                aria-pressed={type === item}
-                className={`whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm ${
-                  type === item
-                    ? "border-zinc-900 bg-zinc-900 text-white"
-                    : "border-zinc-300 bg-white text-zinc-700"
-                }`}
+                onClick={() => setTopics((prev) => prev.filter((item) => item !== slug))}
+                className="rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1 text-sm text-emerald-800"
               >
-                {item}
+                {topicLabels[slug] ?? slug} ✕
               </button>
             ))}
           </div>
-        </div>
+        ) : null}
 
         {showFilters ? (
           <div className="space-y-4 rounded-2xl border border-zinc-200 bg-white p-4">
-            <FilterGroup
-              title="สาย / คณะ"
-              options={fields}
-              selected={selectedFields}
-              onToggle={(value) => setSelectedFields((prev) => toggleValue(prev, value))}
-            />
             <FilterGroup
               title="ระดับชั้น"
               options={levels}

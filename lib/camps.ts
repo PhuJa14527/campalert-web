@@ -148,3 +148,106 @@ export const campFormats = [
 ] as const;
 
 export type FormatId = (typeof campFormats)[number]["id"];
+
+/**
+ * หมวดแบบ CAMPHUB: สายสุขภาพ / สายวิทย์ / สายศิลป์ / ประกวดแข่งขัน
+ * รายชื่อย่อยคัดมาจากเมนูหลักบนเว็บ CAMPHUB (slug ตรงกับที่เก็บใน camps.json)
+ */
+const CAMPHUB_TOPIC_GROUPS = [
+  {
+    id: "health",
+    label: "สายสุขภาพ",
+    items: [
+      { slug: "doctor", label: "แพทย์" },
+      { slug: "dentist", label: "ทันตแพทย์" },
+      { slug: "nurse", label: "พยาบาล" },
+      { slug: "pharma", label: "เภสัช" },
+      { slug: "psychology", label: "จิตแพทย์/จิตวิทยา" },
+      { slug: "vet", label: "สัตวแพทย์" },
+      { slug: "allied-health-sciences", label: "เทคนิคการแพทย์/สหเวช" },
+      { slug: "health-other", label: "สายสุขภาพอื่นๆ" },
+    ],
+  },
+  {
+    id: "science",
+    label: "สายวิทย์",
+    items: [
+      { slug: "engineer", label: "วิศวกรรม" },
+      { slug: "science", label: "วิทยาศาสตร์" },
+      { slug: "computer", label: "คอม/ไอที" },
+      { slug: "aviation", label: "การบิน" },
+      { slug: "architect-design", label: "สถาปัตย์/ออกแบบ" },
+      { slug: "agri-fishery", label: "เกษตร/ประมง" },
+    ],
+  },
+  {
+    id: "arts",
+    label: "สายศิลป์",
+    items: [
+      { slug: "law", label: "นิติศาสตร์" },
+      { slug: "political", label: "รัฐศาสตร์" },
+      { slug: "account-commerce", label: "บัญชี/บริหารธุรกิจ" },
+      { slug: "commarts", label: "นิเทศ/สื่อสารมวลชน" },
+      { slug: "teacher", label: "ครู" },
+      { slug: "lang-human", label: "อักษร/มนุษย์/ศิลปศาสตร์" },
+      { slug: "social", label: "สังคมศาสตร์" },
+      { slug: "economic", label: "เศรษฐศาสตร์" },
+      { slug: "logistics", label: "โลจิสติกส์" },
+      { slug: "hospitality", label: "การโรงแรม/ท่องเที่ยว" },
+      { slug: "music", label: "ดนตรี" },
+    ],
+  },
+  {
+    id: "contest",
+    label: "ประกวดแข่งขัน",
+    items: [{ slug: "contest", label: "ประกวดแข่งขัน" }],
+  },
+] as const;
+
+export type TopicOption = { slug: string; label: string; count: number };
+export type TopicGroup = { id: string; label: string; options: TopicOption[] };
+
+/** นับจำนวนค่ายของแต่ละตัวเลือก และซ่อนตัวเลือกที่ยังไม่มีค่ายเลย */
+export const topicGroups: TopicGroup[] = CAMPHUB_TOPIC_GROUPS.map((group) => ({
+  id: group.id,
+  label: group.label,
+  options: group.items
+    .map((item) => ({
+      slug: item.slug,
+      label: item.label,
+      count: camps.filter((camp) => camp.slugs?.includes(item.slug)).length,
+    }))
+    .filter((item) => item.count > 0),
+})).filter((group) => group.options.length > 0);
+
+/** ใช้แปลง slug ที่เลือกอยู่เป็นชื่อไทยสำหรับแสดงเป็นป้าย */
+export const topicLabels: Record<string, string> = Object.fromEntries(
+  CAMPHUB_TOPIC_GROUPS.flatMap((group) => group.items.map((item) => [item.slug, item.label])),
+);
+
+export type OrganizerKind = "university" | "foundation" | "other";
+
+/**
+ * เดาชนิดผู้จัดจากชื่อ (CAMPHUB ไม่มีช่องนี้ ต้องอนุมานจากชื่อที่แสดง)
+ * เช็กมูลนิธิก่อน เพราะบางชื่อมีทั้งคำว่ามูลนิธิและสถาบัน
+ */
+export function organizerKind(camp: Camp): OrganizerKind {
+  const name = camp.organizer ?? "";
+  if (/มูลนิธิ|foundation/i.test(name)) return "foundation";
+  if (/มหาวิทยาลัย|มหาลัย|วิทยาลัย|คณะ|university|college/i.test(name)) return "university";
+  return "other";
+}
+
+export const organizerKinds = [
+  { id: "university", label: "มหาวิทยาลัย" },
+  { id: "foundation", label: "มูลนิธิ" },
+  { id: "other", label: "อื่น ๆ" },
+] as const;
+
+export const organizerCounts: Record<string, number> = Object.fromEntries(
+  organizerKinds.map((kind) => [
+    kind.id,
+    camps.filter((camp) => organizerKind(camp) === kind.id).length,
+  ]),
+);
+
