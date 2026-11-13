@@ -429,6 +429,9 @@ export default function CampExplorer({
 
   // คำค้นที่พิมพ์อยู่ ถ้าไปตรงกับชื่อตัวเลือกไหน ให้ตัวเลือกนั้นติดสีดำด้วย
   // เช่นพิมพ์ "กรุงเทพ" → ชิปกรุงเทพฯ ติดเป็นสีดำ แล้วผลลัพธ์ก็กรองตามจังหวัดให้เลย
+  //
+  // คำเดียวให้ติดกลุ่มเดียวเท่านั้น เพราะถ้าติดหลายกลุ่มจะกลายเป็นเงื่อนไข "และ" กัน
+  // เช่น "มหาวิทยาลัย" มีทั้งในระดับชั้นและในผู้จัด ถ้าติดทั้งคู่จะเหลือค่ายน้อยเกินจริง
   const implied = useMemo(() => {
     const q = query.trim().toLowerCase();
     const empty = {
@@ -445,7 +448,7 @@ export default function CampExplorer({
 
     const hit = (label: string) => label.toLowerCase().includes(q);
 
-    return {
+    const candidates = {
       topics: topicGroups.flatMap((group) =>
         group.options.filter((option) => hit(option.label)).map((option) => option.slug),
       ),
@@ -455,11 +458,41 @@ export default function CampExplorer({
       prices: prices.filter((item) => hit(item.label)).map((item) => item.id),
       formats: formats.filter((item) => hit(item.label)).map((item) => item.id),
       organizers: organizerKinds.filter((kind) => hit(kind.label)).map((kind) => kind.id),
-      status:
-        ([
-          { id: "open" as Status, label: "เปิดรับสมัคร" },
-          { id: "closed" as Status, label: "ปิดรับแล้ว" },
-        ].find((item) => hit(item.label))?.id ?? "all") as Status,
+      status: ([
+        { id: "open" as Status, label: "เปิดรับสมัคร" },
+        { id: "closed" as Status, label: "ปิดรับแล้ว" },
+      ].find((item) => hit(item.label))?.id ?? "all") as Status,
+    };
+
+    // ลำดับความสำคัญเมื่อคำเดียวตรงหลายกลุ่ม: ผู้จัดมาก่อนระดับชั้น เป็นต้น
+    const priority = [
+      "topics",
+      "organizers",
+      "provinces",
+      "types",
+      "formats",
+      "prices",
+      "levels",
+      "status",
+    ] as const;
+
+    const hasMatch = (key: (typeof priority)[number]) =>
+      key === "status" ? candidates.status !== "all" : candidates[key].length > 0;
+
+    const winner = priority.find(hasMatch) ?? null;
+    if (!winner) return empty;
+
+    // เก็บไว้แค่กลุ่มที่ชนะ กลุ่มอื่นปล่อยว่าง
+    return {
+      ...empty,
+      topics: winner === "topics" ? candidates.topics : [],
+      organizers: winner === "organizers" ? candidates.organizers : [],
+      provinces: winner === "provinces" ? candidates.provinces : [],
+      types: winner === "types" ? candidates.types : [],
+      formats: winner === "formats" ? candidates.formats : [],
+      prices: winner === "prices" ? candidates.prices : [],
+      levels: winner === "levels" ? candidates.levels : [],
+      status: winner === "status" ? candidates.status : ("all" as Status),
     };
   }, [query, topicGroups, types, levels, provinces, prices, formats, organizerKinds]);
 
@@ -493,6 +526,19 @@ export default function CampExplorer({
     [selectedFormats, implied.formats],
   );
   const effStatus: Status = status !== "all" ? status : implied.status;
+
+  // คำค้นถูกใช้เป็นตัวกรองไปแล้วหรือยัง ถ้าใช่ก็ไม่ต้องค้นข้อความซ้ำ
+  // (ไม่งั้นพิมพ์ "มหาวิทยาลัย" แล้วค่ายที่ผู้จัดเขียนแค่ "คณะ... มหิดล" จะหายไป)
+  const impliedActive =
+    implied.topics.length +
+      implied.types.length +
+      implied.levels.length +
+      implied.provinces.length +
+      implied.prices.length +
+      implied.formats.length +
+      implied.organizers.length +
+      (implied.status !== "all" ? 1 : 0) >
+    0;
 
   // ตัวเลือกที่ติดเพราะคำค้น (ไม่ได้กดเอง) ถ้าเอาออกให้ล้างคำค้นด้วย
   function dropQueryIfImplied(label: string) {
@@ -538,7 +584,8 @@ export default function CampExplorer({
         if (effStatus === "closed" && !closed) return false;
       }
       if (bookmarkedOnly && !bookmarked.includes(camp.id)) return false;
-      if (!q) return true;
+      // ถ้าคำค้นกลายเป็นตัวกรองไปแล้ว ไม่ต้องเอาไปค้นข้อความซ้ำ
+      if (!q || impliedActive) return true;
       return [
         camp.title,
         camp.organizer,
@@ -565,6 +612,7 @@ export default function CampExplorer({
     effPrices,
     effFormats,
     effStatus,
+    impliedActive,
     organizerKinds,
     bookmarkedOnly,
     bookmarked,
