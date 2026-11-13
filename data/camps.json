@@ -1,10 +1,10 @@
 {
   "source": "CAMPHUB",
   "sourceUrl": "https://www.camphub.in.th/",
-  "fetchedAt": "2026-11-12T15:03:58.190Z",
+  "fetchedAt": "2026-11-13T14:27:07.098Z",
   "sourcePages": 36,
-  "foundLinks": 348,
-  "keptCamps": 146,
+  "foundLinks": 350,
+  "keptCamps": 133,
   "note": "รวบรวมจากหน้า list สาธารณะของ CAMPHUB (หน้าแรก + หมวดหมู่) เฉพาะค่ายที่ยังเปิดรับสมัคร ข้อมูลเป็นของผู้จัดและ CAMPHUB ควรตรวจสอบกับต้นฉบับก่อนสมัคร",
   "camps": [
     {
@@ -108,38 +108,6 @@
     },
     {
       "startDate": "2026-11-12",
-      "endDate": "2026-11-12",
-      "deadline": "2026-11-12",
-      "level": "ม.1-ม.6 ปีการศึกษา 2570 · มหาวิทยาลัย, บุคคลทั่วไป, GED, Homeschool",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "มหาวิทยาลัย",
-        "บุคคลทั่วไป"
-      ],
-      "location": "คณะมนุษยศาสตร์ มหาวิทยาลัยเชียงใหม่ เปิดแผนที่",
-      "province": "เชียงใหม่",
-      "fee": "เข้าร่วมฟรี",
-      "price": 0,
-      "seats": "ไม่จำกัดจำนวน",
-      "organizer": "คณะมนุษยศาสตร์ มหาวิทยาลัยเชียงใหม่",
-      "registration": "",
-      "dateText": "12 พฤศจิกายน 2569",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "humanitas-cmu-2026",
-      "title": "Humanitas มนุษย์-นิทรรศน์ ครั้งที่ 5",
-      "type": "งานเปิดบ้าน/นิทรรศการ",
-      "field": "ภาษา/มนุษย์",
-      "slugs": [
-        "openhouse",
-        "lang-human"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/humanitas-cmu-2026/"
-    },
-    {
-      "startDate": "2026-11-12",
       "endDate": "2026-11-13",
       "deadline": "2026-11-13",
       "level": "ม.1-ม.6 ปีการศึกษา 2569 · Homeschool, GED, บุคคลทั่วไป, มหาวิทยาลัย, ปวส., ปวช.",
@@ -177,132 +145,6 @@
     {
       "startDate": "2026-11-14",
       "endDate": "2026-11-14",
-      "deadline": "2026-11-12",
-      "level": "ม.ปลาย ปีการศึกษา 2569 · มหาวิทยาลัย, ปวช., ปวส., GED, Homeschool",
-      "levels": [
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส.",
-        "มหาวิทยาลัย"
-      ],
-      "location": "มหาวิทยาลัยมหิดล ศาลายา เปิดแผนที่",
-      "province": "นครปฐม",
-      "fee": "ฟรี (มัดจำ 100 บาท) จ่ายตอนสมัคร",
-      "price": 100,
-      "seats": "ไม่จำกัดจำนวน",
-      "organizer": "Youth4Squad",
-      "registration": "",
-      "dateText": "14 พฤศจิกายน 2569",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "the-healing-canvas",
-      "title": "The Healing Canvas : เปลี่ยนสีโลกทั้งใบผ่านใจที่มั่นคง",
-      "type": "พัฒนาทักษะ/เวิร์กชอป",
-      "field": "จิตวิทยา",
-      "slugs": [
-        "psychology",
-        "skills-workshop"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/the-healing-canvas/"
-    },
-    {
-      "startDate": "2026-11-14",
-      "endDate": "2026-11-14",
-      "deadline": "2026-11-12",
-      "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส., มหาวิทยาลัย, บุคคลทั่วไป, GED, Homeschool",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส.",
-        "มหาวิทยาลัย",
-        "บุคคลทั่วไป"
-      ],
-      "location": "ห้องปฏิบัติการปฐมพยาบาลเบื้องต้น 4401 มหาวิทยาลัยวงษ์ชวลิตกุล อ.เมือง จ.นครราชสีมา เปิดแผนที่",
-      "province": "นครราชสีมา",
-      "fee": "1,200 บาท จ่ายหลังประกาศรายชื่อผู้มีสิทธิ์เข้าร่วม",
-      "price": 1200,
-      "seats": "40 คน",
-      "organizer": "คณะสาธารณสุขศาสตร์ มหาวิทยาลัยวงษ์ชวลิตกุล",
-      "registration": "",
-      "dateText": "14 พฤศจิกายน 2569",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "vu-medical-portfolio-camp-5",
-      "title": "ค่ายสะสมผลงานทางการแพทย์ ครั้งที่ 5",
-      "type": "พัฒนาทักษะ/เวิร์กชอป",
-      "field": "ทั่วไป",
-      "slugs": [
-        "skills-workshop",
-        "health-other"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/vu-medical-portfolio-camp-5/"
-    },
-    {
-      "startDate": "2026-11-14",
-      "endDate": "2026-11-14",
-      "deadline": "2026-11-12",
-      "level": "ม.ต้น ปีการศึกษา 2569",
-      "levels": [
-        "ม.ต้น"
-      ],
-      "location": "คณะวิทยาการเรียนรู้และศึกษาศาสตร์ มหาวิทยาลัยธรรมศาสตร์ รังสิต เปิดแผนที่",
-      "province": "ปทุมธานี",
-      "fee": "เข้าร่วมฟรี",
-      "price": 0,
-      "seats": "10 คน",
-      "organizer": "จุฑาธิป กมลเปี่ยมศักดิ์ นักศึกษาศึกษาชั้นปีที่4 คณะวิทยาการเรียนรู้และศึกษาศาสตร์",
-      "registration": "",
-      "dateText": "14 พฤศจิกายน 2569",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "feel-to-heal",
-      "title": "Feel to Heal : เห็นคุณค่าข้างใน ก่อนใจจะหลงทาง",
-      "type": "พัฒนาทักษะ/เวิร์กชอป",
-      "field": "ทั่วไป",
-      "slugs": [
-        "skills-workshop"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/feel-to-heal/"
-    },
-    {
-      "startDate": "2026-11-14",
-      "endDate": "2026-11-14",
-      "deadline": "2026-11-12",
-      "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส.",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส."
-      ],
-      "location": "Sociefee x Chouxstory หัวลำโพง เปิดแผนที่",
-      "province": "กรุงเทพฯ",
-      "fee": "1,990 บาท จ่ายตอนสมัคร",
-      "price": 1990,
-      "seats": "20 คน",
-      "organizer": "Rhythm Of Arts",
-      "registration": "",
-      "dateText": "14 พฤศจิกายน 2569",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "accounting-world",
-      "title": "ACCOUNTING WORLD ปีที่ 3 เปิดโลกบัญชีและบริหารธุรกิจ",
-      "type": "แนะแนวเรียนต่อ/อาชีพ",
-      "field": "บัญชี/บริหาร",
-      "slugs": [
-        "account-commerce",
-        "guidance"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/accounting-world/"
-    },
-    {
-      "startDate": "2026-11-14",
-      "endDate": "2026-11-14",
       "deadline": "2026-11-13",
       "level": "ม.3-ม.6 ปีการศึกษา 2569 · บุคคลทั่วไป, GED, Homeschool",
       "levels": [
@@ -330,131 +172,6 @@
         "architect-design"
       ],
       "sourceUrl": "https://www.camphub.in.th/architectural-sketch-and-watercolor-workshop/"
-    },
-    {
-      "startDate": "2026-11-14",
-      "endDate": "2026-11-14",
-      "deadline": "2026-11-12",
-      "level": "ม.ปลาย ปีการศึกษา 2569 · ปวช.",
-      "levels": [
-        "ม.ปลาย",
-        "ปวช."
-      ],
-      "location": "โรงเรียนพระหฤทัยดอนเมือง มีทั้งออนไลน์และออนไซต์ · เปิดแผนที่",
-      "province": "กรุงเทพฯ",
-      "fee": "เข้าร่วมฟรี",
-      "price": 0,
-      "seats": "20 ทีม",
-      "organizer": "โรงเรียนพระหฤทัยดอนเมือง สาระสังคมศึกษา",
-      "registration": "",
-      "dateText": "14 พฤศจิกายน 2569 ส่งผลงานออนไลน์ผ่าน Google Forms · ประกาศผลและมอบรางวัลที่โรงเรียนพระหฤทัยดอนเมือง (หากไม่สะดวกเดินทาง แจ้งในกลุ่ม LINE ได้)",
-      "certificate": true,
-      "overnight": false,
-      "online": true,
-      "id": "change-for-tomorrow",
-      "title": "แข่งขันคลิปวีดีโอ Change for Tomorrowเปลี่ยนวันนี้เพื่อสังคมที่ยั่งยืน",
-      "type": "ประกวดแข่งขัน",
-      "field": "ทั่วไป",
-      "slugs": [
-        "contest"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/change-for-tomorrow/"
-    },
-    {
-      "startDate": "2026-11-14",
-      "endDate": "2026-11-14",
-      "deadline": "2026-11-13",
-      "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส., GED, Homeschool",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส."
-      ],
-      "location": "ออนไลน์",
-      "province": "ออนไลน์",
-      "fee": "เดี่ยว 399 บาท · ทีม 1,499 บาท",
-      "price": 399,
-      "seats": "ไม่จำกัดจำนวน",
-      "organizer": "Genventure Group",
-      "registration": "",
-      "dateText": "14 พฤศจิกายน 2569",
-      "certificate": true,
-      "overnight": false,
-      "online": true,
-      "id": "english-vocabulary-mastery-contest-2026-3",
-      "title": "English Vocabulary Mastery Contest 2026",
-      "type": "ประกวดแข่งขัน",
-      "field": "ทั่วไป",
-      "slugs": [
-        "contest"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/english-vocabulary-mastery-contest-2026-3/"
-    },
-    {
-      "startDate": "2026-11-14",
-      "endDate": "2026-11-15",
-      "deadline": "2026-11-13",
-      "level": "ม.3-ม.6 ปีการศึกษา 2569 · ปวช., ปวส., มหาวิทยาลัย, Homeschool, GED",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส.",
-        "มหาวิทยาลัย"
-      ],
-      "location": "UMBRELLA HOUSE (สถานนีรถไฟฟ้า BTS พหลโยธิน 24) เปิดแผนที่",
-      "province": "กรุงเทพฯ",
-      "fee": "1,900 บาท จ่ายตอนสมัคร",
-      "price": 1900,
-      "seats": "15 คน",
-      "organizer": "กิจการเพื่อสังคม เวย์หา",
-      "registration": "",
-      "dateText": "14 – 15 พฤศจิกายน 2569 ไม่ค้างคืน",
-      "certificate": true,
-      "overnight": true,
-      "online": false,
-      "id": "2days-filmmaker-workshop",
-      "title": "2Days Filmmaker Workshop “ค่ายสร้างหนัง…สร้างพอร์ต”",
-      "type": "พัฒนาทักษะ/เวิร์กชอป",
-      "field": "นิเทศ/สื่อสาร",
-      "slugs": [
-        "commarts",
-        "skills-workshop"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/2days-filmmaker-workshop/"
-    },
-    {
-      "startDate": "2026-11-14",
-      "endDate": "2026-11-14",
-      "deadline": "2026-11-13",
-      "level": "ป.1-ป.6 · ม.1-ม.6 ปีการศึกษา 2569 · มหาวิทยาลัย, ปวส., ปวช.",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส.",
-        "มหาวิทยาลัย"
-      ],
-      "location": "Let's sat cafe อนุสาวรีย์ชัยสมรภูมิ เปิดแผนที่",
-      "province": "กรุงเทพฯ",
-      "fee": "220 บาท จ่ายหลังประกาศรายชื่อผู้มีสิทธิ์เข้าร่วม",
-      "price": 220,
-      "seats": "30 คน",
-      "organizer": "พบมิตร จิตอาสา",
-      "registration": "",
-      "dateText": "14 พฤศจิกายน 2569",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "pobmit-multiplication-keychain-14nov69",
-      "title": "อาสาทำสื่อการเรียนพวงกุญแจสูตรคูณให้น้องพท.ห่างไกล เสาร์ 14พย69 (AM)",
-      "type": "อาสา/อนุรักษ์",
-      "field": "ทั่วไป",
-      "slugs": [
-        "volunteer"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/pobmit-multiplication-keychain-14nov69/"
     },
     {
       "startDate": "2026-11-14",
@@ -552,6 +269,136 @@
         "doctor"
       ],
       "sourceUrl": "https://www.camphub.in.th/medical-specialty-oneday-workshop-tutorpearmai-nov-2026/"
+    },
+    {
+      "startDate": "2026-11-14",
+      "endDate": "2026-11-14",
+      "deadline": "2026-11-13",
+      "level": "ป.1-ป.6 · ม.1-ม.6 ปีการศึกษา 2569 · มหาวิทยาลัย, ปวส., ปวช.",
+      "levels": [
+        "ม.ต้น",
+        "ม.ปลาย",
+        "ปวช.",
+        "ปวส.",
+        "มหาวิทยาลัย"
+      ],
+      "location": "Let's sat cafe อนุสาวรีย์ชัยสมรภูมิ เปิดแผนที่",
+      "province": "กรุงเทพฯ",
+      "fee": "220 บาท จ่ายหลังประกาศรายชื่อผู้มีสิทธิ์เข้าร่วม",
+      "price": 220,
+      "seats": "30 คน",
+      "organizer": "พบมิตร จิตอาสา",
+      "registration": "",
+      "dateText": "14 พฤศจิกายน 2569",
+      "certificate": true,
+      "overnight": false,
+      "online": false,
+      "id": "pobmit-multiplication-keychain-14nov69",
+      "title": "อาสาทำสื่อการเรียนพวงกุญแจสูตรคูณให้น้องพท.ห่างไกล เสาร์ 14พย69 (AM)",
+      "type": "อาสา/อนุรักษ์",
+      "field": "ทั่วไป",
+      "slugs": [
+        "volunteer"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/pobmit-multiplication-keychain-14nov69/"
+    },
+    {
+      "startDate": "2026-11-14",
+      "endDate": "2026-11-15",
+      "deadline": "2026-11-13",
+      "level": "ม.3-ม.6 ปีการศึกษา 2569 · ปวช., ปวส., มหาวิทยาลัย, Homeschool, GED",
+      "levels": [
+        "ม.ต้น",
+        "ม.ปลาย",
+        "ปวช.",
+        "ปวส.",
+        "มหาวิทยาลัย"
+      ],
+      "location": "UMBRELLA HOUSE (สถานนีรถไฟฟ้า BTS พหลโยธิน 24) เปิดแผนที่",
+      "province": "กรุงเทพฯ",
+      "fee": "1,900 บาท จ่ายตอนสมัคร",
+      "price": 1900,
+      "seats": "15 คน",
+      "organizer": "กิจการเพื่อสังคม เวย์หา",
+      "registration": "",
+      "dateText": "14 – 15 พฤศจิกายน 2569 ไม่ค้างคืน",
+      "certificate": true,
+      "overnight": true,
+      "online": false,
+      "id": "2days-filmmaker-workshop",
+      "title": "2Days Filmmaker Workshop “ค่ายสร้างหนัง…สร้างพอร์ต”",
+      "type": "พัฒนาทักษะ/เวิร์กชอป",
+      "field": "นิเทศ/สื่อสาร",
+      "slugs": [
+        "commarts",
+        "skills-workshop"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/2days-filmmaker-workshop/"
+    },
+    {
+      "startDate": "2026-11-14",
+      "endDate": "2026-11-14",
+      "deadline": "2026-11-13",
+      "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส., GED, Homeschool",
+      "levels": [
+        "ม.ต้น",
+        "ม.ปลาย",
+        "ปวช.",
+        "ปวส."
+      ],
+      "location": "ออนไลน์",
+      "province": "ออนไลน์",
+      "fee": "เดี่ยว 399 บาท · ทีม 1,499 บาท",
+      "price": 399,
+      "seats": "ไม่จำกัดจำนวน",
+      "organizer": "Genventure Group",
+      "registration": "",
+      "dateText": "14 พฤศจิกายน 2569",
+      "certificate": true,
+      "overnight": false,
+      "online": true,
+      "id": "english-vocabulary-mastery-contest-2026-3",
+      "title": "English Vocabulary Mastery Contest 2026",
+      "type": "ประกวดแข่งขัน",
+      "field": "ทั่วไป",
+      "slugs": [
+        "contest"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/english-vocabulary-mastery-contest-2026-3/"
+    },
+    {
+      "startDate": "2026-11-14",
+      "endDate": "2026-11-14",
+      "deadline": "2026-11-14",
+      "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส., มหาวิทยาลัย, บุคคลทั่วไป, GED, Homeschool",
+      "levels": [
+        "ม.ต้น",
+        "ม.ปลาย",
+        "ปวช.",
+        "ปวส.",
+        "มหาวิทยาลัย",
+        "บุคคลทั่วไป"
+      ],
+      "location": "SCBx Next Tech Siam Paragon เปิดแผนที่",
+      "province": "กรุงเทพฯ",
+      "fee": "เข้าร่วมฟรี",
+      "price": 0,
+      "seats": "250 คน",
+      "organizer": "SCBx Nexttech , Melearn",
+      "registration": "",
+      "dateText": "14 พฤศจิกายน 2569",
+      "certificate": true,
+      "overnight": false,
+      "online": false,
+      "id": "melearn-summit-the-ai-frontier",
+      "title": "MeLearn Summit THE AI FRONTIER",
+      "type": "เสวนา/สัมมนา",
+      "field": "คอม/ไอที",
+      "slugs": [
+        "computer",
+        "seminar"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/melearn-summit-the-ai-frontier/"
     },
     {
       "startDate": "2026-11-14",
@@ -703,35 +550,6 @@
         "openhouse"
       ],
       "sourceUrl": "https://www.camphub.in.th/swu-open-house-2026/"
-    },
-    {
-      "startDate": "2026-11-15",
-      "endDate": "2026-11-15",
-      "deadline": "2026-11-12",
-      "level": "บุคคลทั่วไป, มหาวิทยาลัย ปีการศึกษา 2569",
-      "levels": [
-        "มหาวิทยาลัย",
-        "บุคคลทั่วไป"
-      ],
-      "location": "อาคารปิยชาติ 2 มหาวิทยาลัยธรรมศาสตร์ ศูนย์รังสิต เปิดแผนที่",
-      "province": "ปทุมธานี",
-      "fee": "219 – 319 บาท Student 219 · General 319",
-      "price": 219,
-      "seats": "100 คน",
-      "organizer": "TEDxThammasatU",
-      "registration": "",
-      "dateText": "15 พฤศจิกายน 2569",
-      "certificate": false,
-      "overnight": false,
-      "online": false,
-      "id": "the-unwritten-legacy-tedxthammasatu2026",
-      "title": "The Unwritten Legacy – TEDxThammasatU2026",
-      "type": "เสวนา/สัมมนา",
-      "field": "ทั่วไป",
-      "slugs": [
-        "seminar"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/the-unwritten-legacy-tedxthammasatu2026/"
     },
     {
       "startDate": "2026-11-15",
@@ -953,39 +771,6 @@
         "nurse"
       ],
       "sourceUrl": "https://www.camphub.in.th/kbu-nursing-open-house-2026/"
-    },
-    {
-      "startDate": "2026-11-19",
-      "endDate": "2026-11-21",
-      "deadline": null,
-      "level": "ม.ปลาย ปีการศึกษา 2569 · ปวส., ปวช., มหาวิทยาลัย, บุคคลทั่วไป, GED, Homeschool",
-      "levels": [
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส.",
-        "มหาวิทยาลัย",
-        "บุคคลทั่วไป"
-      ],
-      "location": "มหาวิทยาลัยเกษมบัณฑิต เปิดแผนที่",
-      "province": "กรุงเทพฯ",
-      "fee": "เข้าร่วมฟรี",
-      "price": 0,
-      "seats": "ไม่จำกัดจำนวน",
-      "organizer": "สถาบันพัฒนาบุคลากรการบิน",
-      "registration": "",
-      "dateText": "19 – 21 พฤศจิกายน 2569 ไม่ค้างคืน",
-      "certificate": true,
-      "overnight": true,
-      "online": false,
-      "id": "apdi-open-house-2026",
-      "title": "เปิดบ้านการบิน APDI OPEN HOUSE 2026",
-      "type": "งานเปิดบ้าน/นิทรรศการ",
-      "field": "การบิน",
-      "slugs": [
-        "aviation",
-        "openhouse"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/apdi-open-house-2026/"
     },
     {
       "startDate": "2026-11-20",
@@ -1431,39 +1216,6 @@
     {
       "startDate": "2026-11-21",
       "endDate": "2026-11-21",
-      "deadline": "2026-11-20",
-      "level": "ม.3-ม.6 ปีการศึกษา 2569 · ปวช., ปวส., มหาวิทยาลัย",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส.",
-        "มหาวิทยาลัย"
-      ],
-      "location": "อาคารอรกานต์ ชั้น 16 ซอยชิดลม ( เดินจาก BTS ชิดลม 5 นาที ) เปิดแผนที่",
-      "province": "",
-      "fee": "1,750 บาท จ่ายตอนสมัคร",
-      "price": 1750,
-      "seats": "20 คน",
-      "organizer": "C-HOT Entertainment",
-      "registration": "",
-      "dateText": "21 พฤศจิกายน 2569",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "air-hostess-camp",
-      "title": "Air Hostess Camp รุ่นที่ 3",
-      "type": "แนะแนวเรียนต่อ/อาชีพ",
-      "field": "การบิน",
-      "slugs": [
-        "aviation",
-        "guidance"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/air-hostess-camp/"
-    },
-    {
-      "startDate": "2026-11-21",
-      "endDate": "2026-11-21",
       "deadline": "2026-11-19",
       "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส.",
       "levels": [
@@ -1492,6 +1244,41 @@
         "guidance"
       ],
       "sourceUrl": "https://www.camphub.in.th/money-matter-camp-6-november-2026/"
+    },
+    {
+      "startDate": "2026-11-21",
+      "endDate": "2026-11-21",
+      "deadline": "2026-11-20",
+      "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส., มหาวิทยาลัย, บุคคลทั่วไป, Homeschool, GED",
+      "levels": [
+        "ม.ต้น",
+        "ม.ปลาย",
+        "ปวช.",
+        "ปวส.",
+        "มหาวิทยาลัย",
+        "บุคคลทั่วไป"
+      ],
+      "location": "ออนไลน์",
+      "province": "ออนไลน์",
+      "fee": "999 – 1,499 บาท Workshop ออนไลน์อย่างเดียว ไม่รับเกียรติบัตร 999 · Workshop ออนไลน์ + รับเกียรติบัตร E-Certificate รับรองโดยสถาบัน EQ เยอรมันและ Mindventure ค่าจัดทำ 500 บาท 1499",
+      "price": 999,
+      "seats": "30 คน",
+      "organizer": "Mindventure",
+      "registration": "",
+      "dateText": "21 พฤศจิกายน 2569",
+      "certificate": true,
+      "overnight": false,
+      "online": true,
+      "id": "path-to-bba-bascii-be-eba-gsse-21-nov-2026",
+      "title": "เปิดโลกสายบริหารธุรกิจ PATH TO BBA BASCii BE EBA GSSE",
+      "type": "แนะแนวเรียนต่อ/อาชีพ",
+      "field": "บัญชี/บริหาร",
+      "slugs": [
+        "online",
+        "account-commerce",
+        "guidance"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/path-to-bba-bascii-be-eba-gsse-21-nov-2026/"
     },
     {
       "startDate": "2026-11-21",
@@ -1594,41 +1381,6 @@
       "startDate": "2026-11-21",
       "endDate": "2026-11-21",
       "deadline": "2026-11-20",
-      "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส., มหาวิทยาลัย, บุคคลทั่วไป, Homeschool, GED",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส.",
-        "มหาวิทยาลัย",
-        "บุคคลทั่วไป"
-      ],
-      "location": "ออนไลน์",
-      "province": "ออนไลน์",
-      "fee": "999 – 1,499 บาท Workshop ออนไลน์อย่างเดียว ไม่รับเกียรติบัตร 999 · Workshop ออนไลน์ + รับเกียรติบัตร E-Certificate รับรองโดยสถาบัน EQ เยอรมันและ Mindventure ค่าจัดทำ 500 บาท 1499",
-      "price": 999,
-      "seats": "30 คน",
-      "organizer": "Mindventure",
-      "registration": "",
-      "dateText": "21 พฤศจิกายน 2569",
-      "certificate": true,
-      "overnight": false,
-      "online": true,
-      "id": "path-to-bba-bascii-be-eba-gsse-21-nov-2026",
-      "title": "เปิดโลกสายบริหารธุรกิจ PATH TO BBA BASCii BE EBA GSSE",
-      "type": "แนะแนวเรียนต่อ/อาชีพ",
-      "field": "บัญชี/บริหาร",
-      "slugs": [
-        "online",
-        "account-commerce",
-        "guidance"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/path-to-bba-bascii-be-eba-gsse-21-nov-2026/"
-    },
-    {
-      "startDate": "2026-11-21",
-      "endDate": "2026-11-21",
-      "deadline": "2026-11-20",
       "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส., GED, Homeschool",
       "levels": [
         "ม.ต้น",
@@ -1717,102 +1469,6 @@
         "science"
       ],
       "sourceUrl": "https://www.camphub.in.th/elephantguard-wildlife-conservation-smart-monitoring-innovation/"
-    },
-    {
-      "startDate": "2026-11-22",
-      "endDate": "2026-11-22",
-      "deadline": "2026-11-21",
-      "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส., มหาวิทยาลัย, บุคคลทั่วไป, GED, Homeschool",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส.",
-        "มหาวิทยาลัย",
-        "บุคคลทั่วไป"
-      ],
-      "location": "ลานจอดรถครัวเม็ดทราย หาดชะอำเหนือ จ.เพชรบุรี เปิดแผนที่",
-      "province": "เพชรบุรี",
-      "fee": "250 – 470 บาท เดินทางกับรถของทางคณะ 470 · เดินทางไปกลับเอง 250",
-      "price": 250,
-      "seats": "40 คน",
-      "organizer": "อาสาสมัครพิทักษ์สิ่งแวดล้อม",
-      "registration": "",
-      "dateText": "22 พฤศจิกายน 2569",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "epv-beach-cleanup-fish-house-22-nov-2026",
-      "title": "อาสาสมัครเก็บขยะชายหาด ทำบ้านปลาจากซั้งเชือก 22 พ.ย. 2569",
-      "type": "อาสา/อนุรักษ์",
-      "field": "ทั่วไป",
-      "slugs": [
-        "volunteer"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/epv-beach-cleanup-fish-house-22-nov-2026/"
-    },
-    {
-      "startDate": "2026-11-22",
-      "endDate": "2026-11-22",
-      "deadline": "2026-11-21",
-      "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส., GED, Homeschool",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส."
-      ],
-      "location": "โรงแรมเดอะ ควอเตอร์ หัวลำโพง บาย ยูเอชจี ใกล้ mrt หัวลำโพง เปิดแผนที่",
-      "province": "กรุงเทพฯ",
-      "fee": "2,500 บาท จ่ายตอนสมัคร",
-      "price": 2500,
-      "seats": "100 คน",
-      "organizer": "สถาบัน Tutorpearmai",
-      "registration": "",
-      "dateText": "22 พฤศจิกายน 2569",
-      "certificate": false,
-      "overnight": false,
-      "online": false,
-      "id": "volunteer-leadership-6-activities-camp-tutorpearmai-nov-2026",
-      "title": "ค่ายจิตอาสา ภาวะผู้นำ (6 กิจกรรม 6 ด้าน)",
-      "type": "อาสา/อนุรักษ์",
-      "field": "ทั่วไป",
-      "slugs": [
-        "volunteer"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/volunteer-leadership-6-activities-camp-tutorpearmai-nov-2026/"
-    },
-    {
-      "startDate": "2026-11-22",
-      "endDate": "2026-11-22",
-      "deadline": "2026-11-21",
-      "level": "ป.1-ป.6 · ม.1-ม.6 ปีการศึกษา 2569 · มหาวิทยาลัย, ปวส., ปวช.",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส.",
-        "มหาวิทยาลัย"
-      ],
-      "location": "Let's sat cafe อนุสาวรีย์ชัยสมรภูมิ เปิดแผนที่",
-      "province": "กรุงเทพฯ",
-      "fee": "220 บาท จ่ายหลังประกาศรายชื่อผู้มีสิทธิ์เข้าร่วม",
-      "price": 220,
-      "seats": "30 คน",
-      "organizer": "พบมิตร จิตอาสา",
-      "registration": "",
-      "dateText": "22 พฤศจิกายน 2569",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "pobmit-paint-pack-medicine-bags-22nov69",
-      "title": "เพ้นท์&แพ็คถุงยาให้น้องๆพท.ห่างไกล อา.22 พย 2569 (08.30-12.30)",
-      "type": "อาสา/อนุรักษ์",
-      "field": "ทั่วไป",
-      "slugs": [
-        "volunteer"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/pobmit-paint-pack-medicine-bags-22nov69/"
     },
     {
       "startDate": "2026-11-22",
@@ -2092,6 +1748,38 @@
         "engineer"
       ],
       "sourceUrl": "https://www.camphub.in.th/ai-series-floaino-starter-logic-programming/"
+    },
+    {
+      "startDate": "2026-11-28",
+      "endDate": "2026-11-28",
+      "deadline": "2026-11-25",
+      "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส.",
+      "levels": [
+        "ม.ต้น",
+        "ม.ปลาย",
+        "ปวช.",
+        "ปวส."
+      ],
+      "location": "Innogineer Studio, คณะวิศวกรรมศาสตร์ มหาวิทยาลัยมหิดล เปิดแผนที่",
+      "province": "",
+      "fee": "1,200 บาท จ่ายตอนสมัคร · มีส่วนลดให้ 10% ในกรณีสมัคร เป็นกลุ่ม 10 คนขึ้นไป",
+      "price": 1200,
+      "seats": "80 คน",
+      "organizer": "คณะวิศวกรรมชีวการแพทย์ มหาวิทยาลัยมหิดล",
+      "registration": "",
+      "dateText": "28 พฤศจิกายน 2569",
+      "certificate": false,
+      "overnight": false,
+      "online": false,
+      "id": "ai-series-floaino-starter-logic-flow-programming",
+      "title": "AI Series #1 : Floaino Starter Logic & Flow Programming",
+      "type": "พัฒนาทักษะ/เวิร์กชอป",
+      "field": "คอม/ไอที",
+      "slugs": [
+        "computer",
+        "skills-workshop"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/ai-series-floaino-starter-logic-flow-programming/"
     },
     {
       "startDate": "2026-11-28",
@@ -2521,39 +2209,6 @@
     {
       "startDate": "2026-12-05",
       "endDate": "2026-12-05",
-      "deadline": "2026-11-30",
-      "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวส., มหาวิทยาลัย, บุคคลทั่วไป, GED, Homeschool, ปวช.",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส.",
-        "มหาวิทยาลัย",
-        "บุคคลทั่วไป"
-      ],
-      "location": "รร.วัดบางหญ้าแพรก อ.เมืองฯ จ.สมุทรสาคร เปิดแผนที่",
-      "province": "สมุทรสาคร",
-      "fee": "690 บาท จ่ายตอนสมัคร",
-      "price": 690,
-      "seats": "20 คน",
-      "organizer": "เพจ ค่ายอาสา อยากลอง ลองเลย : จิตอาสา พัฒนาโรงเรียน ต่างจังหวัด",
-      "registration": "",
-      "dateText": "5 ธันวาคม 2569 สามารถไปอยู่ค่ายอาสาค้างคืนเสริมประสบการณ์ หรือจะไปช่วงจิตอาสาตอนเช้าเลยก็ได้",
-      "certificate": true,
-      "overnight": true,
-      "online": false,
-      "id": "paint-school-volunteer-samutsakhon-5dec69",
-      "title": "ค่ายอาสา ทาสีโรงเรียนน้อง สมุทรสาคร วันพ่อ 5 ธ.ค. 69",
-      "type": "อาสา/อนุรักษ์",
-      "field": "ทั่วไป",
-      "slugs": [
-        "volunteer"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/paint-school-volunteer-samutsakhon-5dec69/"
-    },
-    {
-      "startDate": "2026-12-05",
-      "endDate": "2026-12-05",
       "deadline": "2026-12-05",
       "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส.",
       "levels": [
@@ -2779,6 +2434,35 @@
     },
     {
       "startDate": "2026-12-12",
+      "endDate": "2026-12-13",
+      "deadline": "2026-11-16",
+      "level": "ม.ปลาย ปีการศึกษา 2569",
+      "levels": [
+        "ม.ปลาย"
+      ],
+      "location": "ตึก ECC, KMITL เปิดแผนที่",
+      "province": "กรุงเทพฯ",
+      "fee": "450 บาท จ่ายตอนสมัคร",
+      "price": 450,
+      "seats": "40 คน",
+      "organizer": "ภาควิชาวิศวกรรมไฟฟ้า หลักสูตรนานาชาติ มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง",
+      "registration": "",
+      "dateText": "12 – 13 ธันวาคม 2569 ค้างคืน",
+      "certificate": true,
+      "overnight": true,
+      "online": false,
+      "id": "eeint-1",
+      "title": "EEINT 1",
+      "type": "พัฒนาทักษะ/เวิร์กชอป",
+      "field": "วิศวกรรม",
+      "slugs": [
+        "skills-workshop",
+        "engineer"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/eeint-1/"
+    },
+    {
+      "startDate": "2026-12-12",
       "endDate": "2026-12-12",
       "deadline": "2026-12-05",
       "level": "ม.ปลาย ปีการศึกษา 2569",
@@ -2864,126 +2548,6 @@
         "science"
       ],
       "sourceUrl": "https://www.camphub.in.th/beams-beyond-synchrotron-light-science-camp/"
-    },
-    {
-      "startDate": "2026-12-12",
-      "endDate": "2026-12-12",
-      "deadline": "2026-11-29",
-      "level": "ม.3-ม.6 ปีการศึกษา 2569 · ปวช., GED, Homeschool",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช."
-      ],
-      "location": "KX Knowledge Xchange เปิดแผนที่",
-      "province": "กรุงเทพฯ",
-      "fee": "2,490 บาท จ่ายตอนสมัคร · ค่าสมัครเข้าร่วมกิจกรรม 2,490 บาท/คน รวมอาหารกลางวัน อาหารว่าง เครื่องดื่ม และอุปกรณ์สำหรับทำกิจกรรมภายในค่ายแล้ว",
-      "price": 2490,
-      "seats": "20 คน",
-      "organizer": "LCS | Learning Center Station",
-      "registration": "",
-      "dateText": "12 ธันวาคม 2569",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "smart-systems-camp",
-      "title": "Smart Systems Camp: สร้างเทคให้ทำงาน⚡",
-      "type": "พัฒนาทักษะ/เวิร์กชอป",
-      "field": "คอม/ไอที",
-      "slugs": [
-        "computer",
-        "skills-workshop"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/smart-systems-camp/"
-    },
-    {
-      "startDate": "2026-12-12",
-      "endDate": "2026-12-13",
-      "deadline": "2026-11-16",
-      "level": "ม.ปลาย ปีการศึกษา 2569",
-      "levels": [
-        "ม.ปลาย"
-      ],
-      "location": "ตึก ECC, KMITL เปิดแผนที่",
-      "province": "กรุงเทพฯ",
-      "fee": "450 บาท จ่ายตอนสมัคร",
-      "price": 450,
-      "seats": "40 คน",
-      "organizer": "ภาควิชาวิศวกรรมไฟฟ้า หลักสูตรนานาชาติ มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง",
-      "registration": "",
-      "dateText": "12 – 13 ธันวาคม 2569 ค้างคืน",
-      "certificate": true,
-      "overnight": true,
-      "online": false,
-      "id": "eeint-1",
-      "title": "EEINT 1",
-      "type": "พัฒนาทักษะ/เวิร์กชอป",
-      "field": "วิศวกรรม",
-      "slugs": [
-        "skills-workshop",
-        "engineer"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/eeint-1/"
-    },
-    {
-      "startDate": "2026-12-12",
-      "endDate": "2026-12-12",
-      "deadline": "2026-12-09",
-      "level": "ม.1 · ม.2 · ม.3 · ม.4 · ม.6 ปีการศึกษา 2569 · ปวช., ปวส., GED, Homeschool",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส."
-      ],
-      "location": "อาคารวรรณสรณ์ พญาไท เปิดแผนที่",
-      "province": "กรุงเทพฯ",
-      "fee": "2,590 บาท จ่ายตอนสมัคร · มีโปรโมชั่นส่วนลดให้กรณีสมัครตั้งแต่ 2 คนขึ้นไป",
-      "price": 2590,
-      "seats": "50 คน",
-      "organizer": "Dolphincamp Education",
-      "registration": "",
-      "dateText": "12 ธันวาคม 2569",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "engineering-camp-dolphincamp",
-      "title": "ค่ายวิศวกรรมศาสตร์",
-      "type": "แนะแนวเรียนต่อ/อาชีพ",
-      "field": "วิศวกรรม",
-      "slugs": [
-        "engineer",
-        "guidance"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/engineering-camp-dolphincamp/"
-    },
-    {
-      "startDate": "2026-12-12",
-      "endDate": "2026-12-12",
-      "deadline": "2026-12-02",
-      "level": "ป.3-ป.6 · ม.1-ม.2 ปีการศึกษา 2569",
-      "levels": [
-        "ม.ต้น"
-      ],
-      "location": "โรงเรียนมัธยมวัดนายโรง เปิดแผนที่",
-      "province": "",
-      "fee": "300 บาท",
-      "price": 300,
-      "seats": "ไม่จำกัดจำนวน",
-      "organizer": "สมาคมผู้ปกครองและครูโรงเรียนมัธยมวัดนายโรง",
-      "registration": "",
-      "dateText": "12 ธ.ค. 2569 และ 20 มี.ค. 2570",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "imas-2026",
-      "title": "🏆 การทดสอบวัดความรู้ทางคณิตศาสตร์ระดับนานาชาติ IMAS 2026 🏆",
-      "type": "ประกวดแข่งขัน",
-      "field": "ทั่วไป",
-      "slugs": [
-        "contest"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/imas-2026/"
     },
     {
       "startDate": "2026-12-12",
@@ -3240,39 +2804,6 @@
       "sourceUrl": "https://www.camphub.in.th/comsci-comeng/"
     },
     {
-      "startDate": "2026-12-13",
-      "endDate": "2026-12-13",
-      "deadline": "2026-12-09",
-      "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส., Homeschool",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส."
-      ],
-      "location": "ห้องประชุม สมาคมศิษย์เก่ามหาวิทยาลัยมหิดล (ประตู 5) เปิดแผนที่",
-      "province": "",
-      "fee": "1,850 บาท จ่ายหลังประกาศรายชื่อผู้มีสิทธิ์เข้าร่วม",
-      "price": 1850,
-      "seats": "32 คน",
-      "organizer": "Ascend Dream",
-      "registration": "",
-      "dateText": "13 ธันวาคม 2569",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "dream-guide-behind-the-flight-aerospace-engineer",
-      "title": "DREAM GUIDE : Behind the Flight – Aerospace Engineer",
-      "type": "แนะแนวเรียนต่อ/อาชีพ",
-      "field": "วิศวกรรม",
-      "slugs": [
-        "aviation",
-        "engineer",
-        "guidance"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/dream-guide-behind-the-flight-aerospace-engineer/"
-    },
-    {
       "startDate": "2026-12-14",
       "endDate": "2026-12-18",
       "deadline": "2026-12-17",
@@ -3298,6 +2829,63 @@
         "science"
       ],
       "sourceUrl": "https://www.camphub.in.th/mad-scientist-science-camp-asok-2026/"
+    },
+    {
+      "startDate": "2026-12-18",
+      "endDate": "2026-12-18",
+      "deadline": "2026-12-01",
+      "level": "ม.ปลาย ปีการศึกษา 2569",
+      "levels": [
+        "ม.ปลาย"
+      ],
+      "location": "มหาวิทยาลัยอัสสัมชัญ หัวหมาก เปิดแผนที่",
+      "province": "",
+      "fee": "เข้าร่วมฟรี",
+      "price": 0,
+      "seats": "ไม่จำกัดจำนวน",
+      "organizer": "Biotech Abac",
+      "registration": "",
+      "dateText": "18 ธันวาคม 2569",
+      "certificate": true,
+      "overnight": false,
+      "online": false,
+      "id": "abac-junior-sci-conference-2026",
+      "title": "การประชุมวิชาการเยาวชน 2026 “อาหารแห่งอนาคต: เพื่ออายุที่ยืนยาว",
+      "type": "ประกวดแข่งขัน",
+      "field": "ทั่วไป",
+      "slugs": [
+        "contest"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/abac-junior-sci-conference-2026/"
+    },
+    {
+      "startDate": "2026-12-18",
+      "endDate": "2026-12-19",
+      "deadline": "2026-12-04",
+      "level": "ม.ปลาย ปีการศึกษา 2569 · มหาวิทยาลัย",
+      "levels": [
+        "ม.ปลาย",
+        "มหาวิทยาลัย"
+      ],
+      "location": "กาญจนบุรี",
+      "province": "กาญจนบุรี",
+      "fee": "399 บาท จ่ายหลังประกาศรายชื่อผู้มีสิทธิ์เข้าร่วม · โอนเมื่อยืนยัน สิทธิ์",
+      "price": 399,
+      "seats": "10 คน",
+      "organizer": "เพจลองดี",
+      "registration": "",
+      "dateText": "18 – 19 ธันวาคม 2569 ค้างคืน",
+      "certificate": true,
+      "overnight": true,
+      "online": false,
+      "id": "longd-staff-tak-bat-kanchanaburi",
+      "title": "ลองดี อาสาเป็นStaff ตักบาตรกาญจนบุรี",
+      "type": "อาสา/อนุรักษ์",
+      "field": "ทั่วไป",
+      "slugs": [
+        "volunteer"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/longd-staff-tak-bat-kanchanaburi/"
     },
     {
       "startDate": "2026-12-18",
@@ -3327,34 +2915,6 @@
         "engineer"
       ],
       "sourceUrl": "https://www.camphub.in.th/pep-camp-2026/"
-    },
-    {
-      "startDate": "2026-12-18",
-      "endDate": "2026-12-18",
-      "deadline": "2026-12-01",
-      "level": "ม.ปลาย ปีการศึกษา 2569",
-      "levels": [
-        "ม.ปลาย"
-      ],
-      "location": "มหาวิทยาลัยอัสสัมชัญ หัวหมาก เปิดแผนที่",
-      "province": "",
-      "fee": "เข้าร่วมฟรี",
-      "price": 0,
-      "seats": "ไม่จำกัดจำนวน",
-      "organizer": "Biotech Abac",
-      "registration": "",
-      "dateText": "18 ธันวาคม 2569",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "abac-junior-sci-conference-2026",
-      "title": "การประชุมวิชาการเยาวชน 2026 “อาหารแห่งอนาคต: เพื่ออายุที่ยืนยาว",
-      "type": "ประกวดแข่งขัน",
-      "field": "ทั่วไป",
-      "slugs": [
-        "contest"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/abac-junior-sci-conference-2026/"
     },
     {
       "startDate": "2026-12-19",
@@ -3601,38 +3161,6 @@
         "guidance"
       ],
       "sourceUrl": "https://www.camphub.in.th/psychiatrist-season-9/"
-    },
-    {
-      "startDate": "2026-12-20",
-      "endDate": "2026-12-20",
-      "deadline": "2026-12-13",
-      "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส., Homeschool",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส."
-      ],
-      "location": "747 Cafe Bangkok เปิดแผนที่",
-      "province": "",
-      "fee": "990 บาท จ่ายหลังประกาศรายชื่อผู้มีสิทธิ์เข้าร่วม · ชำระค่าค่ายเพื่อยืนยันสิทธิ์ภายในวันที่กรอกใบสมัคร",
-      "price": 990,
-      "seats": "20 คน",
-      "organizer": "Moobin Camp",
-      "registration": "",
-      "dateText": "20 ธันวาคม 2569 เวลาจัดค่าย 14.00 น. - 17.00 น.",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "future-cabin-crew-2",
-      "title": "ค่ายภาษาอังกฤษ Future Cabin Crew#2",
-      "type": "ค่าย/กิจกรรม",
-      "field": "การบิน",
-      "slugs": [
-        "aviation",
-        "language"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/future-cabin-crew-2/"
     },
     {
       "startDate": "2026-12-21",
@@ -4095,6 +3623,35 @@
       "sourceUrl": "https://www.camphub.in.th/kyc3-khon-kaen-astronomy-dinosaur-camp/"
     },
     {
+      "startDate": "2027-01-29",
+      "endDate": "2027-01-31",
+      "deadline": "2026-11-17",
+      "level": "ม.4-ม.5 ปีการศึกษา 2569",
+      "levels": [
+        "ม.ปลาย"
+      ],
+      "location": "สาขาเทคโนโลยีธรณี คณะเทคโนโลยี มหาวิทยาลัยขอนแก่น เปิดแผนที่ · และอีก 2 ที่ ดูทั้งหมด วนอุทยานภูหัน-ภูระงำ อโรคยาศาล “กู่แก้ว”",
+      "province": "ขอนแก่น",
+      "fee": "450 บาท จ่ายตอนสมัคร",
+      "price": 450,
+      "seats": "30 คน",
+      "organizer": "สาขาวิชาเทคโนโลยีธรณี คณะเทคโนโลยี มหาวิทยาลัยขอนแก่น",
+      "registration": "",
+      "dateText": "29 – 31 มกราคม 2570 ค้างคืน",
+      "certificate": true,
+      "overnight": true,
+      "online": false,
+      "id": "geo-explosive-camp-2027",
+      "title": "Geo Explosive Camp 2027",
+      "type": "พัฒนาทักษะ/เวิร์กชอป",
+      "field": "วิทยาศาสตร์",
+      "slugs": [
+        "skills-workshop",
+        "science"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/geo-explosive-camp-2027/"
+    },
+    {
       "startDate": "2027-01-30",
       "endDate": "2027-01-30",
       "deadline": "2026-12-05",
@@ -4247,6 +3804,66 @@
         "guidance"
       ],
       "sourceUrl": "https://www.camphub.in.th/cdream-6/"
+    },
+    {
+      "startDate": "2027-02-13",
+      "endDate": "2027-02-14",
+      "deadline": "2026-12-31",
+      "level": "ม.1-ม.6 ปีการศึกษา 2569 · Homeschool, GED",
+      "levels": [
+        "ม.ต้น",
+        "ม.ปลาย"
+      ],
+      "location": "เดอะ ไพน์ รีสอร์ท เปิดแผนที่",
+      "province": "",
+      "fee": "5,900 บาท จ่ายตอนสมัคร · มีส่วนลดสำหรับกลุ่ม 3 คนขึ้นไป",
+      "price": 5900,
+      "seats": "15 คน",
+      "organizer": "Money Adventure Club",
+      "registration": "",
+      "dateText": "13 – 14 กุมภาพันธ์ 2570 ค้างคืน",
+      "certificate": true,
+      "overnight": true,
+      "online": false,
+      "id": "money-adventure-camp-2027",
+      "title": "ค่ายการเงิน รุ่น 2 Money Adventure Camp 2027",
+      "type": "พัฒนาทักษะ/เวิร์กชอป",
+      "field": "บัญชี/บริหาร",
+      "slugs": [
+        "account-commerce",
+        "skills-workshop"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/money-adventure-camp-2027/"
+    },
+    {
+      "startDate": "2027-02-20",
+      "endDate": "2027-02-22",
+      "deadline": "2026-11-25",
+      "level": "ม.ปลาย ปีการศึกษา 2569 · ปวช. TCAS1",
+      "levels": [
+        "ม.ปลาย",
+        "ปวช."
+      ],
+      "location": "คณะวิศวกรรมศาสตร์ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง เปิดแผนที่",
+      "province": "กรุงเทพฯ",
+      "fee": "เข้าร่วมฟรี",
+      "price": 0,
+      "seats": "120 คน",
+      "organizer": "ภาควิชาชีวการแพทย์ คณะวิศวกรรมศาสตร์ สถาบันเทคโนโลยีเจ้าคุณทหารลาดกระบัง",
+      "registration": "",
+      "dateText": "20 – 22 กุมภาพันธ์ 2570 ค้างคืน",
+      "certificate": true,
+      "overnight": true,
+      "online": false,
+      "id": "beam-camp-11",
+      "title": "BEAM CAMP 11",
+      "type": "แนะแนวเรียนต่อ/อาชีพ",
+      "field": "วิศวกรรม",
+      "slugs": [
+        "engineer",
+        "guidance"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/beam-camp-11/"
     },
     {
       "startDate": "2027-02-21",
@@ -4499,37 +4116,6 @@
         "pharma"
       ],
       "sourceUrl": "https://www.camphub.in.th/pharmabiochem-ignite-4/"
-    },
-    {
-      "startDate": null,
-      "endDate": null,
-      "deadline": "2026-11-15",
-      "level": "ม.ปลาย ปีการศึกษา 2569 · เปิดรับสมัครนักเรียนระดับมัธยมปลาย นักศึกษา วิทยาลัย และอุดมศึกษา (หรือเทียบเท่า) ทุกคณะและทุกสถาบันการศึกษาทั่วประเทศ, ปวช., ปวส., มหาวิทยาลัย",
-      "levels": [
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส.",
-        "มหาวิทยาลัย"
-      ],
-      "location": "",
-      "province": "",
-      "fee": "เข้าร่วมฟรี",
-      "price": 0,
-      "seats": "ไม่จำกัดจำนวน",
-      "organizer": "บริษัท ไทย เดนทัล คลินิก แมนเนจเม้นท์ จำกัด",
-      "registration": "",
-      "dateText": "",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "dio-mascot-contest-2026",
-      "title": "โครงการประกวด “DIO MASCOT CONTEST 2026”",
-      "type": "ประกวดแข่งขัน",
-      "field": "ทั่วไป",
-      "slugs": [
-        "contest"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/dio-mascot-contest-2026/"
     },
     {
       "startDate": null,

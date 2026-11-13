@@ -1,4 +1,5 @@
 import CampExplorer from "@/app/camp-explorer";
+import SiteHeader from "@/app/site-header";
 import {
   campFields,
   campFormats,
@@ -22,14 +23,7 @@ const fetchedLabel = new Intl.DateTimeFormat("th-TH", {
 export default function Home() {
   return (
     <div className="flex flex-1 flex-col bg-[#faf9f6] text-zinc-900">
-      <header className="border-b border-zinc-200 bg-white">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-4">
-          <p className="text-lg font-bold tracking-tight">
-            ค่ายไหนดี<span className="text-emerald-600">.</span>
-          </p>
-          <p className="text-sm text-zinc-500">รวมค่ายสำหรับนักเรียน</p>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-5 pb-16">
         <section className="pt-10 pb-8">

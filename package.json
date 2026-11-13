@@ -15,6 +15,7 @@
     "bot:register": "node --env-file-if-exists=.env.local bot/register-commands.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
     "discord.js": "^14.28.1",
     "next": "16.4.6",
     "react": "19.3.0",

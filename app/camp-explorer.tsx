@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
 import type { Camp } from "@/lib/camps";
+import { getSupabase } from "@/lib/supabase";
 import {
   formatDayFull,
   formatMonthLabel,
@@ -77,9 +78,9 @@ function subscribeBookmarks(callback: () => void) {
 
 // อ่านค่ายที่มาร์กจาก localStorage แบบ external store
 // เพื่อไม่ให้ HTML ตอน prerender กับตอนเปิดหน้าไม่ตรงกัน
-function useBookmarks() {
+function useLocalBookmarks() {
   const raw = useSyncExternalStore(subscribeBookmarks, readBookmarkRaw, () => "[]");
-  const ids = useMemo(() => {
+  return useMemo(() => {
     try {
       const parsed = JSON.parse(raw);
       return Array.isArray(parsed) ? (parsed as string[]) : EMPTY_IDS;
@@ -87,20 +88,101 @@ function useBookmarks() {
       return EMPTY_IDS;
     }
   }, [raw]);
+}
+
+function writeLocalBookmarks(ids: string[]) {
+  try {
+    window.localStorage.setItem(BOOKMARK_KEY, JSON.stringify(ids));
+  } catch {
+    // โหมดส่วนตัวบางตัวเขียนไม่ได้ ก็ยังใช้ในหน้านี้ได้
+  }
+  window.dispatchEvent(new Event(BOOKMARK_EVENT));
+}
+
+function useBookmarks() {
+  const localIds = useLocalBookmarks();
+  // null = ยังไม่รู้ว่าล็อกอินหรือเปล่า / ไม่ได้ล็อกอิน ใช้ของในเครื่อง
+  const [remoteIds, setRemoteIds] = useState<string[] | null>(null);
+
+  useEffect(() => {
+    const supabase = getSupabase();
+    if (!supabase) return;
+    const db = supabase;
+    let active = true;
+
+    async function sync(userId: string | null) {
+      if (!userId) {
+        if (active) setRemoteIds(null);
+        return;
+      }
+
+      const { data } = await db.from("bookmarks").select("camp_id").eq("user_id", userId);
+
+      const remote = (data ?? []).map((row) => row.camp_id as string);
+      const merged = [...new Set([...readLocalIds(), ...remote])];
+      const missing = merged.filter((id) => !remote.includes(id));
+
+      if (missing.length > 0) {
+        await db
+          .from("bookmarks")
+          .upsert(
+            missing.map((campId) => ({ user_id: userId, camp_id: campId })),
+            { onConflict: "user_id,camp_id", ignoreDuplicates: true },
+          );
+      }
+
+      if (!active) return;
+      setRemoteIds(merged);
+      writeLocalBookmarks(merged);
+    }
+
+    void db.auth.getSession().then(({ data }) => {
+      void sync(data.session?.user.id ?? null);
+    });
+
+    const { data: listener } = db.auth.onAuthStateChange((_event, session) => {
+      void sync(session?.user.id ?? null);
+    });
+
+    return () => {
+      active = false;
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const ids = remoteIds ?? localIds;
 
   function toggleBookmark(id: string) {
-    const next = new Set(ids);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    try {
-      window.localStorage.setItem(BOOKMARK_KEY, JSON.stringify([...next]));
-    } catch {
-      // โหมดส่วนตัวบางตัวเขียนไม่ได้ ก็ยังใช้ในหน้านี้ได้
-    }
-    window.dispatchEvent(new Event(BOOKMARK_EVENT));
+    const saved = ids.includes(id);
+    const next = saved ? ids.filter((item) => item !== id) : [...ids, id];
+
+    if (remoteIds) setRemoteIds(next);
+    writeLocalBookmarks(next);
+
+    const supabase = getSupabase();
+    if (!supabase || !remoteIds) return;
+
+    void supabase.auth.getSession().then(({ data }) => {
+      const userId = data.session?.user.id;
+      if (!userId) return;
+      if (saved) {
+        void supabase.from("bookmarks").delete().eq("user_id", userId).eq("camp_id", id);
+      } else {
+        void supabase.from("bookmarks").insert({ user_id: userId, camp_id: id });
+      }
+    });
   }
 
   return { ids, toggleBookmark };
+}
+
+function readLocalIds(): string[] {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(BOOKMARK_KEY) ?? "[]");
+    return Array.isArray(parsed) ? (parsed as string[]) : [];
+  } catch {
+    return [];
+  }
 }
 
 function Chip({

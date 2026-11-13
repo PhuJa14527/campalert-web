@@ -9,6 +9,7 @@ import {
   notificationKey,
   todayISO,
 } from "./notify.mjs";
+import { deleteDbUser, loadDbUsers, saveDbUser } from "./db.mjs";
 import {
   getUserSettings,
   loadSettings,
@@ -97,9 +98,10 @@ async function runNotifications() {
   }
 
   const settings = await loadSettings();
+  const users = await usersWithDb(settings);
   const today = todayISO();
 
-  for (const [userId, user] of Object.entries(settings.users)) {
+  for (const [userId, user] of Object.entries(users)) {
     const pending = pendingFor(user, camps, newbieIds, today);
     if (pending.length === 0) continue;
 
@@ -116,8 +118,28 @@ async function runNotifications() {
     }
 
     user.sent = pruneSent(user.sent, camps);
+    // เก็บสถานะ "แจ้งไปแล้ว" ไว้ในเครื่อง ส่วนค่าตั้งอ่านจากฐานข้อมูลทุกครั้ง
+    settings.users[userId] = { ...(settings.users[userId] ?? {}), sent: user.sent };
     await saveSettings(settings);
   }
+}
+
+// รวมการตั้งค่าจากฐานข้อมูล (ตั้งบนเว็บ) ทับค่าที่ตั้งผ่านคำสั่ง Discord
+async function usersWithDb(settings) {
+  const users = { ...settings.users };
+  try {
+    const dbUsers = await loadDbUsers();
+    for (const [discordId, config] of Object.entries(dbUsers)) {
+      users[discordId] = {
+        ...(users[discordId] ?? {}),
+        ...config,
+        sent: users[discordId]?.sent ?? {},
+      };
+    }
+  } catch (error) {
+    console.log("อ่านการตั้งค่าจากฐานข้อมูลไม่ได้ ใช้ค่าในเครื่องแทน:", error.message);
+  }
+  return users;
 }
 
 async function startScheduler() {
@@ -140,13 +162,21 @@ async function handleCommand(interaction) {
     const mode = interaction.options.getString("mode", true);
     const field = interaction.options.getString("field") ?? "ทั้งหมด";
     const advance = interaction.options.getInteger("advance") ?? 3;
-    const user = await upsertUser(settings, interaction.user.id, {
-      mode,
-      field,
-      advance,
-      name: interaction.user.username,
-      sent: settings.users[interaction.user.id]?.sent ?? {},
-    });
+
+    // ถ้าผู้ใช้เคยล็อกอินเว็บไว้ เก็บลงฐานข้อมูลเพื่อให้เว็บเห็นค่าเดียวกัน
+    const savedToDb = await saveDbUser(interaction.user.id, { mode, field, advance }).catch(
+      () => false,
+    );
+
+    const user = savedToDb
+      ? { mode, field, advance }
+      : await upsertUser(settings, interaction.user.id, {
+          mode,
+          field,
+          advance,
+          name: interaction.user.username,
+          sent: settings.users[interaction.user.id]?.sent ?? {},
+        });
 
     let dmNote = "\n\nส่งข้อความทดสอบไปใน DM แล้ว";
     try {
@@ -159,14 +189,17 @@ async function handleCommand(interaction) {
     }
 
     await interaction.reply({
-      content: `ตั้งค่าแล้ว ✅\n${summary(user)}${dmNote}`,
+      content: `ตั้งค่าแล้ว ✅\n${summary(user)}${dmNote}${
+        savedToDb ? "\n\n(บันทึกในบัญชีเว็บแล้ว ดูได้ที่หน้า ตั้งค่าการแจ้งเตือน)" : ""
+      }`,
       flags: MessageFlags.Ephemeral,
     });
     return;
   }
 
   if (interaction.commandName === "settings") {
-    const user = getUserSettings(settings, interaction.user.id);
+    const dbUsers = await loadDbUsers().catch(() => ({}));
+    const user = dbUsers[interaction.user.id] ?? getUserSettings(settings, interaction.user.id);
     await interaction.reply({
       content: user
         ? `การตั้งค่าของคุณ\n${summary(user)}`
@@ -177,6 +210,7 @@ async function handleCommand(interaction) {
   }
 
   if (interaction.commandName === "stop") {
+    await deleteDbUser(interaction.user.id).catch(() => false);
     await removeUser(settings, interaction.user.id);
     await interaction.reply({
       content: "ปิดการแจ้งเตือนทั้งหมดแล้ว พิมพ์ /notify เมื่ออยากเปิดอีกครั้ง",
