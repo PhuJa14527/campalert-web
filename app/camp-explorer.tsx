@@ -427,30 +427,115 @@ export default function CampExplorer({
 
   const [month, setMonth] = useState(firstMonth);
 
+  // คำค้นที่พิมพ์อยู่ ถ้าไปตรงกับชื่อตัวเลือกไหน ให้ตัวเลือกนั้นติดสีดำด้วย
+  // เช่นพิมพ์ "กรุงเทพ" → ชิปกรุงเทพฯ ติดเป็นสีดำ แล้วผลลัพธ์ก็กรองตามจังหวัดให้เลย
+  const implied = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const empty = {
+      topics: [] as string[],
+      types: [] as string[],
+      levels: [] as string[],
+      provinces: [] as string[],
+      prices: [] as string[],
+      formats: [] as string[],
+      organizers: [] as string[],
+      status: "all" as Status,
+    };
+    if (q.length < 2) return empty;
+
+    const hit = (label: string) => label.toLowerCase().includes(q);
+
+    return {
+      topics: topicGroups.flatMap((group) =>
+        group.options.filter((option) => hit(option.label)).map((option) => option.slug),
+      ),
+      types: types.filter(hit),
+      levels: levels.filter(hit),
+      provinces: provinces.filter(hit),
+      prices: prices.filter((item) => hit(item.label)).map((item) => item.id),
+      formats: formats.filter((item) => hit(item.label)).map((item) => item.id),
+      organizers: organizerKinds.filter((kind) => hit(kind.label)).map((kind) => kind.id),
+      status:
+        ([
+          { id: "open" as Status, label: "เปิดรับสมัคร" },
+          { id: "closed" as Status, label: "ปิดรับแล้ว" },
+        ].find((item) => hit(item.label))?.id ?? "all") as Status,
+    };
+  }, [query, topicGroups, types, levels, provinces, prices, formats, organizerKinds]);
+
+  // ตัวกรองที่ใช้จริง = ที่กดเลือกไว้ + ที่เดาจากคำค้น
+  const effTopics = useMemo(
+    () => [...new Set([...topics, ...implied.topics])],
+    [topics, implied.topics],
+  );
+  const effTypes = useMemo(
+    () => [...new Set([...(type !== "ทั้งหมด" ? [type] : []), ...implied.types])],
+    [type, implied.types],
+  );
+  const effOrganizers = useMemo(
+    () => [...new Set([...(organizer !== "all" ? [organizer] : []), ...implied.organizers])],
+    [organizer, implied.organizers],
+  );
+  const effLevels = useMemo(
+    () => [...new Set([...selectedLevels, ...implied.levels])],
+    [selectedLevels, implied.levels],
+  );
+  const effProvinces = useMemo(
+    () => [...new Set([...selectedProvinces, ...implied.provinces])],
+    [selectedProvinces, implied.provinces],
+  );
+  const effPrices = useMemo(
+    () => [...new Set([...selectedPrices, ...implied.prices])],
+    [selectedPrices, implied.prices],
+  );
+  const effFormats = useMemo(
+    () => [...new Set([...selectedFormats, ...implied.formats])],
+    [selectedFormats, implied.formats],
+  );
+  const effStatus: Status = status !== "all" ? status : implied.status;
+
+  // ตัวเลือกที่ติดเพราะคำค้น (ไม่ได้กดเอง) ถ้าเอาออกให้ล้างคำค้นด้วย
+  function dropQueryIfImplied(label: string) {
+    const q = query.trim().toLowerCase();
+    if (q.length >= 2 && label.toLowerCase().includes(q)) setQuery("");
+  }
+
+  function toggleFilter(
+    value: string,
+    explicit: string[],
+    setExplicit: (update: (prev: string[]) => string[]) => void,
+    effective: string[],
+    label: string,
+  ) {
+    if (!explicit.includes(value) && effective.includes(value)) {
+      dropQueryIfImplied(label);
+      return;
+    }
+    setExplicit((prev) => toggleValue(prev, value));
+  }
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return camps.filter((camp) => {
-      if (type !== "ทั้งหมด" && camp.type !== type) return false;
-      if (topics.length > 0) {
+      if (effTypes.length > 0 && !effTypes.includes(camp.type)) return false;
+      if (effTopics.length > 0) {
         const slugs = camp.slugs ?? [];
-        if (!topics.some((slug) => slugs.includes(slug))) return false;
+        if (!effTopics.some((slug) => slugs.includes(slug))) return false;
       }
-      if (organizer !== "all" && organizerKind(camp) !== organizer) return false;
+      if (effOrganizers.length > 0 && !effOrganizers.includes(organizerKind(camp)))
+        return false;
       if (
-        selectedLevels.length &&
-        !selectedLevels.some((level) => (camp.levels ?? []).includes(level))
+        effLevels.length &&
+        !effLevels.some((level) => (camp.levels ?? []).includes(level))
       )
         return false;
-      if (selectedProvinces.length && !selectedProvinces.includes(camp.province ?? ""))
-        return false;
-      if (selectedPrices.length && !selectedPrices.some((id) => matchPrice(id, camp.price)))
-        return false;
-      if (selectedFormats.length && !selectedFormats.some((id) => matchFormat(id, camp)))
-        return false;
-      if (status !== "all") {
+      if (effProvinces.length && !effProvinces.includes(camp.province ?? "")) return false;
+      if (effPrices.length && !effPrices.some((id) => matchPrice(id, camp.price))) return false;
+      if (effFormats.length && !effFormats.some((id) => matchFormat(id, camp))) return false;
+      if (effStatus !== "all") {
         const closed = isPast(camp.deadline, today);
-        if (status === "open" && closed) return false;
-        if (status === "closed" && !closed) return false;
+        if (effStatus === "open" && closed) return false;
+        if (effStatus === "closed" && !closed) return false;
       }
       if (bookmarkedOnly && !bookmarked.includes(camp.id)) return false;
       if (!q) return true;
@@ -462,6 +547,8 @@ export default function CampExplorer({
         camp.type,
         camp.level,
         camp.province,
+        isPast(camp.deadline, today) ? "ปิดรับแล้ว" : "เปิดรับสมัคร",
+        organizerKinds.find((kind) => kind.id === organizerKind(camp))?.label ?? "",
       ]
         .join(" ")
         .toLowerCase()
@@ -470,28 +557,29 @@ export default function CampExplorer({
   }, [
     camps,
     query,
-    type,
-    topics,
-    organizer,
-    selectedLevels,
-    selectedProvinces,
-    selectedPrices,
-    selectedFormats,
-    status,
+    effTypes,
+    effTopics,
+    effOrganizers,
+    effLevels,
+    effProvinces,
+    effPrices,
+    effFormats,
+    effStatus,
+    organizerKinds,
     bookmarkedOnly,
     bookmarked,
     today,
   ]);
 
   const activeFilterCount =
-    topics.length +
-    selectedLevels.length +
-    selectedProvinces.length +
-    selectedPrices.length +
-    selectedFormats.length +
-    (status !== "all" ? 1 : 0) +
-    (type !== "ทั้งหมด" ? 1 : 0) +
-    (organizer !== "all" ? 1 : 0) +
+    effTopics.length +
+    effLevels.length +
+    effProvinces.length +
+    effPrices.length +
+    effFormats.length +
+    (effStatus !== "all" ? 1 : 0) +
+    (effTypes.length > 0 ? 1 : 0) +
+    (effOrganizers.length > 0 ? 1 : 0) +
     (bookmarkedOnly ? 1 : 0);
 
   function clearFilters() {
@@ -573,7 +661,7 @@ export default function CampExplorer({
           </label>
 
           {topicGroups.map((group) => {
-            const picked = group.options.find((option) => topics.includes(option.slug));
+            const picked = group.options.find((option) => effTopics.includes(option.slug));
             return (
               <label
                 key={group.id}
@@ -585,6 +673,11 @@ export default function CampExplorer({
                   value={picked?.slug ?? ""}
                   onChange={(event) => {
                     const slug = event.target.value;
+                    // ถ้าค่าที่เลือกอยู่มาจากคำค้น เปลี่ยนตัวเลือกแล้วให้ล้างคำค้นด้วย
+                    // ไม่งั้นสองตัวกรองจะชนกัน (หรือเงื่อนไข)
+                    if (group.options.some((option) => implied.topics.includes(option.slug))) {
+                      setQuery("");
+                    }
                     setTopics((prev) => {
                       const others = prev.filter(
                         (item) => !group.options.some((option) => option.slug === item),
@@ -607,12 +700,16 @@ export default function CampExplorer({
 
           <label
             className={`flex items-center border-l border-zinc-200 px-2 text-sm ${
-              type !== "ทั้งหมด" ? "font-medium text-emerald-700" : "text-zinc-700"
+              effTypes.length > 0 ? "font-medium text-emerald-700" : "text-zinc-700"
             }`}
           >
             <select
-              value={type === "ทั้งหมด" ? "" : type}
-              onChange={(event) => setType(event.target.value || "ทั้งหมด")}
+              value={effTypes[0] ?? ""}
+              onChange={(event) => {
+                const value = event.target.value;
+                if (implied.types.length > 0) setQuery("");
+                setType(value || "ทั้งหมด");
+              }}
               className="bg-transparent py-3 pr-1 outline-none"
             >
               <option value="">รูปแบบค่าย</option>
@@ -626,12 +723,16 @@ export default function CampExplorer({
 
           <label
             className={`flex items-center border-l border-zinc-200 px-2 text-sm ${
-              organizer !== "all" ? "font-medium text-emerald-700" : "text-zinc-700"
+              effOrganizers.length > 0 ? "font-medium text-emerald-700" : "text-zinc-700"
             }`}
           >
             <select
-              value={organizer === "all" ? "" : organizer}
-              onChange={(event) => setOrganizer(event.target.value || "all")}
+              value={effOrganizers[0] ?? ""}
+              onChange={(event) => {
+                const value = event.target.value;
+                if (implied.organizers.length > 0) setQuery("");
+                setOrganizer(value || "all");
+              }}
               className="bg-transparent py-3 pr-1 outline-none"
             >
               <option value="">ผู้จัด</option>
@@ -652,14 +753,18 @@ export default function CampExplorer({
           </button>
         </div>
 
-        {/* ป้ายที่เลือกอยู่ กดกากบาทเพื่อเอาออกทีละอัน */}
-        {topics.length > 0 ? (
+        {/* ป้ายที่เลือกอยู่ (รวมที่มาจากคำค้น) กดกากบาทเพื่อเอาออกทีละอัน */}
+        {effTopics.length > 0 ? (
           <div className="flex flex-wrap gap-2">
-            {topics.map((slug) => (
+            {effTopics.map((slug) => (
               <button
                 key={slug}
                 type="button"
-                onClick={() => setTopics((prev) => prev.filter((item) => item !== slug))}
+                onClick={() => {
+                  const label = topicLabels[slug] ?? slug;
+                  if (!topics.includes(slug)) dropQueryIfImplied(label);
+                  else setTopics((prev) => prev.filter((item) => item !== slug));
+                }}
                 className="rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1 text-sm text-emerald-800"
               >
                 {topicLabels[slug] ?? slug} ✕
@@ -673,35 +778,41 @@ export default function CampExplorer({
             <FilterGroup
               title="ระดับชั้น"
               options={levels}
-              selected={selectedLevels}
-              onToggle={(value) => setSelectedLevels((prev) => toggleValue(prev, value))}
+              selected={effLevels}
+              onToggle={(value) =>
+                toggleFilter(value, selectedLevels, setSelectedLevels, effLevels, value)
+              }
             />
             <FilterGroup
               title="จังหวัด"
               options={provinces}
-              selected={selectedProvinces}
-              onToggle={(value) => setSelectedProvinces((prev) => toggleValue(prev, value))}
+              selected={effProvinces}
+              onToggle={(value) =>
+                toggleFilter(value, selectedProvinces, setSelectedProvinces, effProvinces, value)
+              }
             />
             <FilterGroup
               title="ค่าใช้จ่าย"
               options={prices.map((item) => item.label)}
-              selected={selectedPrices.map(
+              selected={effPrices.map(
                 (id) => prices.find((item) => item.id === id)?.label ?? id,
               )}
               onToggle={(label) => {
                 const found = prices.find((item) => item.label === label);
-                if (found) setSelectedPrices((prev) => toggleValue(prev, found.id));
+                if (!found) return;
+                toggleFilter(found.id, selectedPrices, setSelectedPrices, effPrices, label);
               }}
             />
             <FilterGroup
               title="รูปแบบ"
               options={formats.map((item) => item.label)}
-              selected={selectedFormats.map(
+              selected={effFormats.map(
                 (id) => formats.find((item) => item.id === id)?.label ?? id,
               )}
               onToggle={(label) => {
                 const found = formats.find((item) => item.label === label);
-                if (found) setSelectedFormats((prev) => toggleValue(prev, found.id));
+                if (!found) return;
+                toggleFilter(found.id, selectedFormats, setSelectedFormats, effFormats, label);
               }}
             />
 
@@ -710,13 +821,21 @@ export default function CampExplorer({
                 สถานะ
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
-                <Chip active={status === "all"} onClick={() => setStatus("all")}>
+                <Chip
+                  active={effStatus === "all"}
+                  onClick={() => {
+                    if (implied.status !== "all") dropQueryIfImplied(
+                      implied.status === "open" ? "เปิดรับสมัคร" : "ปิดรับแล้ว",
+                    );
+                    setStatus("all");
+                  }}
+                >
                   ทั้งหมด
                 </Chip>
-                <Chip active={status === "open"} onClick={() => setStatus("open")}>
+                <Chip active={effStatus === "open"} onClick={() => setStatus("open")}>
                   เปิดรับสมัคร
                 </Chip>
-                <Chip active={status === "closed"} onClick={() => setStatus("closed")}>
+                <Chip active={effStatus === "closed"} onClick={() => setStatus("closed")}>
                   ปิดรับแล้ว
                 </Chip>
               </div>
