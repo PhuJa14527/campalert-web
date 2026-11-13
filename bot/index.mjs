@@ -1,6 +1,8 @@
 import { Client, Events, GatewayIntentBits, MessageFlags } from "discord.js";
 import { spawn } from "node:child_process";
 import {
+  bookmarkCamps,
+  daysUntil,
   deadlineCamps,
   loadCamps,
   matchesField,
@@ -9,7 +11,7 @@ import {
   notificationKey,
   todayISO,
 } from "./notify.mjs";
-import { deleteDbUser, loadDbUsers, saveDbUser } from "./db.mjs";
+import { deleteDbUser, loadDbBookmarks, loadDbUsers, saveDbUser } from "./db.mjs";
 import {
   getUserSettings,
   loadSettings,
@@ -27,11 +29,15 @@ const DRY_RUN = process.argv.includes("--dry-run");
 const modeLabel = { new: "ค่ายใหม่", deadline: "ใกล้ปิดรับสมัคร", both: "ค่ายใหม่ + ใกล้ปิดรับสมัคร" };
 
 function summary(settings) {
-  return [
+  const lines = [
     `โหมด: ${modeLabel[settings.mode] ?? settings.mode}`,
     `สายที่สนใจ: ${settings.field ?? "ทั้งหมด"}`,
-    `แจ้งล่วงหน้า: ${settings.advance ?? 3} วันก่อนปิดรับ`,
-  ].join("\n");
+    `แจ้งล่วงหน้า: ${settings.advance ?? 3} วัน ก่อนปิดรับ`,
+  ];
+  if (settings.bookmarks?.length) {
+    lines.push(`ค่ายที่มาร์กไว้: ${settings.bookmarks.length} ค่าย (จะเตือนก่อนถึงวันจัดด้วย)`);
+  }
+  return lines.join("\n");
 }
 
 async function refreshData() {
@@ -68,6 +74,14 @@ function pendingFor(settings, camps, newbieIds, today) {
       if (sent[key]) continue;
       pending.push({ camp, reason: "deadline", advance, key });
     }
+  }
+
+  // ค่ายที่มาร์กไว้บนเว็บ แจ้งเตือนแม้จะไม่ได้อยู่ในสายที่เลือก
+  const advance = settings.advance ?? 3;
+  for (const camp of bookmarkCamps(camps, settings.bookmarks, advance, today)) {
+    const key = notificationKey(camp.id, "bookmark");
+    if (sent[key]) continue;
+    pending.push({ camp, reason: "bookmark", advance: daysUntil(camp.startDate, today), key });
   }
 
   return pending;
@@ -127,18 +141,32 @@ async function runNotifications() {
 // รวมการตั้งค่าจากฐานข้อมูล (ตั้งบนเว็บ) ทับค่าที่ตั้งผ่านคำสั่ง Discord
 async function usersWithDb(settings) {
   const users = { ...settings.users };
-  try {
-    const dbUsers = await loadDbUsers();
-    for (const [discordId, config] of Object.entries(dbUsers)) {
-      users[discordId] = {
-        ...(users[discordId] ?? {}),
-        ...config,
-        sent: users[discordId]?.sent ?? {},
-      };
-    }
-  } catch (error) {
-    console.log("อ่านการตั้งค่าจากฐานข้อมูลไม่ได้ ใช้ค่าในเครื่องแทน:", error.message);
+  const [dbUsers, dbBookmarks] = await Promise.all([
+    loadDbUsers().catch((error) => {
+      console.log("อ่านการตั้งค่าจากฐานข้อมูลไม่ได้ ใช้ค่าในเครื่องแทน:", error.message);
+      return {};
+    }),
+    loadDbBookmarks().catch(() => ({})),
+  ]);
+
+  for (const [discordId, config] of Object.entries(dbUsers)) {
+    users[discordId] = {
+      ...(users[discordId] ?? {}),
+      ...config,
+      sent: users[discordId]?.sent ?? {},
+    };
   }
+
+  // มีค่ายที่มาร์กอย่างเดียวก็แจ้งได้ ไม่ต้องตั้งค่าโหมดก่อน
+  for (const [discordId, campIds] of Object.entries(dbBookmarks)) {
+    if (campIds.length === 0) continue;
+    users[discordId] = {
+      ...(users[discordId] ?? { mode: "new", field: "ทั้งหมด", advance: 3 }),
+      bookmarks: campIds,
+      sent: users[discordId]?.sent ?? {},
+    };
+  }
+
   return users;
 }
 
@@ -199,7 +227,9 @@ async function handleCommand(interaction) {
 
   if (interaction.commandName === "settings") {
     const dbUsers = await loadDbUsers().catch(() => ({}));
-    const user = dbUsers[interaction.user.id] ?? getUserSettings(settings, interaction.user.id);
+    const bookmarks = (await loadDbBookmarks().catch(() => ({})))[interaction.user.id] ?? [];
+    const base = dbUsers[interaction.user.id] ?? getUserSettings(settings, interaction.user.id);
+    const user = base ? { ...base, bookmarks } : null;
     await interaction.reply({
       content: user
         ? `การตั้งค่าของคุณ\n${summary(user)}`
@@ -210,10 +240,13 @@ async function handleCommand(interaction) {
   }
 
   if (interaction.commandName === "stop") {
-    await deleteDbUser(interaction.user.id).catch(() => false);
+    // ลบค่าที่ตั้งบนเว็บด้วย จะได้ไม่มี DM ตามมาอีก
+    const savedToDb = await deleteDbUser(interaction.user.id).catch(() => false);
     await removeUser(settings, interaction.user.id);
     await interaction.reply({
-      content: "ปิดการแจ้งเตือนทั้งหมดแล้ว พิมพ์ /notify เมื่ออยากเปิดอีกครั้ง",
+      content: `ปิดการแจ้งเตือนทั้งหมดแล้ว พิมพ์ /notify เมื่ออยากเปิดอีกครั้ง${
+        savedToDb ? "\n\n(ลบการตั้งค่าที่ผูกกับบัญชีเว็บแล้ว)" : ""
+      }`,
       flags: MessageFlags.Ephemeral,
     });
   }

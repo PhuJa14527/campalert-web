@@ -30,6 +30,26 @@ export function deadlineCamps(camps, advance, today) {
   return camps.filter((camp) => camp.deadline === target);
 }
 
+// ค่ายที่ผู้ใช้มาร์กไว้ และจะเริ่มจัดภายใน advance วันข้างหน้า
+export function bookmarkCamps(camps, campIds, advance, today) {
+  if (!campIds || campIds.length === 0) return [];
+  const ids = new Set(campIds);
+  const until = addDaysISO(today, advance);
+  return camps.filter(
+    (camp) =>
+      ids.has(camp.id) &&
+      camp.startDate &&
+      camp.startDate >= today &&
+      camp.startDate <= until,
+  );
+}
+
+// จำนวนวันจากวันนี้ถึงวันเริ่มค่าย
+export function daysUntil(startDate, today) {
+  const diff = Date.parse(`${startDate}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`);
+  return Math.round(diff / 86400000);
+}
+
 // เทียบรายการค่ายกับ snapshot เดิม เพื่อหาค่ายที่เพิ่งเพิ่มเข้ามา
 export function newCamps(camps, knownIds) {
   const known = new Set(knownIds);
@@ -78,6 +98,13 @@ export function messageBody(camp, reason, advance) {
       reason === "deadline"
         ? `⏰ ปิดรับสมัครในอีก ${advance} วัน (${formatDay(camp.deadline)})`
         : `ปิดรับสมัคร ${formatDay(camp.deadline)}`,
+    );
+  }
+  if (reason === "bookmark") {
+    lines.push(
+      advance <= 0
+        ? "⭐ ค่ายที่คุณมาร์กไว้ เริ่มจัดวันนี้"
+        : `⭐ ค่ายที่คุณมาร์กไว้ เริ่มจัดอีก ${advance} วัน`,
     );
   }
   lines.push(`ข้อมูลจาก CAMPHUB: ${camp.sourceUrl}`);

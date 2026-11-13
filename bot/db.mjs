@@ -57,6 +57,27 @@ export async function loadDbUsers() {
   return users;
 }
 
+// คืนค่าเป็น { [discordId]: [campId, ...] } สำหรับค่ายที่ผู้ใช้มาร์กบนเว็บ
+export async function loadDbBookmarks() {
+  if (!hasDb()) return {};
+
+  const [profiles, rows] = await Promise.all([
+    rest("profiles?select=id,discord_id&discord_id=not.is.null"),
+    rest("bookmarks?select=user_id,camp_id"),
+  ]);
+
+  const discordById = new Map((profiles ?? []).map((row) => [row.id, row.discord_id]));
+  const out = {};
+
+  for (const row of rows ?? []) {
+    const discordId = discordById.get(row.user_id);
+    if (!discordId) continue;
+    (out[discordId] ??= []).push(row.camp_id);
+  }
+
+  return out;
+}
+
 // คืนค่า true ถ้าเขียนลงฐานข้อมูลได้ (แปลว่าผู้ใช้เคยล็อกอินเว็บ)
 export async function saveDbUser(discordId, config) {
   if (!hasDb()) return false;
