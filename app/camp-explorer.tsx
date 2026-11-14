@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
 import type { Camp } from "@/lib/camps";
-import { organizerKind, topicLabels } from "@/lib/camps";
+import { organizerKind, universityLabels, universityOf } from "@/lib/camps";
 import { getSupabase } from "@/lib/supabase";
 import {
   formatDayFull,
@@ -17,6 +17,14 @@ import {
 
 type View = "list" | "calendar";
 type Status = "all" | "open" | "closed";
+type ImpliedKey = "type" | "field" | "province" | "price" | "organizer" | "level" | "status";
+
+/** ตัวเลือกในหัวข้อ "คุณสมบัติเพิ่มเติม" ของแผงตัวกรอง */
+const extraOptions = [
+  { id: "online", label: "ออนไลน์" },
+  { id: "overnight", label: "ค้างคืน" },
+  { id: "certificate", label: "มีเกียรติบัตร" },
+] as const;
 
 const BOOKMARK_KEY = "campalert.bookmarks.v1";
 
@@ -48,13 +56,6 @@ function matchPrice(id: string, price?: number | null) {
   if (id === "mid") return price > 500 && price <= 1500;
   if (id === "high") return price > 1500;
   return false;
-}
-
-function matchFormat(id: string, camp: Camp) {
-  if (id === "online") return Boolean(camp.online);
-  if (id === "overnight") return Boolean(camp.overnight);
-  if (id === "onsite") return !camp.online;
-  return true;
 }
 
 const BOOKMARK_EVENT = "campalert:bookmarks-changed";
@@ -214,47 +215,36 @@ function Chip({
   );
 }
 
-function FilterGroup({
-  title,
+/** ช่องเลือกแบบ dropdown ใช้ในแผงตัวกรอง (เลือกได้ทีละอย่าง) */
+function SelectFilter({
+  label,
+  value,
   options,
-  selected,
-  onToggle,
-  limit = 8,
+  onChange,
 }: {
-  title: string;
-  options: string[];
-  selected: string[];
-  onToggle: (value: string) => void;
-  limit?: number;
+  label: string;
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (value: string) => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
-  if (options.length === 0) return null;
-  const visible = expanded ? options : options.slice(0, limit);
-
+  const active = value !== "";
   return (
-    <div>
-      <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">{title}</p>
-      <div className="mt-2 flex flex-wrap gap-2">
-        {visible.map((option) => (
-          <Chip
-            key={option}
-            active={selected.includes(option)}
-            onClick={() => onToggle(option)}
-          >
-            {option}
-          </Chip>
-        ))}
-        {options.length > limit ? (
-          <button
-            type="button"
-            onClick={() => setExpanded((value) => !value)}
-            className="rounded-full px-2 py-1.5 text-sm text-emerald-700 underline"
-          >
-            {expanded ? "ย่อลง" : `เพิ่มเติม (${options.length - limit})`}
-          </button>
-        ) : null}
-      </div>
-    </div>
+    <select
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      className={`w-full rounded-lg border px-3 py-2.5 text-sm outline-none ${
+        active
+          ? "border-zinc-900 bg-white font-medium text-zinc-900"
+          : "border-zinc-300 bg-white text-zinc-600"
+      }`}
+    >
+      <option value="">{label}</option>
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
   );
 }
 
@@ -374,11 +364,11 @@ function CampCard({
 export default function CampExplorer({
   camps,
   types,
+  fields,
   levels,
   provinces,
-  formats,
   prices,
-  topicGroups,
+  universities,
   organizerKinds,
   organizerCounts,
   fetchedLabel,
@@ -386,11 +376,11 @@ export default function CampExplorer({
 }: {
   camps: Camp[];
   types: string[];
+  fields: string[];
   levels: string[];
   provinces: string[];
-  formats: { id: string; label: string }[];
   prices: { id: string; label: string }[];
-  topicGroups: { id: string; label: string; options: { slug: string; label: string; count: number }[] }[];
+  universities: { id: string; label: string; count: number }[];
   organizerKinds: { id: string; label: string }[];
   organizerCounts: Record<string, number>;
   fetchedLabel: string;
@@ -398,15 +388,16 @@ export default function CampExplorer({
 }) {
   const [query, setQuery] = useState("");
   const [type, setType] = useState("ทั้งหมด");
-  const [topics, setTopics] = useState<string[]>([]);
+  const [field, setField] = useState("ทั้งหมด");
+  const [province, setProvince] = useState("ทั้งหมด");
+  const [price, setPrice] = useState("all");
+  const [university, setUniversity] = useState("all");
   const [organizer, setOrganizer] = useState("all");
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
-  const [selectedProvinces, setSelectedProvinces] = useState<string[]>([]);
-  const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
-  const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
-  const [status, setStatus] = useState<Status>("all");
+  const [extras, setExtras] = useState<string[]>([]);
+  const [openOnly, setOpenOnly] = useState(false);
   const [bookmarkedOnly, setBookmarkedOnly] = useState(false);
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
   const [view, setView] = useState<View>("list");
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
@@ -427,157 +418,112 @@ export default function CampExplorer({
 
   const [month, setMonth] = useState(firstMonth);
 
-  // คำค้นที่พิมพ์อยู่ ถ้าไปตรงกับชื่อตัวเลือกไหน ให้ตัวเลือกนั้นติดสีดำด้วย
-  // เช่นพิมพ์ "กรุงเทพ" → ชิปกรุงเทพฯ ติดเป็นสีดำ แล้วผลลัพธ์ก็กรองตามจังหวัดให้เลย
+  // คำค้นที่พิมพ์อยู่ ถ้าไปตรงกับชื่อตัวเลือกไหน ให้ตัวเลือกนั้นติดให้เอง
+  // เช่นพิมพ์ "กรุงเทพ" → ช่องจังหวัดเป็นกรุงเทพฯ แล้วผลลัพธ์ก็กรองตามจังหวัดให้เลย
   //
-  // คำเดียวให้ติดกลุ่มเดียวเท่านั้น เพราะถ้าติดหลายกลุ่มจะกลายเป็นเงื่อนไข "และ" กัน
-  // เช่น "มหาวิทยาลัย" มีทั้งในระดับชั้นและในผู้จัด ถ้าติดทั้งคู่จะเหลือค่ายน้อยเกินจริง
-  const implied = useMemo(() => {
+  // คำเดียวให้ติดช่องเดียวเท่านั้น เพราะถ้าติดหลายช่องจะเป็นเงื่อนไข "และ" กัน
+  // เช่น "มหาวิทยาลัย" มีทั้งในระดับชั้นและผู้จัด ถ้าติดทั้งคู่จะเหลือค่ายน้อยเกินจริง
+  const implied = useMemo((): { key: ImpliedKey; value: string } | null => {
     const q = query.trim().toLowerCase();
-    const empty = {
-      topics: [] as string[],
-      types: [] as string[],
-      levels: [] as string[],
-      provinces: [] as string[],
-      prices: [] as string[],
-      formats: [] as string[],
-      organizers: [] as string[],
-      status: "all" as Status,
-    };
-    if (q.length < 2) return empty;
-
+    if (q.length < 2) return null;
     const hit = (label: string) => label.toLowerCase().includes(q);
 
-    const candidates = {
-      topics: topicGroups.flatMap((group) =>
-        group.options.filter((option) => hit(option.label)).map((option) => option.slug),
-      ),
-      types: types.filter(hit),
-      levels: levels.filter(hit),
-      provinces: provinces.filter(hit),
-      prices: prices.filter((item) => hit(item.label)).map((item) => item.id),
-      formats: formats.filter((item) => hit(item.label)).map((item) => item.id),
-      organizers: organizerKinds.filter((kind) => hit(kind.label)).map((kind) => kind.id),
-      status: ([
-        { id: "open" as Status, label: "เปิดรับสมัคร" },
-        { id: "closed" as Status, label: "ปิดรับแล้ว" },
-      ].find((item) => hit(item.label))?.id ?? "all") as Status,
-    };
+    // เรียงตามความสำคัญ: หมวดหมู่ → ผู้จัด → จังหวัด → รูปแบบกิจกรรม → ค่าใช้จ่าย → ระดับชั้น → สถานะ
+    const fieldHit = fields.find(hit);
+    if (fieldHit) return { key: "field", value: fieldHit };
 
-    // ลำดับความสำคัญเมื่อคำเดียวตรงหลายกลุ่ม: ผู้จัดมาก่อนระดับชั้น เป็นต้น
-    const priority = [
-      "topics",
-      "organizers",
-      "provinces",
-      "types",
-      "formats",
-      "prices",
-      "levels",
-      "status",
-    ] as const;
+    const organizerHit = organizerKinds.find((kind) => hit(kind.label));
+    if (organizerHit) return { key: "organizer", value: organizerHit.id };
 
-    const hasMatch = (key: (typeof priority)[number]) =>
-      key === "status" ? candidates.status !== "all" : candidates[key].length > 0;
+    const provinceHit = provinces.find(hit);
+    if (provinceHit) return { key: "province", value: provinceHit };
 
-    const winner = priority.find(hasMatch) ?? null;
-    if (!winner) return empty;
+    const typeHit = types.find(hit);
+    if (typeHit) return { key: "type", value: typeHit };
 
-    // เก็บไว้แค่กลุ่มที่ชนะ กลุ่มอื่นปล่อยว่าง
-    return {
-      ...empty,
-      topics: winner === "topics" ? candidates.topics : [],
-      organizers: winner === "organizers" ? candidates.organizers : [],
-      provinces: winner === "provinces" ? candidates.provinces : [],
-      types: winner === "types" ? candidates.types : [],
-      formats: winner === "formats" ? candidates.formats : [],
-      prices: winner === "prices" ? candidates.prices : [],
-      levels: winner === "levels" ? candidates.levels : [],
-      status: winner === "status" ? candidates.status : ("all" as Status),
-    };
-  }, [query, topicGroups, types, levels, provinces, prices, formats, organizerKinds]);
+    const priceHit = prices.find((item) => hit(item.label));
+    if (priceHit) return { key: "price", value: priceHit.id };
 
-  // ตัวกรองที่ใช้จริง = ที่กดเลือกไว้ + ที่เดาจากคำค้น
-  const effTopics = useMemo(
-    () => [...new Set([...topics, ...implied.topics])],
-    [topics, implied.topics],
-  );
-  const effTypes = useMemo(
-    () => [...new Set([...(type !== "ทั้งหมด" ? [type] : []), ...implied.types])],
-    [type, implied.types],
-  );
-  const effOrganizers = useMemo(
-    () => [...new Set([...(organizer !== "all" ? [organizer] : []), ...implied.organizers])],
-    [organizer, implied.organizers],
-  );
+    const levelHit = levels.find(hit);
+    if (levelHit) return { key: "level", value: levelHit };
+
+    if ("เปิดรับสมัคร".includes(q)) return { key: "status", value: "open" };
+    if ("ปิดรับแล้ว".includes(q)) return { key: "status", value: "closed" };
+    return null;
+  }, [query, fields, organizerKinds, provinces, types, prices, levels]);
+
+  // ค่าที่ใช้กรองจริง = ที่เลือกเองก่อน ถ้ายังไม่เลือกค่อยใช้ค่าที่เดาจากคำค้น
+  const effType = type !== "ทั้งหมด" ? type : implied?.key === "type" ? implied.value : "ทั้งหมด";
+  const effField =
+    field !== "ทั้งหมด" ? field : implied?.key === "field" ? implied.value : "ทั้งหมด";
+  const effProvince =
+    province !== "ทั้งหมด"
+      ? province
+      : implied?.key === "province"
+        ? implied.value
+        : "ทั้งหมด";
+  const effPrice = price !== "all" ? price : implied?.key === "price" ? implied.value : "all";
+  const effOrganizer =
+    organizer !== "all" ? organizer : implied?.key === "organizer" ? implied.value : "all";
   const effLevels = useMemo(
-    () => [...new Set([...selectedLevels, ...implied.levels])],
-    [selectedLevels, implied.levels],
+    () => (implied?.key === "level" ? [implied.value] : selectedLevels),
+    [implied, selectedLevels],
   );
-  const effProvinces = useMemo(
-    () => [...new Set([...selectedProvinces, ...implied.provinces])],
-    [selectedProvinces, implied.provinces],
-  );
-  const effPrices = useMemo(
-    () => [...new Set([...selectedPrices, ...implied.prices])],
-    [selectedPrices, implied.prices],
-  );
-  const effFormats = useMemo(
-    () => [...new Set([...selectedFormats, ...implied.formats])],
-    [selectedFormats, implied.formats],
-  );
-  const effStatus: Status = status !== "all" ? status : implied.status;
+  const effStatus: Status =
+    openOnly || (implied?.key === "status" && implied.value === "open")
+      ? "open"
+      : implied?.key === "status" && implied.value === "closed"
+        ? "closed"
+        : "all";
 
-  // คำค้นถูกใช้เป็นตัวกรองไปแล้วหรือยัง ถ้าใช่ก็ไม่ต้องค้นข้อความซ้ำ
-  // (ไม่งั้นพิมพ์ "มหาวิทยาลัย" แล้วค่ายที่ผู้จัดเขียนแค่ "คณะ... มหิดล" จะหายไป)
-  const impliedActive =
-    implied.topics.length +
-      implied.types.length +
-      implied.levels.length +
-      implied.provinces.length +
-      implied.prices.length +
-      implied.formats.length +
-      implied.organizers.length +
-      (implied.status !== "all" ? 1 : 0) >
-    0;
-
-  // ตัวเลือกที่ติดเพราะคำค้น (ไม่ได้กดเอง) ถ้าเอาออกให้ล้างคำค้นด้วย
-  function dropQueryIfImplied(label: string) {
-    const q = query.trim().toLowerCase();
-    if (q.length >= 2 && label.toLowerCase().includes(q)) setQuery("");
+  // เปลี่ยนช่องไหน ถ้าคำค้นเป็นคนทำให้ช่องนั้นติดอยู่ ก็ล้างคำค้นทิ้ง
+  // ไม่งั้นตัวกรองจะชนกัน แล้วผลลัพธ์แคบลงโดยที่ผู้ใช้ไม่ได้สั่ง
+  function clearQueryFor(dim: ImpliedKey) {
+    if (implied?.key === dim) setQuery("");
   }
 
-  function toggleFilter(
-    value: string,
-    explicit: string[],
-    setExplicit: (update: (prev: string[]) => string[]) => void,
-    effective: string[],
-    label: string,
-  ) {
-    if (!explicit.includes(value) && effective.includes(value)) {
-      dropQueryIfImplied(label);
+  function toggleExtra(value: string) {
+    setExtras((prev) => toggleValue(prev, value));
+  }
+
+  function toggleLevel(value: string) {
+    // ถ้าระดับนี้ติดมาจากคำค้น เอาคำค้นออกก่อน แล้วค่อยเลือกตามที่กด
+    if (implied?.key === "level") {
+      setQuery("");
+      setSelectedLevels(implied.value === value ? [] : [value]);
       return;
     }
-    setExplicit((prev) => toggleValue(prev, value));
+    setSelectedLevels((prev) => toggleValue(prev, value));
+  }
+
+  function clearFilters() {
+    setQuery("");
+    setType("ทั้งหมด");
+    setField("ทั้งหมด");
+    setProvince("ทั้งหมด");
+    setPrice("all");
+    setUniversity("all");
+    setOrganizer("all");
+    setSelectedLevels([]);
+    setExtras([]);
+    setOpenOnly(false);
+    setBookmarkedOnly(false);
   }
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return camps.filter((camp) => {
-      if (effTypes.length > 0 && !effTypes.includes(camp.type)) return false;
-      if (effTopics.length > 0) {
-        const slugs = camp.slugs ?? [];
-        if (!effTopics.some((slug) => slugs.includes(slug))) return false;
-      }
-      if (effOrganizers.length > 0 && !effOrganizers.includes(organizerKind(camp)))
+      if (effType !== "ทั้งหมด" && camp.type !== effType) return false;
+      if (effField !== "ทั้งหมด" && camp.field !== effField) return false;
+      if (effProvince !== "ทั้งหมด" && (camp.province ?? "") !== effProvince) return false;
+      if (effPrice !== "all" && !matchPrice(effPrice, camp.price)) return false;
+      if (university !== "all" && universityOf(camp) !== university) return false;
+      if (effOrganizer !== "all" && organizerKind(camp) !== effOrganizer) return false;
+      if (effLevels.length && !effLevels.some((level) => (camp.levels ?? []).includes(level)))
         return false;
-      if (
-        effLevels.length &&
-        !effLevels.some((level) => (camp.levels ?? []).includes(level))
-      )
-        return false;
-      if (effProvinces.length && !effProvinces.includes(camp.province ?? "")) return false;
-      if (effPrices.length && !effPrices.some((id) => matchPrice(id, camp.price))) return false;
-      if (effFormats.length && !effFormats.some((id) => matchFormat(id, camp))) return false;
+      if (extras.includes("online") && !camp.online) return false;
+      if (extras.includes("overnight") && !camp.overnight) return false;
+      if (extras.includes("certificate") && !camp.certificate) return false;
       if (effStatus !== "all") {
         const closed = isPast(camp.deadline, today);
         if (effStatus === "open" && closed) return false;
@@ -585,7 +531,7 @@ export default function CampExplorer({
       }
       if (bookmarkedOnly && !bookmarked.includes(camp.id)) return false;
       // ถ้าคำค้นกลายเป็นตัวกรองไปแล้ว ไม่ต้องเอาไปค้นข้อความซ้ำ
-      if (!q || impliedActive) return true;
+      if (!q || implied) return true;
       return [
         camp.title,
         camp.organizer,
@@ -604,15 +550,16 @@ export default function CampExplorer({
   }, [
     camps,
     query,
-    effTypes,
-    effTopics,
-    effOrganizers,
+    effType,
+    effField,
+    effProvince,
+    effPrice,
+    university,
+    effOrganizer,
     effLevels,
-    effProvinces,
-    effPrices,
-    effFormats,
+    extras,
     effStatus,
-    impliedActive,
+    implied,
     organizerKinds,
     bookmarkedOnly,
     bookmarked,
@@ -620,27 +567,109 @@ export default function CampExplorer({
   ]);
 
   const activeFilterCount =
-    effTopics.length +
+    (effType !== "ทั้งหมด" ? 1 : 0) +
+    (effField !== "ทั้งหมด" ? 1 : 0) +
+    (effProvince !== "ทั้งหมด" ? 1 : 0) +
+    (effPrice !== "all" ? 1 : 0) +
+    (university !== "all" ? 1 : 0) +
+    (effOrganizer !== "all" ? 1 : 0) +
     effLevels.length +
-    effProvinces.length +
-    effPrices.length +
-    effFormats.length +
+    extras.length +
     (effStatus !== "all" ? 1 : 0) +
-    (effTypes.length > 0 ? 1 : 0) +
-    (effOrganizers.length > 0 ? 1 : 0) +
     (bookmarkedOnly ? 1 : 0);
 
-  function clearFilters() {
-    setType("ทั้งหมด");
-    setTopics([]);
-    setOrganizer("all");
-    setSelectedLevels([]);
-    setSelectedProvinces([]);
-    setSelectedPrices([]);
-    setSelectedFormats([]);
-    setStatus("all");
-    setBookmarkedOnly(false);
-    setQuery("");
+  // ป้ายสรุปตัวกรองที่ติดอยู่ กด ✕ เพื่อเอาออกทีละอัน (เห็นได้แม้ย่อแผงลงแล้ว)
+  const activeChips: { key: string; label: string; clear: () => void }[] = [];
+  if (effField !== "ทั้งหมด") {
+    activeChips.push({
+      key: "field",
+      label: effField,
+      clear: () => {
+        clearQueryFor("field");
+        setField("ทั้งหมด");
+      },
+    });
+  }
+  if (effType !== "ทั้งหมด") {
+    activeChips.push({
+      key: "type",
+      label: effType,
+      clear: () => {
+        clearQueryFor("type");
+        setType("ทั้งหมด");
+      },
+    });
+  }
+  if (effOrganizer !== "all") {
+    const label = organizerKinds.find((kind) => kind.id === effOrganizer)?.label ?? effOrganizer;
+    activeChips.push({
+      key: "organizer",
+      label,
+      clear: () => {
+        clearQueryFor("organizer");
+        setOrganizer("all");
+      },
+    });
+  }
+  if (effProvince !== "ทั้งหมด") {
+    activeChips.push({
+      key: "province",
+      label: effProvince,
+      clear: () => {
+        clearQueryFor("province");
+        setProvince("ทั้งหมด");
+      },
+    });
+  }
+  if (effPrice !== "all") {
+    const label = prices.find((item) => item.id === effPrice)?.label ?? effPrice;
+    activeChips.push({
+      key: "price",
+      label,
+      clear: () => {
+        clearQueryFor("price");
+        setPrice("all");
+      },
+    });
+  }
+  if (university !== "all") {
+    activeChips.push({
+      key: "university",
+      label: universityLabels[university] ?? university,
+      clear: () => setUniversity("all"),
+    });
+  }
+  for (const level of effLevels) {
+    activeChips.push({
+      key: `level-${level}`,
+      label: level,
+      clear: () => toggleLevel(level),
+    });
+  }
+  for (const extra of extras) {
+    const label = extraOptions.find((item) => item.id === extra)?.label ?? extra;
+    activeChips.push({
+      key: `extra-${extra}`,
+      label,
+      clear: () => toggleExtra(extra),
+    });
+  }
+  if (effStatus !== "all") {
+    activeChips.push({
+      key: "status",
+      label: effStatus === "open" ? "เปิดรับสมัคร" : "ปิดรับแล้ว",
+      clear: () => {
+        clearQueryFor("status");
+        setOpenOnly(false);
+      },
+    });
+  }
+  if (bookmarkedOnly) {
+    activeChips.push({
+      key: "bookmarked",
+      label: "★ มาร์กไว้",
+      clear: () => setBookmarkedOnly(false),
+    });
   }
 
   const monthCamps = useMemo(() => {
@@ -696,9 +725,21 @@ export default function CampExplorer({
   return (
     <div>
       <section className="space-y-3">
-        {/* แถบตัวกรองแบบ CAMPHUB: ค้นหา + dropdown แยกตามกลุ่ม */}
-        <div className="flex flex-wrap items-stretch overflow-hidden rounded-xl border border-zinc-300 bg-white">
-          <label className="flex min-w-[180px] flex-1 items-center gap-2 px-3">
+        {/* แถบค้นหาแบบย่อ: ปกติเห็นแค่ช่องค้นหา กด "ค้นหาละเอียด" ค่อยกางแผงตัวกรองออกมา */}
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
+          <label className="flex flex-1 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-4">
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="size-5 shrink-0 text-zinc-400"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.5-3.5" />
+            </svg>
             <span className="sr-only">ค้นหาค่ายและกิจกรรม</span>
             <input
               value={query}
@@ -706,205 +747,300 @@ export default function CampExplorer({
               placeholder="ค้นหาค่ายและกิจกรรม"
               className="w-full bg-transparent py-3 text-base outline-none"
             />
-          </label>
-
-          {topicGroups.map((group) => {
-            const picked = group.options.find((option) => effTopics.includes(option.slug));
-            return (
-              <label
-                key={group.id}
-                className={`flex items-center border-l border-zinc-200 px-2 text-sm ${
-                  picked ? "font-medium text-emerald-700" : "text-zinc-700"
-                }`}
+            {query ? (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="ล้างคำค้น"
+                className="shrink-0 rounded-full px-1 text-zinc-400 hover:text-zinc-700"
               >
-                <select
-                  value={picked?.slug ?? ""}
-                  onChange={(event) => {
-                    const slug = event.target.value;
-                    // ถ้าค่าที่เลือกอยู่มาจากคำค้น เปลี่ยนตัวเลือกแล้วให้ล้างคำค้นด้วย
-                    // ไม่งั้นสองตัวกรองจะชนกัน (หรือเงื่อนไข)
-                    if (group.options.some((option) => implied.topics.includes(option.slug))) {
-                      setQuery("");
-                    }
-                    setTopics((prev) => {
-                      const others = prev.filter(
-                        (item) => !group.options.some((option) => option.slug === item),
-                      );
-                      return slug ? [...others, slug] : others;
-                    });
-                  }}
-                  className="bg-transparent py-3 pr-1 outline-none"
-                >
-                  <option value="">{group.label}</option>
-                  {group.options.map((option) => (
-                    <option key={option.slug} value={option.slug}>
-                      {option.label} ({option.count})
-                    </option>
-                  ))}
-                </select>
-              </label>
-            );
-          })}
-
-          <label
-            className={`flex items-center border-l border-zinc-200 px-2 text-sm ${
-              effTypes.length > 0 ? "font-medium text-emerald-700" : "text-zinc-700"
-            }`}
-          >
-            <select
-              value={effTypes[0] ?? ""}
-              onChange={(event) => {
-                const value = event.target.value;
-                if (implied.types.length > 0) setQuery("");
-                setType(value || "ทั้งหมด");
-              }}
-              className="bg-transparent py-3 pr-1 outline-none"
-            >
-              <option value="">รูปแบบค่าย</option>
-              {types.map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label
-            className={`flex items-center border-l border-zinc-200 px-2 text-sm ${
-              effOrganizers.length > 0 ? "font-medium text-emerald-700" : "text-zinc-700"
-            }`}
-          >
-            <select
-              value={effOrganizers[0] ?? ""}
-              onChange={(event) => {
-                const value = event.target.value;
-                if (implied.organizers.length > 0) setQuery("");
-                setOrganizer(value || "all");
-              }}
-              className="bg-transparent py-3 pr-1 outline-none"
-            >
-              <option value="">ผู้จัด</option>
-              {organizerKinds.map((kind) => (
-                <option key={kind.id} value={kind.id}>
-                  {kind.label} ({organizerCounts[kind.id] ?? 0})
-                </option>
-              ))}
-            </select>
+                ✕
+              </button>
+            ) : null}
           </label>
 
           <button
             type="button"
             onClick={() => setShowFilters((value) => !value)}
-            className="border-l border-zinc-200 px-4 py-3 text-sm font-medium text-zinc-700"
+            aria-expanded={showFilters}
+            className={`flex items-center justify-center gap-2 rounded-xl border px-5 py-3 text-sm font-medium transition-colors ${
+              showFilters || activeFilterCount > 0
+                ? "border-zinc-900 bg-zinc-900 text-white"
+                : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-500"
+            }`}
           >
-            ตัวกรอง{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="size-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
+              <path d="M4 6h16M7 12h10M10 18h4" />
+            </svg>
+            ค้นหาละเอียด
+            {activeFilterCount > 0 ? (
+              <span className="rounded-full bg-white/20 px-2 text-xs">{activeFilterCount}</span>
+            ) : null}
           </button>
         </div>
 
-        {/* ป้ายที่เลือกอยู่ (รวมที่มาจากคำค้น) กดกากบาทเพื่อเอาออกทีละอัน */}
-        {effTopics.length > 0 ? (
+        {/* ป้ายที่เลือกอยู่ (รวมที่มาจากคำค้น) กด ✕ เพื่อเอาออกทีละอัน เห็นได้แม้ย่อแผงแล้ว */}
+        {activeChips.length > 0 ? (
           <div className="flex flex-wrap gap-2">
-            {effTopics.map((slug) => (
+            {activeChips.map((chip) => (
               <button
-                key={slug}
+                key={chip.key}
                 type="button"
-                onClick={() => {
-                  const label = topicLabels[slug] ?? slug;
-                  if (!topics.includes(slug)) dropQueryIfImplied(label);
-                  else setTopics((prev) => prev.filter((item) => item !== slug));
-                }}
-                className="rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1 text-sm text-emerald-800"
+                onClick={chip.clear}
+                className="rounded-full border border-zinc-900 bg-zinc-900 px-3 py-1 text-sm text-white"
               >
-                {topicLabels[slug] ?? slug} ✕
+                {chip.label} ✕
               </button>
             ))}
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="rounded-full px-3 py-1 text-sm text-zinc-500 underline"
+            >
+              ล้างทั้งหมด
+            </button>
           </div>
         ) : null}
 
         {showFilters ? (
-          <div className="space-y-4 rounded-2xl border border-zinc-200 bg-white p-4">
-            <FilterGroup
-              title="ระดับชั้น"
-              options={levels}
-              selected={effLevels}
-              onToggle={(value) =>
-                toggleFilter(value, selectedLevels, setSelectedLevels, effLevels, value)
-              }
-            />
-            <FilterGroup
-              title="จังหวัด"
-              options={provinces}
-              selected={effProvinces}
-              onToggle={(value) =>
-                toggleFilter(value, selectedProvinces, setSelectedProvinces, effProvinces, value)
-              }
-            />
-            <FilterGroup
-              title="ค่าใช้จ่าย"
-              options={prices.map((item) => item.label)}
-              selected={effPrices.map(
-                (id) => prices.find((item) => item.id === id)?.label ?? id,
-              )}
-              onToggle={(label) => {
-                const found = prices.find((item) => item.label === label);
-                if (!found) return;
-                toggleFilter(found.id, selectedPrices, setSelectedPrices, effPrices, label);
-              }}
-            />
-            <FilterGroup
-              title="รูปแบบ"
-              options={formats.map((item) => item.label)}
-              selected={effFormats.map(
-                (id) => formats.find((item) => item.id === id)?.label ?? id,
-              )}
-              onToggle={(label) => {
-                const found = formats.find((item) => item.label === label);
-                if (!found) return;
-                toggleFilter(found.id, selectedFormats, setSelectedFormats, effFormats, label);
-              }}
-            />
-
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">
-                สถานะ
-              </p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                <Chip
-                  active={effStatus === "all"}
-                  onClick={() => {
-                    if (implied.status !== "all") dropQueryIfImplied(
-                      implied.status === "open" ? "เปิดรับสมัคร" : "ปิดรับแล้ว",
-                    );
-                    setStatus("all");
-                  }}
-                >
-                  ทั้งหมด
-                </Chip>
-                <Chip active={effStatus === "open"} onClick={() => setStatus("open")}>
-                  เปิดรับสมัคร
-                </Chip>
-                <Chip active={effStatus === "closed"} onClick={() => setStatus("closed")}>
-                  ปิดรับแล้ว
-                </Chip>
-              </div>
+          <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-[#f6f4ef]">
+            {/* แท็บเลือกชนิดกิจกรรม เหมือนหน้า search ของ CAMPHUB */}
+            <div className="flex items-end gap-2 px-4 pt-3">
+              {[
+                { id: "ทั้งหมด", label: "กิจกรรมทั่วไป" },
+                { id: "ประกวดแข่งขัน", label: "ประกวดแข่งขัน" },
+              ].map((tab) => {
+                const active =
+                  tab.id === "ประกวดแข่งขัน"
+                    ? effType === "ประกวดแข่งขัน"
+                    : effType !== "ประกวดแข่งขัน";
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => {
+                      clearQueryFor("type");
+                      setType(tab.id);
+                    }}
+                    aria-pressed={active}
+                    className={`rounded-t-xl px-4 py-2 text-sm font-semibold ${
+                      active
+                        ? "bg-zinc-900 text-white"
+                        : "bg-white/70 text-zinc-600 hover:bg-white"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-3">
-              <Chip
-                active={bookmarkedOnly}
-                onClick={() => setBookmarkedOnly((value) => !value)}
+            <div className="space-y-5 border-t border-zinc-200 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    className="size-4 text-zinc-500"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  >
+                    <path d="M4 6h16M7 12h10M10 18h4" />
+                  </svg>
+                  <p className="text-sm font-semibold text-zinc-800">ตัวกรอง</p>
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className={`rounded-full border px-3 py-1 text-xs ${
+                      activeFilterCount > 0
+                        ? "border-zinc-400 bg-white text-zinc-800"
+                        : "border-zinc-300 bg-white/60 text-zinc-500"
+                    }`}
+                  >
+                    ทั้งหมด
+                  </button>
+                </div>
+                <p className="text-xs text-zinc-500">เลือกได้หลายระดับชั้น · ช่องอื่นเลือกได้ทีละอย่าง</p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowFilters(false)}
+                className="w-full rounded-lg border border-zinc-800 bg-white px-3 py-2 text-sm font-medium text-zinc-800"
               >
-                ★ เฉพาะที่มาร์กไว้ ({bookmarked.length})
-              </Chip>
-              {activeFilterCount > 0 ? (
-                <button
-                  type="button"
-                  onClick={clearFilters}
-                  className="rounded-full px-3 py-1.5 text-sm text-zinc-500 underline"
+                ซ่อนตัวกรอง ⌃
+              </button>
+
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div>
+                  <p className="mb-1.5 text-xs font-medium text-zinc-500">รูปแบบกิจกรรม</p>
+                  <SelectFilter
+                    label="ทั้งหมด"
+                    value={effType === "ทั้งหมด" ? "" : effType}
+                    options={types.map((item) => ({ value: item, label: item }))}
+                    onChange={(value) => {
+                      clearQueryFor("type");
+                      setType(value || "ทั้งหมด");
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <p className="mb-1.5 text-xs font-medium text-zinc-500">หมวดหมู่/สาขา</p>
+                  <SelectFilter
+                    label="ทั้งหมด"
+                    value={effField === "ทั้งหมด" ? "" : effField}
+                    options={fields.map((item) => ({ value: item, label: item }))}
+                    onChange={(value) => {
+                      clearQueryFor("field");
+                      setField(value || "ทั้งหมด");
+                    }}
+                  />
+                </div>
+
+                <div className="lg:row-span-2">
+                  <p className="mb-1.5 text-xs font-medium text-zinc-500">ระดับชั้นที่รับ</p>
+                  <div className="grid gap-1.5 rounded-lg border border-zinc-300 bg-white p-3">
+                    {levels.map((level) => (
+                      <label
+                        key={level}
+                        className="flex cursor-pointer items-center gap-2 text-sm text-zinc-700"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={effLevels.includes(level)}
+                          onChange={() => toggleLevel(level)}
+                          className="size-4 accent-zinc-900"
+                        />
+                        <span>{level}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="mb-1.5 text-xs font-medium text-zinc-500">จังหวัด/พื้นที่</p>
+                  <SelectFilter
+                    label="ทั้งหมด"
+                    value={effProvince === "ทั้งหมด" ? "" : effProvince}
+                    options={provinces.map((item) => ({ value: item, label: item }))}
+                    onChange={(value) => {
+                      clearQueryFor("province");
+                      setProvince(value || "ทั้งหมด");
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <p className="mb-1.5 text-xs font-medium text-zinc-500">ช่วงค่าใช้จ่าย</p>
+                  <SelectFilter
+                    label="ทั้งหมด"
+                    value={effPrice === "all" ? "" : effPrice}
+                    options={prices.map((item) => ({ value: item.id, label: item.label }))}
+                    onChange={(value) => {
+                      clearQueryFor("price");
+                      setPrice(value || "all");
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <p className="mb-1.5 text-xs font-medium text-zinc-500">มหาวิทยาลัย</p>
+                  <SelectFilter
+                    label="ทั้งหมด"
+                    value={university === "all" ? "" : university}
+                    options={universities.map((item) => ({
+                      value: item.id,
+                      label: `${item.label} (${item.count})`,
+                    }))}
+                    onChange={(value) => setUniversity(value || "all")}
+                  />
+                </div>
+
+                <div>
+                  <p className="mb-1.5 text-xs font-medium text-zinc-500">ผู้จัด</p>
+                  <SelectFilter
+                    label="ทั้งหมด"
+                    value={effOrganizer === "all" ? "" : effOrganizer}
+                    options={organizerKinds.map((kind) => ({
+                      value: kind.id,
+                      label: `${kind.label} (${organizerCounts[kind.id] ?? 0})`,
+                    }))}
+                    onChange={(value) => {
+                      clearQueryFor("organizer");
+                      setOrganizer(value || "all");
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-xs font-medium text-zinc-500">คุณสมบัติเพิ่มเติม:</p>
+                {extraOptions.map((option) => (
+                  <Chip
+                    key={option.id}
+                    active={extras.includes(option.id)}
+                    onClick={() => toggleExtra(option.id)}
+                  >
+                    {option.label}
+                  </Chip>
+                ))}
+                <Chip active={openOnly} onClick={() => setOpenOnly((value) => !value)}>
+                  เปิดรับสมัครเท่านั้น
+                </Chip>
+                <Chip
+                  active={bookmarkedOnly}
+                  onClick={() => setBookmarkedOnly((value) => !value)}
                 >
-                  ล้างตัวกรอง
-                </button>
-              ) : null}
+                  ★ มาร์กไว้ ({bookmarked.length})
+                </Chip>
+              </div>
+
+              <label className="flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3">
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  className="size-4 shrink-0 text-zinc-400"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="m20 20-3.5-3.5" />
+                </svg>
+                <span className="sr-only">ค้นหาคำเพิ่มเติมในแผงตัวกรอง</span>
+                <input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="ค้นหาคำเพิ่มเติม เช่น ชื่อค่าย"
+                  className="w-full bg-transparent py-2.5 text-sm outline-none"
+                />
+              </label>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 px-4 py-3">
+              <p className="text-sm text-zinc-600">
+                พบ <span className="font-semibold text-orange-600">{filtered.length}</span>{" "}
+                กิจกรรม ที่ตรงเงื่อนไข
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowFilters(false)}
+                className="rounded-full bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-orange-700"
+              >
+                ดูผลลัพธ์ทั้งหมด
+              </button>
             </div>
           </div>
         ) : null}

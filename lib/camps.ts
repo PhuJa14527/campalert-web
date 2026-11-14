@@ -141,92 +141,7 @@ export const priceRanges = [
 
 export type PriceRangeId = (typeof priceRanges)[number]["id"];
 
-export const campFormats = [
-  { id: "onsite", label: "ออนไซต์", test: (camp: Camp) => !camp.online },
-  { id: "online", label: "ออนไลน์", test: (camp: Camp) => Boolean(camp.online) },
-  { id: "overnight", label: "ค้างคืน", test: (camp: Camp) => Boolean(camp.overnight) },
-] as const;
-
-export type FormatId = (typeof campFormats)[number]["id"];
-
-/**
- * หมวดแบบ CAMPHUB: สายสุขภาพ / สายวิทย์ / สายศิลป์ / ประกวดแข่งขัน
- * รายชื่อย่อยคัดมาจากเมนูหลักบนเว็บ CAMPHUB (slug ตรงกับที่เก็บใน camps.json)
- */
-const CAMPHUB_TOPIC_GROUPS = [
-  {
-    id: "health",
-    label: "สายสุขภาพ",
-    items: [
-      { slug: "doctor", label: "แพทย์" },
-      { slug: "dentist", label: "ทันตแพทย์" },
-      { slug: "nurse", label: "พยาบาล" },
-      { slug: "pharma", label: "เภสัช" },
-      { slug: "psychology", label: "จิตแพทย์/จิตวิทยา" },
-      { slug: "vet", label: "สัตวแพทย์" },
-      { slug: "allied-health-sciences", label: "เทคนิคการแพทย์/สหเวช" },
-      { slug: "health-other", label: "สายสุขภาพอื่นๆ" },
-    ],
-  },
-  {
-    id: "science",
-    label: "สายวิทย์",
-    items: [
-      { slug: "engineer", label: "วิศวกรรม" },
-      { slug: "science", label: "วิทยาศาสตร์" },
-      { slug: "computer", label: "คอม/ไอที" },
-      { slug: "aviation", label: "การบิน" },
-      { slug: "architect-design", label: "สถาปัตย์/ออกแบบ" },
-      { slug: "agri-fishery", label: "เกษตร/ประมง" },
-    ],
-  },
-  {
-    id: "arts",
-    label: "สายศิลป์",
-    items: [
-      { slug: "law", label: "นิติศาสตร์" },
-      { slug: "political", label: "รัฐศาสตร์" },
-      { slug: "account-commerce", label: "บัญชี/บริหารธุรกิจ" },
-      { slug: "commarts", label: "นิเทศ/สื่อสารมวลชน" },
-      { slug: "teacher", label: "ครู" },
-      { slug: "lang-human", label: "อักษร/มนุษย์/ศิลปศาสตร์" },
-      { slug: "social", label: "สังคมศาสตร์" },
-      { slug: "economic", label: "เศรษฐศาสตร์" },
-      { slug: "logistics", label: "โลจิสติกส์" },
-      { slug: "hospitality", label: "การโรงแรม/ท่องเที่ยว" },
-      { slug: "music", label: "ดนตรี" },
-    ],
-  },
-  {
-    id: "contest",
-    label: "ประกวดแข่งขัน",
-    items: [{ slug: "contest", label: "ประกวดแข่งขัน" }],
-  },
-] as const;
-
-export type TopicOption = { slug: string; label: string; count: number };
-export type TopicGroup = { id: string; label: string; options: TopicOption[] };
-
-/** นับจำนวนค่ายของแต่ละตัวเลือก และซ่อนตัวเลือกที่ยังไม่มีค่ายเลย */
-export const topicGroups: TopicGroup[] = CAMPHUB_TOPIC_GROUPS.map((group) => ({
-  id: group.id,
-  label: group.label,
-  options: group.items
-    .map((item) => ({
-      slug: item.slug,
-      label: item.label,
-      count: camps.filter((camp) => camp.slugs?.includes(item.slug)).length,
-    }))
-    .filter((item) => item.count > 0),
-})).filter((group) => group.options.length > 0);
-
-/** ใช้แปลง slug ที่เลือกอยู่เป็นชื่อไทยสำหรับแสดงเป็นป้าย */
-export const topicLabels: Record<string, string> = Object.fromEntries(
-  CAMPHUB_TOPIC_GROUPS.flatMap((group) => group.items.map((item) => [item.slug, item.label])),
-);
-
 export type OrganizerKind = "university" | "foundation" | "other";
-
 /**
  * เดาชนิดผู้จัดจากชื่อ (CAMPHUB ไม่มีช่องนี้ ต้องอนุมานจากชื่อที่แสดง)
  * เช็กมูลนิธิก่อน เพราะบางชื่อมีทั้งคำว่ามูลนิธิและสถาบัน
@@ -250,4 +165,121 @@ export const organizerCounts: Record<string, number> = Object.fromEntries(
     camps.filter((camp) => organizerKind(camp) === kind.id).length,
   ]),
 );
+
+/**
+ * รายชื่อมหาวิทยาลัยสำหรับตัวกรอง (slug เดียวกับหน้า search ของ CAMPHUB)
+ * CAMPHUB ไม่ได้เก็บช่อง "มหาวิทยาลัย" เป็นข้อมูลแยกบนหน้าค่าย เราจึงอ่านจากชื่อผู้จัด
+ * ด้วยคำสำคัญ เช่น "คณะวิศวกรรมศาสตร์ มหาวิทยาลัยเกษตรศาสตร์" → มหาวิทยาลัยเกษตรศาสตร์
+ */
+const UNIVERSITY_RULES: { id: string; label: string; pattern: RegExp }[] = [
+  // เรียงจากชื่อเฉพาะไปชื่อกว้าง เพราะใช้ตัวแรกที่ตรง (เช่น ราชมงคลพระนคร ก่อน ราชมงคล)
+  { id: "chulalongkorn-university", label: "จุฬาลงกรณ์มหาวิทยาลัย", pattern: /จุฬาลงกรณ์|chulalongkorn/i },
+  { id: "kasetsart-university", label: "มหาวิทยาลัยเกษตรศาสตร์", pattern: /เกษตรศาสตร์|kasetsart/i },
+  { id: "thammasat-university", label: "มหาวิทยาลัยธรรมศาสตร์", pattern: /ธรรมศาสตร์|thammasat/i },
+  { id: "mahidol-university", label: "มหาวิทยาลัยมหิดล", pattern: /มหิดล|ศิริราช|รามาธิบดี|mahidol/i },
+  {
+    id: "kmitl-king-mongkuts-institute-of-technology-ladkrabang",
+    label: "สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง",
+    pattern: /ลาดกระบัง|สจล|kmitl/i,
+  },
+  {
+    id: "kmutt-king-mongkuts-university-of-technology-thonburi",
+    label: "มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี",
+    pattern: /ธนบุรี|มจธ|kmutt/i,
+  },
+  {
+    id: "kmutnb-king-mongkuts-university-of-technology-north-bangkok",
+    label: "มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ",
+    pattern: /พระนครเหนือ|มจพ|kmutnb/i,
+  },
+  { id: "thai-nichi-institute-of-technology", label: "สถาบันเทคโนโลยีไทย-ญี่ปุ่น", pattern: /ไทย-?ญี่ปุ่น|thai-?nichi/i },
+  { id: "silpakorn-university", label: "มหาวิทยาลัยศิลปากร", pattern: /ศิลปากร|silpakorn/i },
+  { id: "chiang-mai-university", label: "มหาวิทยาลัยเชียงใหม่", pattern: /เชียงใหม่|chiangmai|chiang mai/i },
+  { id: "prince-of-songkla-university", label: "มหาวิทยาลัยสงขลานครินทร์", pattern: /สงขลานครินทร์|songkhla|songkla/i },
+  { id: "khon-kaen-university", label: "มหาวิทยาลัยขอนแก่น", pattern: /ขอนแก่น|khonkaen|khon kaen/i },
+  { id: "srinakharinwirot-university", label: "มหาวิทยาลัยศรีนครินทรวิโรฒ", pattern: /ศรีนครินทรวิโรฒ|srinakharinwirot/i },
+  {
+    id: "university-of-the-thai-chamber-of-commerce",
+    label: "มหาวิทยาลัยหอการค้าไทย",
+    pattern: /หอการค้าไทย|chamber of commerce/i,
+  },
+  { id: "assumption-university", label: "มหาวิทยาลัยอัสสัมชัญ", pattern: /อัสสัมชัญ|assumption/i },
+  { id: "naresuan-university", label: "มหาวิทยาลัยนเรศวร", pattern: /นเรศวร|naresuan/i },
+  { id: "dhurakij-pundit-university", label: "มหาวิทยาลัยธุรกิจบัณฑิตย์", pattern: /ธุรกิจบัณฑิตย์|dhurakij/i },
+  { id: "burapha-university", label: "มหาวิทยาลัยบูรพา", pattern: /บูรพา|burapha/i },
+  { id: "suranaree-university-of-technology", label: "มหาวิทยาลัยเทคโนโลยีสุรนารี", pattern: /สุรนารี|suranaree/i },
+  { id: "walailak-university", label: "มหาวิทยาลัยวลัยลักษณ์", pattern: /วลัยลักษณ์|walailak/i },
+  {
+    id: "rajamangala-university-of-technology-phra-nakhon",
+    label: "มหาวิทยาลัยเทคโนโลยีราชมงคลพระนคร",
+    pattern: /ราชมงคลพระนคร/i,
+  },
+  { id: "rajamangala-university-of-technology", label: "มหาวิทยาลัยเทคโนโลยีราชมงคล", pattern: /ราชมงคล/i },
+  { id: "mahasarakham-university", label: "มหาวิทยาลัยมหาสารคาม", pattern: /มหาสารคาม|mahasarakham/i },
+  {
+    id: "suan-sunandha-rajabhat-university",
+    label: "มหาวิทยาลัยราชภัฏสวนสุนันทา",
+    pattern: /สวนสุนันทา/i,
+  },
+  { id: "rajabhat-university", label: "มหาวิทยาลัยราชภัฏ", pattern: /ราชภัฏ/i },
+  { id: "raffles-international-college", label: "วิทยาลัยนานาชาติราฟเฟิลส์", pattern: /ราฟเฟิลส์|raffles/i },
+  { id: "maejo-university", label: "มหาวิทยาลัยแม่โจ้", pattern: /แม่โจ้|maejo/i },
+  { id: "ubon-ratchathani-university", label: "มหาวิทยาลัยอุบลราชธานี", pattern: /อุบลราชธานี/i },
+  { id: "rpc-technological-college", label: "วิทยาลัยเทคโนโลยีโอลิมปิก", pattern: /โอลิมปิก/i },
+  { id: "ramkhamhaeng-university", label: "มหาวิทยาลัยรามคำแหง", pattern: /รามคำแหง|ramkhamhaeng/i },
+  { id: "university-of-phayao", label: "มหาวิทยาลัยพะเยา", pattern: /พะเยา|phayao/i },
+  {
+    id: "srisavarindhira-thai-red-cross-institute-of-nursing",
+    label: "สถาบันการพยาบาลศรีสวรินทิรา สภากาชาดไทย",
+    pattern: /ศรีสวรินทิรา|สภากาชาดไทย/i,
+  },
+  { id: "stamford-international-university", label: "มหาวิทยาลัยนานาชาติแสตมฟอร์ด", pattern: /แสตมฟอร์ด|stamford/i },
+  {
+    id: "phramongkutklao-college-of-medicine",
+    label: "วิทยาลัยแพทยศาสตร์พระมงกุฎเกล้า",
+    pattern: /พระมงกุฎเกล้า|phramongkutklao/i,
+  },
+  { id: "pccms", label: "ราชวิทยาลัยจุฬาภรณ์", pattern: /จุฬาภรณ์/i },
+  { id: "suan-dusit-university", label: "มหาวิทยาลัยสวนดุสิต", pattern: /สวนดุสิต/i },
+  { id: "civil-aviation-training-center", label: "สถาบันการบินพลเรือน", pattern: /การบินพลเรือน/i },
+  { id: "thaksin-university", label: "มหาวิทยาลัยทักษิณ", pattern: /ทักษิณ|thaksin/i },
+  { id: "navamindradhiraj-university", label: "มหาวิทยาลัยนวมินทราธิราช", pattern: /นวมินทราธิราช/i },
+  { id: "chitralada-technology-institute", label: "สถาบันเทคโนโลยีจิตรลดา", pattern: /จิตรลดา/i },
+  { id: "สถาบันเทคโนโลยีปทุมวัน", label: "สถาบันเทคโนโลยีปทุมวัน", pattern: /ปทุมวัน/i },
+  {
+    id: "panyapiwat-institute-of-management",
+    label: "สถาบันการจัดการปัญญาภิวัฒน์",
+    pattern: /ปัญญาภิวัฒน์|panyapiwat/i,
+  },
+  { id: "rangsit-university", label: "มหาวิทยาลัยรังสิต", pattern: /รังสิต|rangsit/i },
+  { id: "sripatum-university", label: "มหาวิทยาลัยศรีปทุม", pattern: /ศรีปทุม|sripatum|\bspu\b/i },
+  { id: "christian-university-of-thailand", label: "มหาวิทยาลัยคริสเตียน", pattern: /คริสเตียน|christian university/i },
+  { id: "kasem-bundit-university", label: "มหาวิทยาลัยเกษมบัณฑิต", pattern: /เกษมบัณฑิต|kasem/i },
+  { id: "bangkok-university", label: "มหาวิทยาลัยกรุงเทพ", pattern: /มหาวิทยาลัยกรุงเทพ|bangkok university/i },
+  { id: "huachiew-chalermprakiet-university", label: "มหาวิทยาลัยหัวเฉียวเฉลิมพระเกียรติ", pattern: /หัวเฉียว|huachiew/i },
+  { id: "western-university", label: "มหาวิทยาลัยเวสเทิร์น", pattern: /เวสเทิร์น|western university/i },
+  // มีอยู่ในข้อมูลของเรา แต่ไม่มีในลิสต์หน้า search ของ CAMPHUB
+  { id: "wongchawalitkul-university", label: "มหาวิทยาลัยวงษ์ชวลิตกุล", pattern: /วงษ์ชวลิตกุล/i },
+];
+
+/** ชื่อมหาวิทยาลัยของผู้จัดค่าย (null = ไม่ใช่ค่ายของมหาวิทยาลัย หรืออ่านไม่ได้) */
+export function universityOf(camp: Camp): string | null {
+  const name = camp.organizer ?? "";
+  const found = UNIVERSITY_RULES.find((rule) => rule.pattern.test(name));
+  return found ? found.id : null;
+}
+
+export const universityLabels: Record<string, string> = Object.fromEntries(
+  UNIVERSITY_RULES.map((rule) => [rule.id, rule.label]),
+);
+
+/** เฉพาะมหาวิทยาลัยที่มีค่ายในรอบนี้ เรียงจากที่มีค่ายมากไปน้อย */
+export const campUniversities = UNIVERSITY_RULES.map((rule) => ({
+  id: rule.id,
+  label: rule.label,
+  count: camps.filter((camp) => universityOf(camp) === rule.id).length,
+}))
+  .filter((item) => item.count > 0)
+  .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "th"));
+
 
