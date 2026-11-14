@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
 import type { Camp } from "@/lib/camps";
 import { organizerKind, universityLabels, universityOf } from "@/lib/camps";
@@ -198,7 +198,32 @@ function useBookmarks() {
     });
   }
 
-  return { ids, toggleBookmark };
+  // ใช้ตอนทัวร์เก็บค่ายตัวอย่างคืนให้ผู้ใช้ (ลบทีละหลายค่ายพร้อมกัน)
+  function removeBookmarks(targetIds: string[]) {
+    if (targetIds.length === 0) return;
+    const next = ids.filter((id) => !targetIds.includes(id));
+
+    if (remoteIds) setRemoteIds(next);
+    writeLocalBookmarks(next);
+
+    const supabase = getSupabase();
+    if (!supabase) return;
+
+    void supabase.auth.getSession().then(async ({ data }) => {
+      const userId = data.session?.user.id;
+      if (!userId) return;
+
+      const { error } = await supabase
+        .from("bookmarks")
+        .delete()
+        .eq("user_id", userId)
+        .in("camp_id", targetIds);
+
+      if (error) console.error("ล้างค่ายตัวอย่างไม่สำเร็จ:", error.message);
+    });
+  }
+
+  return { ids, toggleBookmark, removeBookmarks };
 }
 
 function readLocalIds(): string[] {
@@ -272,10 +297,12 @@ function BookmarkButton({
   saved,
   onClick,
   title,
+  campId,
 }: {
   saved: boolean;
   onClick: () => void;
   title: string;
+  campId: string;
 }) {
   return (
     <button
@@ -284,6 +311,7 @@ function BookmarkButton({
       aria-pressed={saved}
       aria-label={saved ? `เลิกมาร์ก ${title}` : `มาร์ก ${title}`}
       title={saved ? "เลิกมาร์ก" : "มาร์กค่ายนี้"}
+      data-tour-bookmark={campId}
       className={`rounded-full border px-2.5 py-1 text-sm leading-none ${
         saved
           ? "border-amber-300 bg-amber-50 text-amber-600"
@@ -329,7 +357,12 @@ function CampCard({
           >
             {closed ? "ปิดรับแล้ว" : "เปิดรับสมัคร"}
           </span>
-          <BookmarkButton saved={saved} onClick={onBookmark} title={camp.title} />
+          <BookmarkButton
+            saved={saved}
+            onClick={onBookmark}
+            title={camp.title}
+            campId={camp.id}
+          />
         </div>
       </div>
 
@@ -421,7 +454,7 @@ export default function CampExplorer({
   const [view, setView] = useState<View>("list");
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
-  const { ids: bookmarked, toggleBookmark } = useBookmarks();
+  const { ids: bookmarked, toggleBookmark, removeBookmarks } = useBookmarks();
 
   // อ่านเวลาปัจจุบันฝั่งเบราว์เซอร์เท่านั้น เพื่อให้หน้าเว็บยัง prerender ได้
   const today = useSyncExternalStore<string | null>(
@@ -598,6 +631,20 @@ export default function CampExplorer({
     (effStatus !== "all" ? 1 : 0) +
     (bookmarkedOnly ? 1 : 0);
 
+  // นับเฉพาะตัวกรองที่ผู้ใช้เลือกเอง (ไม่นับที่เดาจากคำค้น)
+  // ใช้ให้ทัวร์รู้ว่าผู้ใช้ได้ลองกดตัวกรองจริง ๆ แล้วหรือยัง
+  const explicitFilterCount =
+    (type !== "ทั้งหมด" ? 1 : 0) +
+    (field !== "ทั้งหมด" ? 1 : 0) +
+    (province !== "ทั้งหมด" ? 1 : 0) +
+    (price !== "all" ? 1 : 0) +
+    (university !== "all" ? 1 : 0) +
+    (organizer !== "all" ? 1 : 0) +
+    selectedLevels.length +
+    extras.length +
+    (openOnly ? 1 : 0) +
+    (bookmarkedOnly ? 1 : 0);
+
   // ป้ายสรุปตัวกรองที่ติดอยู่ กด ✕ เพื่อเอาออกทีละอัน (เห็นได้แม้ย่อแผงลงแล้ว)
   const activeChips: { key: string; label: string; clear: () => void }[] = [];
   if (effField !== "ทั้งหมด") {
@@ -730,6 +777,13 @@ export default function CampExplorer({
     setSelectedDay(null);
   }
 
+  // ให้ทัวร์พาปฏิทินไปที่เดือนของค่ายตัวอย่าง
+  const focusMonthOf = useCallback((iso: string) => {
+    const [year, month] = iso.split("-").map(Number);
+    setMonth({ year, month: month - 1 });
+    setSelectedDay(null);
+  }, []);
+
   function dayCampsOn(iso: string) {
     return filtered.filter(
       (camp) =>
@@ -786,7 +840,7 @@ export default function CampExplorer({
       <section className="space-y-3">
         {/* แถบค้นหาแบบย่อ: ปกติเห็นแค่ช่องค้นหา กด "ค้นหาละเอียด" ค่อยกางแผงตัวกรองออกมา */}
         <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
-          <label className="flex flex-1 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-4">
+          <label className="flex flex-1 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-4" data-tour="search">
             <svg
               viewBox="0 0 24 24"
               aria-hidden="true"
@@ -822,6 +876,7 @@ export default function CampExplorer({
             type="button"
             onClick={() => setShowFilters((value) => !value)}
             aria-expanded={showFilters}
+            data-tour="advanced"
             className={`flex items-center justify-center gap-2 rounded-xl border px-5 py-3 text-sm font-medium transition-colors ${
               showFilters || activeFilterCount > 0
                 ? "border-zinc-900 bg-zinc-900 text-white"
@@ -870,7 +925,7 @@ export default function CampExplorer({
         ) : null}
 
         {showFilters ? (
-          <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-[#f6f4ef]">
+          <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-[#f6f4ef]" data-tour="filters">
             {/* แท็บเลือกชนิดกิจกรรม เหมือนหน้า search ของ CAMPHUB */}
             <div className="flex items-end gap-2 px-4 pt-3">
               {[
@@ -920,6 +975,7 @@ export default function CampExplorer({
                   <button
                     type="button"
                     onClick={clearFilters}
+                    data-tour="reset"
                     className={`rounded-full border px-3 py-1 text-xs ${
                       activeFilterCount > 0
                         ? "border-zinc-400 bg-white text-zinc-800"
@@ -1018,7 +1074,7 @@ export default function CampExplorer({
                   />
                 </div>
 
-                <div>
+                <div data-tour="organizer">
                   <p className="mb-1.5 text-xs font-medium text-zinc-500">ผู้จัด</p>
                   <SelectFilter
                     label="ทั้งหมด"
@@ -1096,6 +1152,7 @@ export default function CampExplorer({
                 <button
                   type="button"
                   onClick={() => setShowFilters(false)}
+                  data-tour="apply"
                   className="rounded-full bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-orange-700"
                 >
                   ดูผลลัพธ์ทั้งหมด
@@ -1122,6 +1179,7 @@ export default function CampExplorer({
               type="button"
               onClick={() => setView("calendar")}
               aria-pressed={view === "calendar"}
+              data-tour="calendar"
               className={`rounded-full px-3 py-1 ${view === "calendar" ? "bg-zinc-900 text-white" : "text-zinc-600"}`}
             >
               ปฏิทิน
@@ -1213,6 +1271,7 @@ export default function CampExplorer({
                   type="button"
                   onClick={() => setSelectedDay(selected ? null : iso)}
                   title={hasConflict ? "มีค่ายที่มาร์กไว้และวันจัดชนกัน" : undefined}
+                  data-tour-day={iso}
                   className={`relative flex h-14 flex-col items-center justify-center rounded-lg border text-sm ${
                     selected
                       ? "border-zinc-900 bg-zinc-900 text-white"
@@ -1312,6 +1371,7 @@ export default function CampExplorer({
                             saved={bookmarked.includes(camp.id)}
                             onClick={() => toggleBookmark(camp.id)}
                             title={camp.title}
+                            campId={camp.id}
                           />
                           <a
                             href={camp.sourceUrl}
@@ -1338,12 +1398,19 @@ export default function CampExplorer({
       </p>
 
       <Tutorial
+        camps={camps}
         query={query}
         showFilters={showFilters}
-        activeFilterCount={activeFilterCount}
+        explicitFilterCount={explicitFilterCount}
+        organizer={organizer}
+        bookmarkedIds={bookmarked}
         view={view}
         selectedDay={selectedDay}
-        bookmarkedCount={bookmarked.length}
+        onRemoveBookmarks={removeBookmarks}
+        onResetFilters={clearFilters}
+        onSetView={setView}
+        onSetShowFilters={setShowFilters}
+        onFocusMonth={focusMonthOf}
       />
     </div>
   );
