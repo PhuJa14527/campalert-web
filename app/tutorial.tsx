@@ -25,50 +25,50 @@ type Step = {
 const STEPS: Step[] = [
   {
     id: "search",
-    title: "ลองค้นหาค่าย",
-    body: "พิมพ์คำที่สนใจในช่องค้นหาด้านบน เช่น แพทย์ หรือ กรุงเทพ แล้วดูรายการด้านล่างเปลี่ยนตาม",
+    title: "ค้นหาค่าย",
+    body: "ช่องค้นหาด้านบนใช้หาชื่อค่าย สายการเรียน หรือจังหวัด เช่น พิมพ์ แพทย์ หรือ กรุงเทพ แล้วรายการด้านล่างจะกรองให้ทันที ลองพิมพ์อะไรก็ได้ครับ",
     done: (state) => state.query.trim().length > 0,
   },
   {
     id: "open-filters",
-    title: "เปิดตัวกรองละเอียด",
-    body: "กดปุ่ม ค้นหาละเอียด เพื่อกางแผงตัวกรองแบบเดียวกับหน้า search ของ CAMPHUB ออกมา",
+    title: "ตัวกรองละเอียด",
+    body: "ปุ่ม ค้นหาละเอียด เปิดแผงตัวกรองแบบเดียวกับหน้า search ของ CAMPHUB ข้างในมีรูปแบบกิจกรรม หมวดหมู่/สาขา ระดับชั้น จังหวัด ช่วงค่าใช้จ่าย มหาวิทยาลัย ผู้จัด และคุณสมบัติเพิ่มเติม ลองกดเปิดดูได้",
     done: (state) => state.showFilters,
   },
   {
     id: "pick-filter",
-    title: "เลือกตัวกรองอย่างน้อย 1 อย่าง",
-    body: "ลองเลือกจังหวัด ระดับชั้น หรือมหาวิทยาลัย ตัวกรองที่ติดอยู่จะขึ้นเป็นป้ายดำเหนือรายการ",
+    title: "ตัวกรองที่เลือกอยู่",
+    body: "พอเลือกตัวกรอง จะมีป้ายดำขึ้นเหนือรายการ บอกว่าตอนนี้กรองอะไรอยู่ กด ✕ ที่ป้ายเพื่อเอาออกทีละอัน หรือกด ทั้งหมด เพื่อเริ่มใหม่ ลองเลือกสักอย่างดู",
     done: (state) => state.activeFilterCount > 0,
   },
   {
     id: "close-filters",
     title: "กลับไปดูผลลัพธ์",
-    body: "กด ซ่อนตัวกรอง หรือ ดูผลลัพธ์ทั้งหมด เพื่อย่อแผงลง เหลือแค่ช่องค้นหากับรายการค่ายที่กรองแล้ว",
+    body: "ในแผงตัวกรองมีปุ่ม ซ่อนตัวกรอง กับ ดูผลลัพธ์ทั้งหมด ใช้ย่อแผงกลับเหลือแค่ช่องค้นหา รายการค่ายที่กรองแล้วจะอยู่ด้านล่าง ลองกดปิดดู",
     done: (state) => !state.showFilters,
   },
   {
     id: "bookmark",
     title: "มาร์กค่ายที่สนใจ",
-    body: "กดดาว ☆ ที่การ์ดค่ายเพื่อเก็บไว้ ค่ายที่มาร์กจะขึ้นในปฏิทิน และใช้เป็นฐานส่งแจ้งเตือนใน Discord",
+    body: "การ์ดค่ายทุกใบมีดาว ☆ ไว้เก็บค่ายที่สนใจ ค่ายที่มาร์กจะขึ้นในปฏิทินและถูกใช้ส่งแจ้งเตือนใน Discord ถ้าล็อกอินไว้ รายการมาร์กจะตามไปทุกเครื่อง ลองกดดาวดู",
     done: (state) => state.bookmarkedCount > 0,
   },
   {
     id: "calendar",
-    title: "เปิดมุมมองปฏิทิน",
-    body: "สลับปุ่มเป็น ปฏิทิน ด้านขวาของจำนวนค่าย ปฏิทินจะโชว์วันจัดจริงของค่าย ไม่ใช่วันปิดรับสมัคร",
+    title: "ปฏิทินวันจัดค่าย",
+    body: "สลับมุมมองเป็น ปฏิทิน เพื่อดูค่ายเรียงตามวันจัดจริง ไม่ใช่วันปิดรับสมัคร วันที่มีค่ายจะเป็นสีเขียว ค่ายที่มาร์กไว้จะเป็นสีเหลือง ลองสลับไปดู",
     done: (state) => state.view === "calendar",
   },
   {
     id: "calendar-day",
-    title: "กดดูค่ายในแต่ละวัน",
-    body: "กดช่องวันในปฏิทินเพื่อดูว่าวันนั้นมีค่ายอะไร ถ้าค่ายที่มาร์กไว้จัดทับกัน วันที่ชนจะขึ้นสีแดง",
+    title: "ค่ายที่วันจัดชนกัน",
+    body: "ถ้าค่ายที่มาร์กไว้ตั้งแต่ 2 ค่ายจัดทับกัน วันนั้นจะขึ้นสีแดง และในรายการจะมีป้ายบอกช่วงที่ชน เช่น ชน 21 - 23 พ.ย. ลองกดช่องวันในปฏิทินดู",
     done: (state) => state.selectedDay !== null,
   },
   {
     id: "discord",
-    title: "เปิดแจ้งเตือน Discord",
-    body: "กด เข้าสู่ระบบ Discord ที่มุมขวาบน ไปที่หน้าตั้งค่า แล้วเลือกสายที่สนใจกับจำนวนวันแจ้งล่วงหน้า บอทจะส่ง DM ให้เมื่อมีค่ายใหม่หรือใกล้วันจัด",
+    title: "แจ้งเตือนทาง Discord",
+    body: "เว็บมีระบบแจ้งเตือนผ่าน Discord: กด เข้าสู่ระบบ Discord มุมขวาบน ไปที่หน้าตั้งค่าเพื่อเลือกสายที่สนใจและจำนวนวันแจ้งล่วงหน้า บอทจะทักไปเมื่อมีค่ายใหม่ตรงสาย หรือใกล้วันจัดค่ายที่มาร์กไว้ ลองกดล็อกอินดู",
     done: (state) => state.loggedIn,
   },
 ];
@@ -217,10 +217,10 @@ export default function Tutorial({
       >
         🎓{" "}
         {finished
-          ? "ดูวิธีใช้เว็บอีกครั้ง"
+          ? "ดูแนะนำเว็บอีกครั้ง"
           : step > 0
-            ? `ทำทัวร์ต่อ ขั้น ${step + 1}/${STEPS.length}`
-            : "สอนวิธีใช้เว็บ"}
+            ? `ทำต่อ ขั้น ${step + 1}/${STEPS.length}`
+            : "รู้จักเว็บนี้"}
       </button>
     );
   }
@@ -231,7 +231,7 @@ export default function Tutorial({
     <aside className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-sm overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl">
       <div className="flex items-center justify-between gap-2 border-b border-zinc-100 px-4 py-3">
         <div>
-          <p className="text-sm font-semibold text-zinc-900">🎓 วิธีใช้ค่ายไหนดี</p>
+          <p className="text-sm font-semibold text-zinc-900">🎓 มีอะไรในค่ายไหนดี</p>
           <p className="text-xs text-zinc-500">
             {finished ? "ครบทุกขั้นแล้ว" : `ขั้น ${step + 1} จาก ${STEPS.length}`}
           </p>
@@ -257,7 +257,7 @@ export default function Tutorial({
         {finished ? (
           <div className="space-y-3">
             <p className="text-sm text-zinc-700">
-              🎉 เยี่ยมเลย คุณลองครบทุกอย่างแล้ว ตอนนี้เว็บพร้อมใช้จริง:
+              🎉 ลองครบทุกอย่างแล้ว ตอนนี้เว็บพร้อมใช้จริง:
             </p>
             <ul className="space-y-1.5 text-sm text-zinc-600">
               <li>· ค่ายที่มาร์กไว้จะขึ้นในปฏิทินและใช้ส่งแจ้งเตือน</li>
@@ -269,7 +269,7 @@ export default function Tutorial({
               onClick={restart}
               className="w-full rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
             >
-              เริ่มสอนใหม่
+              เริ่มแนะนำใหม่
             </button>
           </div>
         ) : currentDone ? (
@@ -277,7 +277,7 @@ export default function Tutorial({
             <span className="flex size-12 items-center justify-center rounded-full bg-emerald-600 text-2xl text-white">
               ✓
             </span>
-            <p className="text-sm font-medium text-emerald-700">ทำได้แล้ว</p>
+            <p className="text-sm font-medium text-emerald-700">ลองแล้ว ✓</p>
           </div>
         ) : current ? (
           <div className="space-y-3">
@@ -296,7 +296,7 @@ export default function Tutorial({
           >
             ข้ามขั้นนี้
           </button>
-          <p className="text-xs text-zinc-400">ทำตามที่บอก แล้วติ๊กถูกจะขึ้นเอง</p>
+          <p className="text-xs text-zinc-400">ลองกดเล่นได้เลย ติ๊กถูกจะขึ้นเอง</p>
         </div>
       ) : null}
     </aside>
