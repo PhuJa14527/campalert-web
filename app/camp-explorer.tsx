@@ -58,6 +58,25 @@ function matchPrice(id: string, price?: number | null) {
   return false;
 }
 
+function addDay(iso: string) {
+  const [year, month, day] = iso.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day + 1)).toISOString().slice(0, 10);
+}
+
+/** ข้อความบอกช่วงวันที่ชน เช่น "ชน 21 - 23 พ.ย." */
+function clashLabel(days: string[]) {
+  if (days.length === 0) return "";
+  let contiguous = true;
+  for (let index = 1; index < days.length; index += 1) {
+    if (days[index] !== addDay(days[index - 1])) {
+      contiguous = false;
+      break;
+    }
+  }
+  if (!contiguous) return `ชน ${days.length} วัน`;
+  return `ชน ${formatRange(days[0], days[days.length - 1])}`;
+}
+
 const BOOKMARK_EVENT = "campalert:bookmarks-changed";
 const EMPTY_IDS: string[] = [];
 
@@ -722,28 +741,44 @@ export default function CampExplorer({
 
   const bookmarkedCamps = camps.filter((camp) => bookmarked.includes(camp.id));
 
-  // หาค่ายที่มาร์กไว้แล้ว "วันจัดชนกัน" คือช่วงวันจัดทับซ้อนกันอย่างน้อย 1 วัน
-  // (ค่ายที่ยังไม่ระบุวันจัดเทียบไม่ได้ เลยไม่นับ)
-  const conflictCampIds = useMemo(() => {
+  // หา "วันที่ชนกัน" แบบรายวัน: วันไหนมีค่ายที่มาร์กไว้ตั้งแต่ 2 ค่ายจัดอยู่ = วันนั้นชน
+  // ทำแบบรายวันเพื่อให้แดงเฉพาะจุดที่ทับกันจริง ไม่ลามไปทั้งช่วงของค่าย
+  const { conflictDays, clashByCamp } = useMemo(() => {
     const saved = camps.filter(
       (camp) => bookmarked.includes(camp.id) && camp.startDate && camp.endDate,
     );
-    const ids = new Set<string>();
-    for (let i = 0; i < saved.length; i += 1) {
-      for (let j = i + 1; j < saved.length; j += 1) {
-        const a = saved[i];
-        const b = saved[j];
-        if (!a.startDate || !a.endDate || !b.startDate || !b.endDate) continue;
-        if (a.startDate <= b.endDate && b.startDate <= a.endDate) {
-          ids.add(a.id);
-          ids.add(b.id);
-        }
+
+    const dayCount = new Map<string, number>();
+    for (const camp of saved) {
+      if (!camp.startDate || !camp.endDate) continue;
+      let cursor = camp.startDate;
+      while (cursor <= camp.endDate) {
+        dayCount.set(cursor, (dayCount.get(cursor) ?? 0) + 1);
+        cursor = addDay(cursor);
       }
     }
-    return ids;
+
+    const conflict = new Set<string>();
+    for (const [iso, count] of dayCount) {
+      if (count >= 2) conflict.add(iso);
+    }
+
+    const byCamp = new Map<string, string[]>();
+    for (const camp of saved) {
+      if (!camp.startDate || !camp.endDate) continue;
+      const days: string[] = [];
+      let cursor = camp.startDate;
+      while (cursor <= camp.endDate) {
+        if (conflict.has(cursor)) days.push(cursor);
+        cursor = addDay(cursor);
+      }
+      if (days.length > 0) byCamp.set(camp.id, days);
+    }
+
+    return { conflictDays: conflict, clashByCamp: byCamp };
   }, [camps, bookmarked]);
 
-  const conflictCount = bookmarkedCamps.filter((camp) => conflictCampIds.has(camp.id)).length;
+  const conflictCount = clashByCamp.size;
 
   return (
     <div>
@@ -1102,7 +1137,7 @@ export default function CampExplorer({
           >
             ★ มาร์กไว้ {bookmarkedCamps.length} ค่าย
             {conflictCount > 0
-              ? ` · ${conflictCount} ค่ายวันจัดชนกัน ดูสีแดงในปฏิทิน`
+              ? ` · ${conflictCount} ค่ายมีวันจัดชนกัน ดูสีแดงในปฏิทิน`
               : " · จะขึ้นในปฏิทิน และใช้ส่งแจ้งเตือนใน Discord"}
           </p>
         ) : null}
@@ -1167,7 +1202,7 @@ export default function CampExplorer({
               const savedCount = dayList.filter((camp) =>
                 bookmarked.includes(camp.id),
               ).length;
-              const hasConflict = dayList.some((camp) => conflictCampIds.has(camp.id));
+              const hasConflict = savedCount > 0 && conflictDays.has(iso);
               const selected = selectedDay === iso;
               const isToday = today === iso;
               return (
@@ -1246,22 +1281,20 @@ export default function CampExplorer({
             ) : (
               <ul className="mt-3 space-y-2">
                 {(selectedDay ? dayCamps : monthCamps).map((camp) => {
-                  const clash = conflictCampIds.has(camp.id);
+                  const clashDays = clashByCamp.get(camp.id);
                   return (
                     <li
                       key={camp.id}
-                      className={`rounded-xl border p-3 text-sm ${
-                        clash ? "border-red-300 bg-red-50" : "border-zinc-200 bg-white"
-                      }`}
+                      className="rounded-xl border border-zinc-200 bg-white p-3 text-sm"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <p className="font-medium">
                             {bookmarked.includes(camp.id) ? "★ " : ""}
                             {camp.title}
-                            {clash ? (
+                            {clashDays ? (
                               <span className="ml-2 rounded-full bg-red-600 px-2 py-0.5 align-middle text-[10px] font-medium text-white">
-                                วันจัดชนกัน
+                                {clashLabel(clashDays)}
                               </span>
                             ) : null}
                           </p>
