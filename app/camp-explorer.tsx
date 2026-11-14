@@ -931,14 +931,6 @@ export default function CampExplorer({
                 <p className="text-xs text-zinc-500">เลือกได้หลายระดับชั้น · ช่องอื่นเลือกได้ทีละอย่าง</p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setShowFilters(false)}
-                className="w-full rounded-lg border border-zinc-800 bg-white px-3 py-2 text-sm font-medium text-zinc-800"
-              >
-                ซ่อนตัวกรอง ⌃
-              </button>
-
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <p className="mb-1.5 text-xs font-medium text-zinc-500">รูปแบบกิจกรรม</p>
@@ -1092,13 +1084,22 @@ export default function CampExplorer({
                 พบ <span className="font-semibold text-orange-600">{filtered.length}</span>{" "}
                 กิจกรรม ที่ตรงเงื่อนไข
               </p>
-              <button
-                type="button"
-                onClick={() => setShowFilters(false)}
-                className="rounded-full bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-orange-700"
-              >
-                ดูผลลัพธ์ทั้งหมด
-              </button>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => setShowFilters(false)}
+                  className="text-sm text-zinc-500 underline-offset-2 hover:text-zinc-800 hover:underline"
+                >
+                  ซ่อนตัวกรอง ⌃
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowFilters(false)}
+                  className="rounded-full bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-orange-700"
+                >
+                  ดูผลลัพธ์ทั้งหมด
+                </button>
+              </div>
             </div>
           </div>
         ) : null}
