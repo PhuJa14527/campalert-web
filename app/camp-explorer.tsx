@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import type { Camp } from "@/lib/camps";
 import { organizerKind, universityLabels, universityOf } from "@/lib/camps";
 import { getSupabase } from "@/lib/supabase";
+import Tutorial from "@/app/tutorial";
 import {
   formatDayFull,
   formatMonthLabel,
@@ -1335,6 +1336,15 @@ export default function CampExplorer({
         รอบนี้ดึงจาก {stats.sourcePages} หน้า CAMPHUB พบลิงก์ {stats.foundLinks} รายการ
         และเก็บเฉพาะที่ยังเปิดรับสมัคร {stats.keptCamps} ค่าย · รีเฟรชวันละครั้ง
       </p>
+
+      <Tutorial
+        query={query}
+        showFilters={showFilters}
+        activeFilterCount={activeFilterCount}
+        view={view}
+        selectedDay={selectedDay}
+        bookmarkedCount={bookmarked.length}
+      />
     </div>
   );
 }
