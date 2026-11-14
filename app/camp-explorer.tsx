@@ -722,6 +722,29 @@ export default function CampExplorer({
 
   const bookmarkedCamps = camps.filter((camp) => bookmarked.includes(camp.id));
 
+  // หาค่ายที่มาร์กไว้แล้ว "วันจัดชนกัน" คือช่วงวันจัดทับซ้อนกันอย่างน้อย 1 วัน
+  // (ค่ายที่ยังไม่ระบุวันจัดเทียบไม่ได้ เลยไม่นับ)
+  const conflictCampIds = useMemo(() => {
+    const saved = camps.filter(
+      (camp) => bookmarked.includes(camp.id) && camp.startDate && camp.endDate,
+    );
+    const ids = new Set<string>();
+    for (let i = 0; i < saved.length; i += 1) {
+      for (let j = i + 1; j < saved.length; j += 1) {
+        const a = saved[i];
+        const b = saved[j];
+        if (!a.startDate || !a.endDate || !b.startDate || !b.endDate) continue;
+        if (a.startDate <= b.endDate && b.startDate <= a.endDate) {
+          ids.add(a.id);
+          ids.add(b.id);
+        }
+      }
+    }
+    return ids;
+  }, [camps, bookmarked]);
+
+  const conflictCount = bookmarkedCamps.filter((camp) => conflictCampIds.has(camp.id)).length;
+
   return (
     <div>
       <section className="space-y-3">
@@ -1070,9 +1093,17 @@ export default function CampExplorer({
         </div>
 
         {bookmarkedCamps.length > 0 ? (
-          <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-            ★ มาร์กไว้ {bookmarkedCamps.length} ค่าย · จะขึ้นในปฏิทิน และใช้ส่งแจ้งเตือนใน Discord
-            (กำลังทำขั้นถัดไป)
+          <p
+            className={`rounded-xl border px-3 py-2 text-xs ${
+              conflictCount > 0
+                ? "border-red-200 bg-red-50 text-red-700"
+                : "border-amber-200 bg-amber-50 text-amber-800"
+            }`}
+          >
+            ★ มาร์กไว้ {bookmarkedCamps.length} ค่าย
+            {conflictCount > 0
+              ? ` · ${conflictCount} ค่ายวันจัดชนกัน ดูสีแดงในปฏิทิน`
+              : " · จะขึ้นในปฏิทิน และใช้ส่งแจ้งเตือนใน Discord"}
           </p>
         ) : null}
       </section>
@@ -1136,6 +1167,7 @@ export default function CampExplorer({
               const savedCount = dayList.filter((camp) =>
                 bookmarked.includes(camp.id),
               ).length;
+              const hasConflict = dayList.some((camp) => conflictCampIds.has(camp.id));
               const selected = selectedDay === iso;
               const isToday = today === iso;
               return (
@@ -1143,14 +1175,17 @@ export default function CampExplorer({
                   key={iso}
                   type="button"
                   onClick={() => setSelectedDay(selected ? null : iso)}
+                  title={hasConflict ? "มีค่ายที่มาร์กไว้และวันจัดชนกัน" : undefined}
                   className={`relative flex h-14 flex-col items-center justify-center rounded-lg border text-sm ${
                     selected
                       ? "border-zinc-900 bg-zinc-900 text-white"
-                      : savedCount > 0
-                        ? "border-amber-300 bg-amber-50 text-amber-900"
-                        : count > 0
-                          ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-                          : "border-zinc-200 bg-white text-zinc-700"
+                      : hasConflict
+                        ? "border-red-300 bg-red-50 text-red-900"
+                        : savedCount > 0
+                          ? "border-amber-300 bg-amber-50 text-amber-900"
+                          : count > 0
+                            ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                            : "border-zinc-200 bg-white text-zinc-700"
                   }`}
                 >
                   <span className={isToday ? "font-bold" : ""}>
@@ -1158,17 +1193,44 @@ export default function CampExplorer({
                   </span>
                   {count > 0 ? (
                     <span
-                      className={`text-[10px] ${selected ? "text-white/80" : "text-emerald-700"}`}
+                      className={`text-[10px] ${
+                        selected
+                          ? "text-white/80"
+                          : hasConflict
+                            ? "text-red-600"
+                            : "text-emerald-700"
+                      }`}
                     >
                       {count} ค่าย
                     </span>
                   ) : null}
                   {savedCount > 0 ? (
-                    <span className="absolute right-1 top-1 text-[10px] text-amber-500">★</span>
+                    <span
+                      className={`absolute right-1 top-1 text-[10px] ${
+                        hasConflict ? "text-red-500" : "text-amber-500"
+                      }`}
+                    >
+                      ★
+                    </span>
                   ) : null}
                 </button>
               );
             })}
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-zinc-500">
+            <span className="flex items-center gap-1.5">
+              <span className="size-2.5 rounded-full border border-amber-300 bg-amber-50" />
+              มาร์กไว้
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="size-2.5 rounded-full border border-red-300 bg-red-50" />
+              วันจัดชนกัน
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="size-2.5 rounded-full border border-emerald-200 bg-emerald-50" />
+              มีค่าย
+            </span>
           </div>
 
           <div className="mt-6">
@@ -1183,42 +1245,52 @@ export default function CampExplorer({
               </p>
             ) : (
               <ul className="mt-3 space-y-2">
-                {(selectedDay ? dayCamps : monthCamps).map((camp) => (
-                  <li
-                    key={camp.id}
-                    className="rounded-xl border border-zinc-200 bg-white p-3 text-sm"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="font-medium">
-                          {bookmarked.includes(camp.id) ? "★ " : ""}
-                          {camp.title}
-                        </p>
-                        <p className="mt-0.5 text-xs text-zinc-500">
-                          {camp.startDate && camp.endDate
-                            ? formatRange(camp.startDate, camp.endDate)
-                            : "ยังไม่ระบุวันจัด"}{" "}
-                          · {camp.location || "ไม่ระบุสถานที่"}
-                        </p>
+                {(selectedDay ? dayCamps : monthCamps).map((camp) => {
+                  const clash = conflictCampIds.has(camp.id);
+                  return (
+                    <li
+                      key={camp.id}
+                      className={`rounded-xl border p-3 text-sm ${
+                        clash ? "border-red-300 bg-red-50" : "border-zinc-200 bg-white"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-medium">
+                            {bookmarked.includes(camp.id) ? "★ " : ""}
+                            {camp.title}
+                            {clash ? (
+                              <span className="ml-2 rounded-full bg-red-600 px-2 py-0.5 align-middle text-[10px] font-medium text-white">
+                                วันจัดชนกัน
+                              </span>
+                            ) : null}
+                          </p>
+                          <p className="mt-0.5 text-xs text-zinc-500">
+                            {camp.startDate && camp.endDate
+                              ? formatRange(camp.startDate, camp.endDate)
+                              : "ยังไม่ระบุวันจัด"}{" "}
+                            · {camp.location || "ไม่ระบุสถานที่"}
+                          </p>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-2">
+                          <BookmarkButton
+                            saved={bookmarked.includes(camp.id)}
+                            onClick={() => toggleBookmark(camp.id)}
+                            title={camp.title}
+                          />
+                          <a
+                            href={camp.sourceUrl}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            className="text-xs font-medium text-emerald-700 underline"
+                          >
+                            ต้นฉบับ
+                          </a>
+                        </div>
                       </div>
-                      <div className="flex shrink-0 items-center gap-2">
-                        <BookmarkButton
-                          saved={bookmarked.includes(camp.id)}
-                          onClick={() => toggleBookmark(camp.id)}
-                          title={camp.title}
-                        />
-                        <a
-                          href={camp.sourceUrl}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                          className="text-xs font-medium text-emerald-700 underline"
-                        >
-                          ต้นฉบับ
-                        </a>
-                      </div>
-                    </div>
-                  </li>
-                ))}
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
