@@ -40,6 +40,11 @@ jobs:
       - name: Install
         run: npm ci
 
+      # Next.js สร้าง type ของ layout/page (เช่น LayoutProps) ตอน build หรือ dev
+      # บน CI ที่ยังไม่เคย build ต้องสั่ง typegen ก่อน ไม่งั้น tsc จะหา type ไม่เจอ
+      - name: Generate Next.js types
+        run: npx next typegen
+
       - name: Type check
         run: npx tsc --noEmit
 
