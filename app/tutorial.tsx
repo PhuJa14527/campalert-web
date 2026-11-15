@@ -255,6 +255,13 @@ export default function Tutorial({
   const [clickedStep, setClickedStep] = useState<string | null>(null);
   const [rect, setRect] = useState<Rect | null>(null);
 
+  // ครั้งแรกที่เข้าหน้า การแนะนำเป็นเรื่องสมัครใจ: ถามก่อนว่าจะให้พาไหม
+  // ยังไม่เคยเลือกอะไรเลย (readSaved() เป็น null) จึงค่อยถาม
+  const [ask, setAsk] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return readSaved() === null;
+  });
+
   const cardRef = useRef<HTMLElement | null>(null);
   // ค่ายที่ผู้ใช้เพิ่งมาร์กช่วงทัวร์ เก็บไว้ล้างคืนตอนไปขั้นถัดไป
   const demoIdsRef = useRef<Set<string>>(new Set());
@@ -325,6 +332,23 @@ export default function Tutorial({
     setOpen(true);
     save(0, false, false);
   }, [save, onRemoveBookmarks]);
+
+  // เริ่มดูคำแนะนำ (ทั้งจากปุ่มถามครั้งแรกและปุ่มมุมขวาล่าง)
+  const startTutorial = useCallback(() => {
+    preparedRef.current = null;
+    setClickedStep(null);
+    setAsk(false);
+    setOpen(true);
+    // บอกป๊อปอัปอื่นว่าตอบคำถามแล้ว (จอมือถือใช้เลื่อนป๊อปอัปบอทขึ้นมา)
+    window.dispatchEvent(new Event("campalert:tutorial-answered"));
+  }, []);
+
+  // เลือกข้าม: จำไว้ไม่ถามซ้ำ แต่ยังเปิดดูเองได้ตลอดจากปุ่มมุมขวาล่าง
+  const skipTutorial = useCallback(() => {
+    setAsk(false);
+    save(step, finished, true);
+    window.dispatchEvent(new Event("campalert:tutorial-answered"));
+  }, [save, step, finished]);
 
   // เตรียมหน้าจอให้ตรงกับขั้น เช่น ล้างตัวกรองก่อนให้มาร์กค่ายตัวอย่าง
   useEffect(() => {
@@ -473,14 +497,58 @@ export default function Tutorial({
   if (!mounted) return null;
 
   if (!open) {
+    if (ask) {
+      return (
+        <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-sm animate-rise rounded-2xl border border-emerald-200 bg-white p-4 shadow-[0_24px_70px_-20px_rgba(0,0,0,0.35)]">
+          <div className="flex items-start justify-between gap-3">
+            <span className="flex items-center gap-2.5">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-base shadow-sm shadow-emerald-600/25">
+                🎓
+              </span>
+              <span className="text-sm font-semibold text-zinc-900">
+                อยากให้พาแนะนำเว็บไหม?
+              </span>
+            </span>
+            <button
+              type="button"
+              onClick={skipTutorial}
+              aria-label="ข้ามคำแนะนำ"
+              className="rounded-full p-1 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-700"
+            >
+              ✕
+            </button>
+          </div>
+
+          <p className="mt-2.5 text-xs leading-5 text-zinc-600">
+            10 ขั้นสั้น ๆ พาไล่ดูตัวกรอง ปฏิทิน และการแจ้งเตือน Discord
+            ระหว่างแนะนำจะกดได้เฉพาะปุ่มที่ชี้ไว้ ใช้เวลาไม่ถึงสองนาที
+            หรือจะลองกดใช้เองก่อนแล้วค่อยกลับมาดูทีหลังก็ได้
+          </p>
+
+          <div className="mt-3 flex gap-2">
+            <button
+              type="button"
+              onClick={startTutorial}
+              className="flex-1 rounded-full bg-gradient-to-r from-emerald-600 to-teal-500 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-emerald-600/25 transition hover:brightness-105 active:scale-[0.98]"
+            >
+              พาแนะนำหน่อย
+            </button>
+            <button
+              type="button"
+              onClick={skipTutorial}
+              className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-600 transition hover:border-zinc-400 hover:text-zinc-900 active:scale-[0.98]"
+            >
+              ข้ามไปก่อน
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <button
         type="button"
-        onClick={() => {
-          preparedRef.current = null;
-          setClickedStep(null);
-          setOpen(true);
-        }}
+        onClick={startTutorial}
         className="fixed bottom-4 right-4 z-50 flex items-center gap-2.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 transition hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0"
       >
         <span className="flex size-6 items-center justify-center rounded-full bg-white/20 text-xs">
@@ -531,13 +599,14 @@ export default function Tutorial({
         )
       ) : null}
 
+      {/* สูงคงที่ทุกขั้น ข้อความยาวสั้นต่างกันแค่เลื่อนในกรอบ การ์ดจึงไม่ขยับ */}
       <aside
         key={finished ? "done" : `step-${step}`}
         ref={cardRef}
         style={cardStyle}
-        className="animate-tour-in fixed z-[70] max-h-[64vh] w-[calc(100vw-2rem)] max-w-sm overflow-y-auto rounded-2xl border border-white/70 bg-white/95 shadow-[0_24px_70px_-20px_rgba(0,0,0,0.5)] backdrop-blur-md"
+        className="animate-tour-in fixed z-[70] flex h-[28rem] max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-sm flex-col overflow-hidden rounded-2xl border border-white/70 bg-white/95 shadow-[0_24px_70px_-20px_rgba(0,0,0,0.5)] backdrop-blur-md"
       >
-        <div className="relative overflow-hidden border-b border-zinc-100 bg-gradient-to-br from-emerald-50 via-white to-white px-4 pb-3 pt-3.5">
+        <div className="relative shrink-0 overflow-hidden border-b border-zinc-100 bg-gradient-to-br from-emerald-50 via-white to-white px-4 pb-3 pt-3.5">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-2.5">
               <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-lg shadow-sm shadow-emerald-600/25">
@@ -578,7 +647,7 @@ export default function Tutorial({
           </div>
         </div>
 
-        <div className="px-4 py-4">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
           {finished ? (
             <div className="space-y-3">
               <p className="text-sm text-zinc-700">
@@ -614,29 +683,29 @@ export default function Tutorial({
               <p className="whitespace-pre-line text-sm leading-6 text-zinc-600">
                 {current.body}
               </p>
-              {current.manualLabel ? (
-                <button
-                  type="button"
-                  onClick={advance}
-                  className="mt-1 w-full rounded-full bg-gradient-to-r from-emerald-600 to-teal-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/25 transition hover:brightness-105 active:scale-[0.98]"
-                >
-                  {current.manualLabel}
-                </button>
-              ) : null}
             </div>
           ) : null}
         </div>
 
         {!finished && !currentDone ? (
-          <div className="flex items-center gap-2 border-t border-zinc-100 bg-zinc-50/70 px-4 py-2.5">
-            {current?.manualLabel ? null : (
-              <span className="size-1.5 shrink-0 animate-hint rounded-full bg-emerald-500" />
+          <div className="shrink-0 border-t border-zinc-100 bg-zinc-50/70 px-4 py-2.5">
+            {current?.manualLabel ? (
+              // ปุ่มเล่าเรื่องอยู่ช่องล่างที่ติดกับกรอบ ไม่ต้องเลื่อนหาภายในการ์ด
+              <button
+                type="button"
+                onClick={advance}
+                className="w-full rounded-full bg-gradient-to-r from-emerald-600 to-teal-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/25 transition hover:brightness-105 active:scale-[0.98]"
+              >
+                {current.manualLabel}
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="size-1.5 shrink-0 animate-hint rounded-full bg-emerald-500" />
+                <p className="text-xs text-zinc-500">
+                  กดปุ่มที่วงเขียวไว้ แล้วติ๊กถูกจะขึ้นเอง
+                </p>
+              </div>
             )}
-            <p className="text-xs text-zinc-500">
-              {current?.manualLabel
-                ? "กดปุ่มด้านบนเพื่อไปต่อ"
-                : "กดปุ่มที่วงเขียวไว้ แล้วติ๊กถูกจะขึ้นเอง"}
-            </p>
           </div>
         ) : null}
       </aside>

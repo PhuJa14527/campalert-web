@@ -1,5 +1,6 @@
 import CampExplorer from "@/app/camp-explorer";
 import SiteHeader from "@/app/site-header";
+import { BotInvitePopup } from "@/app/settings/bot-invite";
 import {
   campFields,
   campLevels,
@@ -96,6 +97,8 @@ export default function Home() {
           <span>มีค่ายที่ยังไม่เปิดรับใน CAMPHUB จะขึ้นเองในรอบถัดไป</span>
         </div>
       </footer>
+
+      <BotInvitePopup />
     </div>
   );
 }

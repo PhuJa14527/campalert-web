@@ -1,6 +1,7 @@
 "use client";
 
-import { useSyncExternalStore, useState } from "react";
+import Link from "next/link";
+import { useEffect, useSyncExternalStore, useState } from "react";
 
 /** ลิงก์เชิญบอท CampAlert เข้า Discord */
 const BOT_INVITE_URL =
@@ -14,81 +15,63 @@ const COMMANDS = [
   { command: "/stop", detail: "ปิดการแจ้งเตือนของบัญชีนี้" },
 ];
 
-/** การ์ดอธิบายวิธีใช้บอท อยู่ในหน้าตั้งค่าการแจ้งเตือน */
+/** วิธีใช้บอท ท้ายหน้าตั้งค่าการแจ้งเตือน (เนื้อหาล้วน ไม่ใส่การ์ดหรือไอคอน) */
 export function BotInviteSection() {
   return (
-    <section className="animate-rise mt-6 overflow-hidden rounded-2xl border border-emerald-200 bg-white">
-      <div className="border-b border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-white px-5 py-4">
-        <div className="flex items-start gap-3">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-lg text-white shadow-sm shadow-emerald-600/25">
-            🤖
-          </span>
-          <div>
-            <h2 className="text-base font-semibold text-zinc-900">
-              เพิ่มบอทเข้า Discord
-            </h2>
-            <p className="mt-1 text-sm leading-6 text-zinc-600">
-              บอท CampAlert เป็นตัวส่งข้อความส่วนตัว (DM) หาคุณ
-              เว็บอย่างเดียวส่งหาไม่ได้ ต้องเพิ่มบอทเข้าไปในบัญชี Discord ก่อนสักครั้ง
-            </p>
-          </div>
-        </div>
+    <section id="bot" className="mt-8 scroll-mt-6 border-t border-zinc-200 pt-6">
+      <h2 className="text-base font-semibold text-zinc-900">เพิ่มบอทเข้า Discord</h2>
+      <p className="mt-1 text-sm leading-6 text-zinc-600">
+        บอท CampAlert เป็นตัวส่งข้อความส่วนตัว (DM) หาคุณ เว็บอย่างเดียวส่งหาไม่ได้
+        ต้องเพิ่มบอทเข้าไปในบัญชี Discord ก่อนสักครั้ง
+      </p>
 
-        <a
-          href={BOT_INVITE_URL}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-teal-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/25 transition hover:brightness-105 active:scale-[0.98]"
-        >
-          เพิ่มบอทเข้า Discord
-          <span aria-hidden="true">↗</span>
-        </a>
-        <p className="mt-2 text-xs text-zinc-500">
-          เปิดลิงก์แล้วเลือกเซิร์ฟเวอร์หรือบัญชีของคุณ กดอนุญาตให้บอทส่งข้อความได้
-        </p>
-      </div>
+      <a
+        href={BOT_INVITE_URL}
+        target="_blank"
+        rel="noreferrer noopener"
+        className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-emerald-700 underline underline-offset-2 transition hover:text-emerald-800"
+      >
+        เพิ่มบอทเข้า Discord
+        <span aria-hidden="true">↗</span>
+      </a>
+      <p className="mt-1 text-xs leading-5 text-zinc-500">
+        เปิดลิงก์แล้วเลือกเซิร์ฟเวอร์หรือบัญชีของคุณ กดอนุญาตให้บอทส่งข้อความได้
+      </p>
 
-      <div className="px-5 py-4">
-        <p className="text-sm font-medium text-zinc-900">ใช้ยังไงหลังเพิ่มบอทแล้ว</p>
-        <ol className="mt-2 space-y-2 text-sm leading-6 text-zinc-600">
-          <li>
-            <span className="font-medium text-zinc-800">1.</span> ตั้งค่าด้านบนของหน้านี้
-            เลือกโหมด สายที่สนใจ และจำนวนวันแจ้งล่วงหน้า แล้วกดบันทึก
+      <p className="mt-4 text-sm font-medium text-zinc-900">ใช้ยังไงหลังเพิ่มบอทแล้ว</p>
+      <ol className="mt-2 space-y-2 text-sm leading-6 text-zinc-600">
+        <li>
+          <span className="font-medium text-zinc-800">1.</span> ตั้งค่าด้านบนของหน้านี้
+          เลือกโหมด สายที่สนใจ และจำนวนวันแจ้งล่วงหน้า แล้วกดบันทึก
+        </li>
+        <li>
+          <span className="font-medium text-zinc-800">2.</span> พิมพ์คำสั่งใน Discord
+          (พิมพ์ในเซิร์ฟเวอร์หรือ DM กับบอทก็ได้)
+        </li>
+        <li>
+          <span className="font-medium text-zinc-800">3.</span> บอทจะทักมาเป็น DM
+          เมื่อมีค่ายใหม่ตรงสาย หรือใกล้วันปิดรับของค่ายที่มาร์กไว้
+        </li>
+      </ol>
+
+      <ul className="mt-3 space-y-1 text-sm leading-6 text-zinc-600">
+        {COMMANDS.map((item) => (
+          <li key={item.command}>
+            <code className="font-semibold text-zinc-800">{item.command}</code>{" "}
+            <span className="text-zinc-500">{item.detail}</span>
           </li>
-          <li>
-            <span className="font-medium text-zinc-800">2.</span> พิมพ์คำสั่งใน Discord
-            (พิมพ์ในเซิร์ฟเวอร์หรือ DM กับบอทก็ได้)
-          </li>
-          <li>
-            <span className="font-medium text-zinc-800">3.</span> บอทจะทักมาเป็น DM
-            เมื่อมีค่ายใหม่ตรงสาย หรือใกล้วันปิดรับของค่ายที่มาร์กไว้
-          </li>
-        </ol>
+        ))}
+      </ul>
 
-        <ul className="mt-4 grid gap-2 sm:grid-cols-3">
-          {COMMANDS.map((item) => (
-            <li
-              key={item.command}
-              className="rounded-xl border border-zinc-200 bg-[#faf9f6] px-3 py-2"
-            >
-              <code className="text-sm font-semibold text-emerald-700">
-                {item.command}
-              </code>
-              <p className="mt-0.5 text-xs leading-5 text-zinc-500">{item.detail}</p>
-            </li>
-          ))}
-        </ul>
-
-        <p className="mt-3 text-xs leading-5 text-zinc-500">
-          ถ้าไม่ได้รับ DM ให้เช็กว่าบัญชี Discord ปิดรับข้อความจากคนในเซิร์ฟเวอร์ไว้หรือเปล่า
-          และตอนนี้บอททำงานเฉพาะเวลาที่เจ้าของโปรเจกต์เปิดคอมไว้
-        </p>
-      </div>
+      <p className="mt-3 text-xs leading-5 text-zinc-500">
+        ถ้าไม่ได้รับ DM ให้เช็กว่าบัญชี Discord ปิดรับข้อความจากคนในเซิร์ฟเวอร์ไว้หรือเปล่า
+        และตอนนี้บอททำงานเฉพาะเวลาที่เจ้าของโปรเจกต์เปิดคอมไว้
+      </p>
     </section>
   );
 }
 
-/** ป๊อปอัปมุมซ้ายล่าง เตือนให้เพิ่มบอท ปิดแล้วไม่ขึ้นอีก */
+/** ป๊อปอัปมุมซ้ายล่างของหน้าแรก ชวนไปตั้งค่าการแจ้งเตือน ปิดแล้วไม่ขึ้นอีก */
 export function BotInvitePopup() {
   // ให้ prerender กับ render แรกตรงกัน (ฝั่งเซิร์ฟเวอร์อ่าน localStorage ไม่ได้)
   const mounted = useSyncExternalStore(
@@ -105,6 +88,27 @@ export function BotInvitePopup() {
     }
   });
 
+  // จอมือถือครั้งแรก: กล่องถามเรื่องทัวร์กินพื้นที่เต็มความกว้างอยู่
+  // ให้ป๊อปอัปนี้รอจนผู้ใช้ตอบว่าจะดูทัวร์หรือไม่ก่อน ไม่งั้นจะทับกัน
+  const [waitingForTutorial, setWaitingForTutorial] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const narrow = window.matchMedia("(max-width: 639px)").matches;
+    if (!narrow) return false;
+    try {
+      return window.localStorage.getItem("campalert.tutorial.v1") === null;
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    if (!waitingForTutorial) return;
+    const onAnswered = () => setWaitingForTutorial(false);
+    window.addEventListener("campalert:tutorial-answered", onAnswered);
+    return () =>
+      window.removeEventListener("campalert:tutorial-answered", onAnswered);
+  }, [waitingForTutorial]);
+
   function dismiss() {
     setHidden(true);
     try {
@@ -114,7 +118,7 @@ export function BotInvitePopup() {
     }
   }
 
-  if (!mounted || hidden) return null;
+  if (!mounted || hidden || waitingForTutorial) return null;
 
   return (
     <div
@@ -126,7 +130,7 @@ export function BotInvitePopup() {
           <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-50 text-sm">
             🤖
           </span>
-          อยากให้บอททัก DM?
+          ทำให้บอทแจ้งเตือน
         </span>
         <button
           type="button"
@@ -139,20 +143,18 @@ export function BotInvitePopup() {
       </div>
 
       <p className="mt-2 text-xs leading-5 text-zinc-600">
-        กดปุ่มด้านล่างเพื่อเพิ่มบอท CampAlert เข้า Discord
-        แล้วตั้งค่าด้านบนเท่านี้ก็เริ่มรับแจ้งเตือนได้
+        เพิ่มบอท CampAlert แล้วตั้งค่าที่หน้าตั้งค่า บอทจะทัก DM
+        เมื่อมีค่ายใหม่ตรงสายที่สนใจ หรือใกล้วันปิดรับของค่ายที่มาร์กไว้
       </p>
 
-      <a
-        href={BOT_INVITE_URL}
-        target="_blank"
-        rel="noreferrer noopener"
+      <Link
+        href="/settings#bot"
         onClick={dismiss}
         className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-500 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-emerald-600/25 transition hover:brightness-105 active:scale-[0.98]"
       >
-        เพิ่มบอทเข้า Discord
-        <span aria-hidden="true">↗</span>
-      </a>
+        ไปตั้งค่าการแจ้งเตือน
+        <span aria-hidden="true">→</span>
+      </Link>
     </div>
   );
 }
