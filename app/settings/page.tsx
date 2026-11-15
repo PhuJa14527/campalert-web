@@ -1,5 +1,6 @@
 import SiteHeader from "@/app/site-header";
 import SettingsForm from "@/app/settings/settings-form";
+import { BotInvitePopup, BotInviteSection } from "@/app/settings/bot-invite";
 import { campFields } from "@/lib/camps";
 
 export const metadata = {
@@ -23,7 +24,10 @@ export default function SettingsPage() {
         </section>
 
         <SettingsForm fields={campFields} />
+        <BotInviteSection />
       </main>
+
+      <BotInvitePopup />
     </div>
   );
 }

@@ -398,7 +398,7 @@ function CampCard({
       </dl>
 
       <div className="mt-auto flex items-center justify-between gap-3 pt-4">
-        <p className="text-xs text-zinc-500">
+        <p className="text-sm text-zinc-500">
           {camp.deadline ? `ปิดรับ ${formatDayFull(camp.deadline)}` : "ไม่ระบุวันปิดรับ"}
         </p>
         <a

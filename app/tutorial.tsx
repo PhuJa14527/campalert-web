@@ -58,7 +58,7 @@ const STEPS: Step[] = [
   {
     id: "intro",
     title: "เว็บนี้คืออะไร",
-    body: "ค่ายไหนดี รวมค่ายที่ยังเปิดรับสมัครจาก CAMPHUB ไว้ที่เดียว แต่ละค่ายมีลิงก์กลับไปหน้าต้นฉบับให้กดสมัครเอง\n\nเว็บมีสามระบบหลัก ตัวกรองแบบเดียวกับหน้า search ของ CAMPHUB ที่เราเพิ่มผู้จัดเข้ามาว่าเป็นมหาวิทยาลัยหรือมูลนิธิ, ปฏิทินที่โชว์วันจัดจริงและเตือนวันที่ค่ายชนกัน, กับการแจ้งเตือนผ่าน Discord\n\nเดี๋ยวพาไล่กดทีละอัน ปุ่มที่ให้กดจะมีวงเขียว ๆ ส่วนอื่นล็อกไว้ก่อน",
+    body: "ค่ายไหนดี รวมค่ายที่ยังเปิดรับสมัครจาก CAMPHUB ไว้ที่เดียว แต่ละค่ายมีลิงก์กลับไปหน้าต้นฉบับให้กดสมัครเอง\n\nเว็บมีสามระบบหลัก ตัวกรองแบบเดียวกับหน้า search ของ CAMPHUB ที่เราเพิ่มผู้จัดเข้ามาว่าเป็นมหาวิทยาลัยหรือมูลนิธิ, ปฏิทินที่โชว์วันจัดจริงและเตือนวันที่ค่ายชนกัน, กับการแจ้งเตือนผ่าน Discord\n\nเดี๋ยวพาไล่กดทีละอัน ปุ่มที่ให้กดจะมีวงเขียว ๆ ส่วนอื่นล็อกไว้ก่อน ถ้ายังไม่สะดวกกด ✕ ปิดไว้ก่อนได้ กลับมาทำต่อทีหลังได้ตลอด",
     manualLabel: "เริ่มเลย",
   },
   {
@@ -242,11 +242,7 @@ export default function Tutorial({
     () => false,
   );
 
-  const [open, setOpen] = useState(() => {
-    if (typeof window === "undefined") return false;
-    const saved = readSaved();
-    return !saved || (!saved.done && !saved.closed);
-  });
+  const [open, setOpen] = useState(false);
   const [step, setStep] = useState(() => {
     if (typeof window === "undefined") return 0;
     const saved = readSaved();
@@ -370,7 +366,13 @@ export default function Tutorial({
 
       if (node && !scrolled) {
         scrolled = true;
-        node.scrollIntoView({ block: "center", inline: "nearest" });
+        // วางเป้าหมายไว้ค่อนไปทางบนของจอ (~24%) เพื่อไม่ให้การ์ดทัวร์ที่อยู่มุมขวาล่างบัง
+        const box = node.getBoundingClientRect();
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        window.scrollBy({
+          top: box.top + box.height / 2 - window.innerHeight * 0.24,
+          behavior: reduceMotion ? "auto" : "smooth",
+        });
       }
 
       const next = node ? node.getBoundingClientRect() : null;
@@ -394,6 +396,16 @@ export default function Tutorial({
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
   }, [open, targetSelector]);
+
+  // เว้นที่ด้านล่างของหน้าไว้ระหว่างทัวร์ ให้ทุกเป้าหมายเลื่อนขึ้นมาพ้นการ์ดได้เสมอ
+  useEffect(() => {
+    if (!open || finished) return;
+    const previous = document.body.style.paddingBottom;
+    document.body.style.paddingBottom = "55vh";
+    return () => {
+      document.body.style.paddingBottom = previous;
+    };
+  }, [open, finished]);
 
   // ระหว่างทัวร์ให้กดได้แค่ปุ่มที่แนะนำ (การ์ดกับปุ่มเป้าหมายเท่านั้น)
   useEffect(() => {
@@ -455,14 +467,8 @@ export default function Tutorial({
     return () => clearTimeout(timer);
   }, [open, finished, current, currentDone, advance]);
 
-  const placement = useMemo(() => {
-    if (!rect || typeof window === "undefined") return "bottom-right";
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const vertical = centerY > window.innerHeight / 2 ? "top" : "bottom";
-    const horizontal = centerX > window.innerWidth / 2 ? "left" : "right";
-    return `${vertical}-${horizontal}`;
-  }, [rect]);
+  // การ์ดอยู่จุดเดียวตลอดทุกขั้น (มุมขวาล่าง) ไม่กระโดดไปมาตามปุ่มเป้าหมาย
+  const cardStyle: CSSProperties = { bottom: 16, right: 16 };
 
   if (!mounted) return null;
 
@@ -488,15 +494,6 @@ export default function Tutorial({
       </button>
     );
   }
-
-  const cardStyle: CSSProperties =
-    placement === "top-left"
-      ? { top: 16, left: 16 }
-      : placement === "top-right"
-        ? { top: 16, right: 16 }
-        : placement === "bottom-left"
-          ? { bottom: 16, left: 16 }
-          : { bottom: 16, right: 16 };
 
   const hole = rect
     ? {
@@ -538,7 +535,7 @@ export default function Tutorial({
         key={finished ? "done" : `step-${step}`}
         ref={cardRef}
         style={cardStyle}
-        className="animate-tour-in fixed z-[70] max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-sm overflow-y-auto rounded-2xl border border-white/70 bg-white/95 shadow-[0_24px_70px_-20px_rgba(0,0,0,0.5)] backdrop-blur-md"
+        className="animate-tour-in fixed z-[70] max-h-[64vh] w-[calc(100vw-2rem)] max-w-sm overflow-y-auto rounded-2xl border border-white/70 bg-white/95 shadow-[0_24px_70px_-20px_rgba(0,0,0,0.5)] backdrop-blur-md"
       >
         <div className="relative overflow-hidden border-b border-zinc-100 bg-gradient-to-br from-emerald-50 via-white to-white px-4 pb-3 pt-3.5">
           <div className="flex items-start justify-between gap-3">
