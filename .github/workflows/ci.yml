@@ -1,0 +1,50 @@
+name: Code check
+
+# ทำไมต้องมี: กันการ push โค้ดที่ build ไม่ผ่านขึ้น master
+# Vercel จะ build จาก master ทุกครั้ง ถ้าพังเราจะรู้ตรงนี้ก่อน ไม่ใช่รู้ตอนเว็บล่ม
+#
+# หมายเหตุเรื่องข้อมูลค่าย: การดึง CAMPHUB ทำในเครื่องเจ้าของโปรเจกต์
+# (scripts/daily-refresh.ps1 + Windows Task Scheduler) เพราะ CAMPHUB ใช้ Cloudflare
+# แล้วบล็อก IP ของ GitHub/Vercel ด้วย 403 "Just a moment..." ทุกครั้ง
+# ทดสอบจากทั้ง GitHub Actions และ Vercel function แล้วได้ 403 เหมือนกัน
+# จึงย้ายการดึงข้อมูลขึ้นคลาวด์ตรง ๆ ไม่ได้ ต้องขออนุญาต CAMPHUB ก่อน
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: code-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npx eslint app lib
+
+      - name: Build
+        run: npm run build

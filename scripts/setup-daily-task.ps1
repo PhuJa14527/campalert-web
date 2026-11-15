@@ -30,7 +30,7 @@ Register-ScheduledTask `
   -Action $action `
   -Trigger $trigger `
   -Settings $settings `
-  -Description "ดึงข้อมูล CAMPHUB ใหม่แล้ว deploy เว็บค่ายไหนดี (วันละครั้ง)" `
+  -Description "ดึงข้อมูล CAMPHUB ใหม่แล้ว push ให้ Vercel deploy เว็บค่ายไหนดี (วันละครั้ง)" `
   -Force | Out-Null
 
 Write-Host ("ตั้งเวลาแล้ว: " + $taskName + " ทุกวัน " + $Time)
