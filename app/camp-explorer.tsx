@@ -249,9 +249,9 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+      className={`rounded-full border px-3 py-1.5 text-sm transition-all duration-200 active:scale-95 ${
         active
-          ? "border-zinc-900 bg-zinc-900 text-white"
+          ? "border-zinc-900 bg-zinc-900 text-white shadow-sm"
           : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-500"
       }`}
     >
@@ -277,7 +277,7 @@ function SelectFilter({
     <select
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className={`w-full rounded-lg border px-3 py-2.5 text-sm outline-none ${
+      className={`w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 ${
         active
           ? "border-zinc-900 bg-white font-medium text-zinc-900"
           : "border-zinc-300 bg-white text-zinc-600"
@@ -312,10 +312,10 @@ function BookmarkButton({
       aria-label={saved ? `เลิกมาร์ก ${title}` : `มาร์ก ${title}`}
       title={saved ? "เลิกมาร์ก" : "มาร์กค่ายนี้"}
       data-tour-bookmark={campId}
-      className={`rounded-full border px-2.5 py-1 text-sm leading-none ${
+      className={`rounded-full border px-2.5 py-1 text-sm leading-none transition active:scale-90 ${
         saved
-          ? "border-amber-300 bg-amber-50 text-amber-600"
-          : "border-zinc-200 bg-white text-zinc-400 hover:text-amber-500"
+          ? "animate-pop border-amber-300 bg-amber-50 text-amber-600"
+          : "border-zinc-200 bg-white text-zinc-400 hover:border-amber-300 hover:text-amber-500"
       }`}
     >
       {saved ? "★" : "☆"}
@@ -336,7 +336,7 @@ function CampCard({
 }) {
   const closed = isPast(camp.deadline, today);
   return (
-    <article className="flex h-full flex-col rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+    <article className="flex h-full flex-col rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md">
       <div className="flex flex-wrap items-center gap-2">
         <span
           className={`rounded-full border px-2.5 py-1 text-xs font-medium ${typeBadge(camp.type)}`}
@@ -840,7 +840,7 @@ export default function CampExplorer({
       <section className="space-y-3">
         {/* แถบค้นหาแบบย่อ: ปกติเห็นแค่ช่องค้นหา กด "ค้นหาละเอียด" ค่อยกางแผงตัวกรองออกมา */}
         <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
-          <label className="flex flex-1 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-4" data-tour="search">
+          <label className="flex flex-1 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-4 transition focus-within:border-emerald-400 focus-within:ring-4 focus-within:ring-emerald-100/70" data-tour="search">
             <svg
               viewBox="0 0 24 24"
               aria-hidden="true"
@@ -877,10 +877,10 @@ export default function CampExplorer({
             onClick={() => setShowFilters((value) => !value)}
             aria-expanded={showFilters}
             data-tour="advanced"
-            className={`flex items-center justify-center gap-2 rounded-xl border px-5 py-3 text-sm font-medium transition-colors ${
+            className={`flex items-center justify-center gap-2 rounded-xl border px-5 py-3 text-sm font-medium transition-all duration-200 active:scale-[0.98] ${
               showFilters || activeFilterCount > 0
-                ? "border-zinc-900 bg-zinc-900 text-white"
-                : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-500"
+                ? "border-zinc-900 bg-zinc-900 text-white shadow-sm"
+                : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-500 hover:shadow-sm"
             }`}
           >
             <svg
@@ -909,7 +909,7 @@ export default function CampExplorer({
                 key={chip.key}
                 type="button"
                 onClick={chip.clear}
-                className="rounded-full border border-zinc-900 bg-zinc-900 px-3 py-1 text-sm text-white"
+                className="animate-fade rounded-full border border-zinc-900 bg-zinc-900 px-3 py-1 text-sm text-white transition hover:bg-zinc-800 active:scale-95"
               >
                 {chip.label} ✕
               </button>
@@ -925,7 +925,7 @@ export default function CampExplorer({
         ) : null}
 
         {showFilters ? (
-          <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-[#f6f4ef]" data-tour="filters">
+          <div className="animate-panel overflow-hidden rounded-2xl border border-zinc-200 bg-[#f6f4ef] shadow-sm" data-tour="filters">
             {/* แท็บเลือกชนิดกิจกรรม เหมือนหน้า search ของ CAMPHUB */}
             <div className="flex items-end gap-2 px-4 pt-3">
               {[
@@ -945,7 +945,7 @@ export default function CampExplorer({
                       setType(tab.id);
                     }}
                     aria-pressed={active}
-                    className={`rounded-t-xl px-4 py-2 text-sm font-semibold ${
+                    className={`rounded-t-xl px-4 py-2 text-sm font-semibold transition-colors duration-200 ${
                       active
                         ? "bg-zinc-900 text-white"
                         : "bg-white/70 text-zinc-600 hover:bg-white"
@@ -1145,7 +1145,7 @@ export default function CampExplorer({
                 <button
                   type="button"
                   onClick={() => setShowFilters(false)}
-                  className="text-sm text-zinc-500 underline-offset-2 hover:text-zinc-800 hover:underline"
+                  className="text-sm text-zinc-500 underline-offset-2 transition hover:text-zinc-800 hover:underline"
                 >
                   ซ่อนตัวกรอง ⌃
                 </button>
@@ -1153,7 +1153,7 @@ export default function CampExplorer({
                   type="button"
                   onClick={() => setShowFilters(false)}
                   data-tour="apply"
-                  className="rounded-full bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-orange-700"
+                  className="rounded-full bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 hover:shadow-md active:scale-[0.98]"
                 >
                   ดูผลลัพธ์ทั้งหมด
                 </button>
@@ -1171,7 +1171,7 @@ export default function CampExplorer({
               type="button"
               onClick={() => setView("list")}
               aria-pressed={view === "list"}
-              className={`rounded-full px-3 py-1 ${view === "list" ? "bg-zinc-900 text-white" : "text-zinc-600"}`}
+              className={`rounded-full px-3 py-1 transition-colors duration-200 ${view === "list" ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"}`}
             >
               รายการ
             </button>
@@ -1180,7 +1180,7 @@ export default function CampExplorer({
               onClick={() => setView("calendar")}
               aria-pressed={view === "calendar"}
               data-tour="calendar"
-              className={`rounded-full px-3 py-1 ${view === "calendar" ? "bg-zinc-900 text-white" : "text-zinc-600"}`}
+              className={`rounded-full px-3 py-1 transition-colors duration-200 ${view === "calendar" ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"}`}
             >
               ปฏิทิน
             </button>
@@ -1209,9 +1209,13 @@ export default function CampExplorer({
             ไม่พบค่ายที่ตรงกับเงื่อนไข ลองล้างตัวกรองหรือเปลี่ยนคำค้น
           </p>
         ) : (
-          <ul className="mt-6 grid gap-4 sm:grid-cols-2">
-            {filtered.map((camp) => (
-              <li key={camp.id}>
+          <ul className="mt-6 grid animate-view gap-4 sm:grid-cols-2">
+            {filtered.map((camp, index) => (
+              <li
+                key={camp.id}
+                className="animate-rise"
+                style={{ animationDelay: `${Math.min(index, 12) * 35}ms` }}
+              >
                 <CampCard
                   camp={camp}
                   today={today}
@@ -1223,12 +1227,12 @@ export default function CampExplorer({
           </ul>
         )
       ) : (
-        <section className="mt-6">
+        <section className="mt-6 animate-view">
           <div className="flex items-center justify-between gap-2">
             <button
               type="button"
               onClick={() => moveMonth(-1)}
-              className="rounded-full border border-zinc-300 bg-white px-3 py-1.5 text-sm"
+              className="rounded-full border border-zinc-300 bg-white px-3 py-1.5 text-sm transition hover:border-zinc-500 hover:shadow-sm active:scale-95"
               aria-label="เดือนก่อนหน้า"
             >
               ‹
@@ -1239,7 +1243,7 @@ export default function CampExplorer({
             <button
               type="button"
               onClick={() => moveMonth(1)}
-              className="rounded-full border border-zinc-300 bg-white px-3 py-1.5 text-sm"
+              className="rounded-full border border-zinc-300 bg-white px-3 py-1.5 text-sm transition hover:border-zinc-500 hover:shadow-sm active:scale-95"
               aria-label="เดือนถัดไป"
             >
               ›
@@ -1272,7 +1276,7 @@ export default function CampExplorer({
                   onClick={() => setSelectedDay(selected ? null : iso)}
                   title={hasConflict ? "มีค่ายที่มาร์กไว้และวันจัดชนกัน" : undefined}
                   data-tour-day={iso}
-                  className={`relative flex h-14 flex-col items-center justify-center rounded-lg border text-sm ${
+                  className={`relative flex h-14 flex-col items-center justify-center rounded-lg border text-sm transition duration-150 hover:scale-[1.04] hover:shadow-sm active:scale-95 ${
                     selected
                       ? "border-zinc-900 bg-zinc-900 text-white"
                       : hasConflict

@@ -397,7 +397,7 @@ export default function Tutorial({
 
   // ระหว่างทัวร์ให้กดได้แค่ปุ่มที่แนะนำ (การ์ดกับปุ่มเป้าหมายเท่านั้น)
   useEffect(() => {
-    if (!open) return;
+    if (!open || finished) return;
 
     const insideAllowed = (node: Element | null) => {
       if (!node) return false;
@@ -446,7 +446,7 @@ export default function Tutorial({
       document.removeEventListener("mousedown", onPointer, true);
       document.removeEventListener("keydown", onKey);
     };
-  }, [open, targetSelector, current, bookmarkedIds, close]);
+  }, [open, finished, targetSelector, current, bookmarkedIds, close]);
 
   // ทำตามขั้นนี้แล้ว โชว์ติ๊กถูกแป๊บหนึ่งก่อนเลื่อนไปขั้นถัดไป
   useEffect(() => {
@@ -475,9 +475,11 @@ export default function Tutorial({
           setClickedStep(null);
           setOpen(true);
         }}
-        className="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-full bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white shadow-lg hover:bg-zinc-800"
+        className="fixed bottom-4 right-4 z-50 flex items-center gap-2.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 transition hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0"
       >
-        🎓{" "}
+        <span className="flex size-6 items-center justify-center rounded-full bg-white/20 text-xs">
+          🎓
+        </span>
         {finished
           ? "ดูแนะนำเว็บอีกครั้ง"
           : step > 0 && step < STEPS.length
@@ -498,88 +500,85 @@ export default function Tutorial({
 
   const hole = rect
     ? {
-        top: Math.max(0, rect.top - 6),
-        left: Math.max(0, rect.left - 6),
-        width: rect.width + 12,
-        height: rect.height + 12,
+        top: rect.top - 10,
+        left: rect.left - 10,
+        width: rect.width + 20,
+        height: rect.height + 20,
       }
     : null;
 
-  const viewportWidth = typeof window === "undefined" ? 0 : window.innerWidth;
-  const viewportHeight = typeof window === "undefined" ? 0 : window.innerHeight;
-  const progress = Math.round((Math.min(step, STEPS.length) / STEPS.length) * 100);
-
   return (
     <>
-      <div className="pointer-events-none fixed inset-0 z-[60]">
-        {hole ? (
-          <>
-            <div
-              className="absolute inset-x-0 top-0 bg-zinc-950/55"
-              style={{ height: hole.top }}
-            />
-            <div
-              className="absolute inset-x-0 bottom-0 bg-zinc-950/55"
-              style={{ height: Math.max(0, viewportHeight - hole.top - hole.height) }}
-            />
-            <div
-              className="absolute left-0 bg-zinc-950/55"
-              style={{ top: hole.top, height: hole.height, width: hole.left }}
-            />
-            <div
-              className="absolute right-0 bg-zinc-950/55"
-              style={{
-                top: hole.top,
-                height: hole.height,
-                width: Math.max(0, viewportWidth - hole.left - hole.width),
-              }}
-            />
-          </>
+      {!finished ? (
+        hole ? (
+          <div
+            className="pointer-events-none fixed z-[60] animate-fade rounded-xl"
+            style={{
+              top: hole.top,
+              left: hole.left,
+              width: hole.width,
+              height: hole.height,
+              // เงาแผ่ครอบทั้งจอ เว้นรูปร่างของกรอบไว้เท่านั้น
+              // จุดสว่างจึงเท่ากับกรอบสีเขียวเป๊ะ ทั้งขนาดและมุมโค้ง
+              boxShadow: "0 0 0 9999px rgba(9, 9, 11, 0.66)",
+            }}
+          >
+            {currentDone ? (
+              <div className="absolute inset-0 rounded-xl border-2 border-emerald-300/70" />
+            ) : (
+              <div className="absolute inset-0 animate-glow rounded-xl border-2" />
+            )}
+          </div>
         ) : (
-          <div className="absolute inset-0 bg-zinc-950/55" />
-        )}
-      </div>
-
-      {hole && !currentDone ? (
-        <div
-          className="pointer-events-none fixed z-[65] animate-pulse rounded-xl ring-4 ring-emerald-400"
-          style={{
-            top: hole.top,
-            left: hole.left,
-            width: hole.width,
-            height: hole.height,
-            boxShadow: "0 0 0 8px rgba(16,185,129,0.25)",
-          }}
-        />
+          <div className="pointer-events-none fixed inset-0 z-[60] animate-fade bg-zinc-950/66" />
+        )
       ) : null}
 
       <aside
+        key={finished ? "done" : `step-${step}`}
         ref={cardRef}
         style={cardStyle}
-        className="fixed z-[70] max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-sm overflow-y-auto rounded-2xl border border-zinc-200 bg-white shadow-2xl"
+        className="animate-tour-in fixed z-[70] max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-sm overflow-y-auto rounded-2xl border border-white/70 bg-white/95 shadow-[0_24px_70px_-20px_rgba(0,0,0,0.5)] backdrop-blur-md"
       >
-        <div className="flex items-start justify-between gap-2 border-b border-zinc-100 px-4 py-3">
-          <div>
-            <p className="text-sm font-semibold text-zinc-900">🎓 มีอะไรในค่ายไหนดี</p>
-            <p className="text-xs text-zinc-500">
-              {finished ? "ครบทุกขั้นแล้ว" : `ขั้น ${Math.min(step + 1, STEPS.length)} จาก ${STEPS.length}`}
-            </p>
+        <div className="relative overflow-hidden border-b border-zinc-100 bg-gradient-to-br from-emerald-50 via-white to-white px-4 pb-3 pt-3.5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-lg shadow-sm shadow-emerald-600/25">
+                🎓
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-zinc-900">มีอะไรในค่ายไหนดี</p>
+                <p className="text-[11px] font-medium text-emerald-700">
+                  {finished
+                    ? "ครบทุกขั้นแล้ว"
+                    : `ขั้น ${Math.min(step + 1, STEPS.length)} จาก ${STEPS.length}`}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={close}
+              aria-label="ปิดการแนะนำ"
+              className="rounded-full p-1 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-700"
+            >
+              ✕
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={close}
-            aria-label="ปิดการแนะนำ"
-            className="rounded-full px-1.5 text-zinc-400 hover:text-zinc-700"
-          >
-            ✕
-          </button>
-        </div>
 
-        <div className="h-1 bg-zinc-100">
-          <div
-            className="h-1 bg-emerald-600 transition-all"
-            style={{ width: `${finished ? 100 : progress}%` }}
-          />
+          <div className="mt-3 flex gap-1.5">
+            {STEPS.map((item, index) => (
+              <span
+                key={item.id}
+                className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${
+                  finished || index < step
+                    ? "bg-emerald-500"
+                    : index === step
+                      ? "bg-emerald-300"
+                      : "bg-zinc-200"
+                }`}
+              />
+            ))}
+          </div>
         </div>
 
         <div className="px-4 py-4">
@@ -597,21 +596,24 @@ export default function Tutorial({
               <button
                 type="button"
                 onClick={restart}
-                className="w-full rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
+                className="w-full rounded-full bg-gradient-to-r from-emerald-600 to-teal-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/25 transition hover:brightness-105 active:scale-[0.98]"
               >
                 เริ่มแนะนำใหม่
               </button>
             </div>
           ) : currentDone ? (
-            <div className="flex flex-col items-center gap-2 py-5">
-              <span className="flex size-12 items-center justify-center rounded-full bg-emerald-600 text-2xl text-white">
-                ✓
+            <div className="flex flex-col items-center gap-3 py-6">
+              <span className="relative flex size-14 items-center justify-center">
+                <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/30" />
+                <span className="animate-check relative flex size-14 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-2xl text-white shadow-lg shadow-emerald-600/30">
+                  ✓
+                </span>
               </span>
-              <p className="text-sm font-medium text-emerald-700">ลองแล้ว ✓</p>
+              <p className="text-sm font-semibold text-emerald-700">ลองแล้ว ไปขั้นถัดไป...</p>
             </div>
           ) : current ? (
             <div className="space-y-3">
-              <p className="text-base font-semibold text-zinc-900">{current.title}</p>
+              <p className="text-[15px] font-semibold text-zinc-900">{current.title}</p>
               <p className="whitespace-pre-line text-sm leading-6 text-zinc-600">
                 {current.body}
               </p>
@@ -619,7 +621,7 @@ export default function Tutorial({
                 <button
                   type="button"
                   onClick={advance}
-                  className="w-full rounded-full bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
+                  className="mt-1 w-full rounded-full bg-gradient-to-r from-emerald-600 to-teal-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/25 transition hover:brightness-105 active:scale-[0.98]"
                 >
                   {current.manualLabel}
                 </button>
@@ -629,8 +631,11 @@ export default function Tutorial({
         </div>
 
         {!finished && !currentDone ? (
-          <div className="border-t border-zinc-100 px-4 py-2.5">
-            <p className="text-xs text-zinc-400">
+          <div className="flex items-center gap-2 border-t border-zinc-100 bg-zinc-50/70 px-4 py-2.5">
+            {current?.manualLabel ? null : (
+              <span className="size-1.5 shrink-0 animate-hint rounded-full bg-emerald-500" />
+            )}
+            <p className="text-xs text-zinc-500">
               {current?.manualLabel
                 ? "กดปุ่มด้านบนเพื่อไปต่อ"
                 : "กดปุ่มที่วงเขียวไว้ แล้วติ๊กถูกจะขึ้นเอง"}
