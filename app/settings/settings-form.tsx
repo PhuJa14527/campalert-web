@@ -99,21 +99,21 @@ export default function SettingsForm({ fields }: { fields: string[] }) {
 
   if (!enabled) {
     return (
-      <p className="rounded-2xl border border-dashed border-zinc-300 p-6 text-sm text-zinc-500">
+      <p className="rounded-2xl border border-dashed border-zinc-300 dark:border-[#3b352d] p-6 text-sm text-zinc-500 dark:text-zinc-400">
         ยังไม่ได้ตั้งค่า Supabase ใน `.env.local`
       </p>
     );
   }
 
   if (status === "loading") {
-    return <p className="text-sm text-zinc-500">กำลังโหลด…</p>;
+    return <p className="text-sm text-zinc-500 dark:text-zinc-400">กำลังโหลด…</p>;
   }
 
   if (status === "anon") {
     return (
-      <div className="rounded-2xl border border-zinc-200 bg-white p-6">
+      <div className="rounded-2xl border border-zinc-200 dark:border-[#332e27] bg-white dark:bg-[#1c1a17] p-6">
         <p className="text-base font-semibold">เข้าสู่ระบบก่อนตั้งค่า</p>
-        <p className="mt-1 text-sm leading-6 text-zinc-600">
+        <p className="mt-1 text-sm leading-6 text-zinc-600 dark:text-zinc-300">
           ใช้บัญชี Discord ของคุณ เพื่อให้การตั้งค่าตรงกับ DM ที่บอทจะส่ง
           และให้ค่ายที่มาร์กไว้อยู่กับบัญชี ไม่หายเมื่อเปลี่ยนเครื่อง
         </p>
@@ -126,9 +126,9 @@ export default function SettingsForm({ fields }: { fields: string[] }) {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-[#ebe3d5] bg-white p-5">
-        <p className="text-sm text-zinc-500">
-          เข้าสู่ระบบในชื่อ <span className="font-medium text-zinc-800">{discordName || "ผู้ใช้ Discord"}</span>
+      <section className="rounded-2xl border border-[#ebe3d5] dark:border-[#332e27] bg-white dark:bg-[#1c1a17] p-5">
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          เข้าสู่ระบบในชื่อ <span className="font-medium text-zinc-800 dark:text-zinc-200">{discordName || "ผู้ใช้ Discord"}</span>
           {" · "}
           <span>มาร์กค่ายไว้ {bookmarkCount} ค่าย</span>
         </p>
@@ -141,8 +141,8 @@ export default function SettingsForm({ fields }: { fields: string[] }) {
                 key={mode.id}
                 className={`cursor-pointer rounded-xl border p-3 text-sm transition ${
                   settings.mode === mode.id
-                    ? "border-orange-600 bg-orange-600 text-white"
-                    : "border-zinc-300 bg-white text-zinc-700 hover:border-orange-300"
+                    ? "border-emerald-600 bg-emerald-600 text-white"
+                    : "border-zinc-300 dark:border-[#3b352d] bg-white dark:bg-[#1c1a17] text-zinc-700 dark:text-zinc-300 hover:border-emerald-300"
                 }`}
               >
                 <input
@@ -156,7 +156,7 @@ export default function SettingsForm({ fields }: { fields: string[] }) {
                 <span className="block font-medium">{mode.label}</span>
                 <span
                   className={`mt-0.5 block text-xs ${
-                    settings.mode === mode.id ? "text-white/70" : "text-zinc-500"
+                    settings.mode === mode.id ? "text-white/70" : "text-zinc-500 dark:text-zinc-400"
                   }`}
                 >
                   {mode.hint}
@@ -174,7 +174,7 @@ export default function SettingsForm({ fields }: { fields: string[] }) {
               onChange={(event) =>
                 setSettings((prev) => ({ ...prev, field: event.target.value }))
               }
-              className="mt-2 w-full rounded-xl border border-zinc-300 bg-white px-3 py-2.5"
+              className="mt-2 w-full rounded-xl border border-zinc-300 dark:border-[#3b352d] bg-white dark:bg-[#1c1a17] px-3 py-2.5"
             >
               <option value="ทั้งหมด">ทุกสาย</option>
               {fields.map((field) => (
@@ -196,9 +196,9 @@ export default function SettingsForm({ fields }: { fields: string[] }) {
                 onChange={(event) =>
                   setSettings((prev) => ({ ...prev, advance: Number(event.target.value) }))
                 }
-                className="w-full accent-orange-600"
+                className="w-full accent-emerald-600 dark:accent-emerald-400"
               />
-              <span className="w-14 shrink-0 rounded-lg border border-zinc-200 px-2 py-1 text-center">
+              <span className="w-14 shrink-0 rounded-lg border border-zinc-200 dark:border-[#332e27] px-2 py-1 text-center">
                 {settings.advance} วัน
               </span>
             </div>
@@ -210,19 +210,19 @@ export default function SettingsForm({ fields }: { fields: string[] }) {
             type="button"
             onClick={() => void save()}
             disabled={saving}
-            className="rounded-full bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:opacity-50"
+            className="rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50"
           >
             {saving ? "กำลังบันทึก…" : "บันทึกการตั้งค่า"}
           </button>
-          {message ? <p className="text-sm text-zinc-600">{message}</p> : null}
+          {message ? <p className="text-sm text-zinc-600 dark:text-zinc-300">{message}</p> : null}
         </div>
       </section>
 
-      <section className="rounded-2xl border border-[#ebe3d5] bg-white p-5 text-sm leading-6 text-zinc-600">
-        <p className="font-semibold text-zinc-900">ค่ายที่มาร์กไว้</p>
+      <section className="rounded-2xl border border-[#ebe3d5] dark:border-[#332e27] bg-white dark:bg-[#1c1a17] p-5 text-sm leading-6 text-zinc-600 dark:text-zinc-300">
+        <p className="font-semibold text-zinc-900 dark:text-zinc-100">ค่ายที่มาร์กไว้</p>
         <p className="mt-1">
           กดดาวที่การ์ดค่ายในหน้าแรก ค่ายที่มาร์กจะขึ้นในปฏิทิน (จุดสีเหลือง) และส่งไปบอทเพื่อแจ้งเตือน
-          ถ้าอยากดูรายการทั้งหมด <Link href="/" className="text-orange-700 underline underline-offset-2">กลับไปหน้าแรก</Link>
+          ถ้าอยากดูรายการทั้งหมด <Link href="/" className="text-emerald-700 dark:text-emerald-300 underline underline-offset-2">กลับไปหน้าแรก</Link>
         </p>
       </section>
     </div>

@@ -30,18 +30,18 @@ const extraOptions = [
 const BOOKMARK_KEY = "campalert.bookmarks.v1";
 
 const typeStyles: Record<string, string> = {
-  "พัฒนาทักษะ/เวิร์กชอป": "bg-sky-50 text-sky-700 border-sky-200",
-  "แนะแนวเรียนต่อ/อาชีพ": "bg-violet-50 text-violet-700 border-violet-200",
-  "งานเปิดบ้าน/นิทรรศการ": "bg-emerald-50 text-emerald-700 border-emerald-200",
-  "เสวนา/สัมมนา": "bg-amber-50 text-amber-700 border-amber-200",
-  "ประกวดแข่งขัน": "bg-rose-50 text-rose-700 border-rose-200",
-  "อาสา/อนุรักษ์": "bg-lime-50 text-lime-700 border-lime-200",
-  "ติวสอบ/ทำพอร์ต": "bg-indigo-50 text-indigo-700 border-indigo-200",
-  "จำลองสนามสอบ": "bg-teal-50 text-teal-700 border-teal-200",
+  "พัฒนาทักษะ/เวิร์กชอป": "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-900",
+  "แนะแนวเรียนต่อ/อาชีพ": "bg-violet-50 dark:bg-violet-950/40 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-900",
+  "งานเปิดบ้าน/นิทรรศการ": "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900",
+  "เสวนา/สัมมนา": "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-900",
+  "ประกวดแข่งขัน": "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-900",
+  "อาสา/อนุรักษ์": "bg-lime-50 dark:bg-lime-950/40 text-lime-700 dark:text-lime-300 border-lime-200 dark:border-lime-900",
+  "ติวสอบ/ทำพอร์ต": "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-900",
+  "จำลองสนามสอบ": "bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border-teal-200 dark:border-teal-900",
 };
 
 function typeBadge(type: string) {
-  return typeStyles[type] ?? "bg-zinc-100 text-zinc-700 border-zinc-200";
+  return typeStyles[type] ?? "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-[#332e27]";
 }
 
 function toggleValue(list: string[], value: string) {
@@ -251,8 +251,8 @@ function Chip({
       aria-pressed={active}
       className={`rounded-full border px-3 py-1.5 text-sm transition-all duration-200 active:scale-95 ${
         active
-          ? "border-zinc-900 bg-zinc-900 text-white shadow-sm"
-          : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-500"
+          ? "border-zinc-900 bg-zinc-900 text-white shadow-sm dark:border-zinc-200 dark:bg-zinc-100 dark:text-zinc-900"
+          : "border-zinc-300 dark:border-[#3b352d] bg-white dark:bg-[#1c1a17] text-zinc-700 dark:text-zinc-300 hover:border-zinc-500 dark:hover:border-zinc-400"
       }`}
     >
       {children}
@@ -277,10 +277,10 @@ function SelectFilter({
     <select
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className={`w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 ${
+      className={`w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-900/50 ${
         active
-          ? "border-zinc-900 bg-white font-medium text-zinc-900"
-          : "border-zinc-300 bg-white text-zinc-600"
+          ? "border-zinc-900 dark:border-zinc-100 bg-white dark:bg-[#1c1a17] font-medium text-zinc-900 dark:text-zinc-100"
+          : "border-zinc-300 dark:border-[#3b352d] bg-white dark:bg-[#1c1a17] text-zinc-600 dark:text-zinc-300"
       }`}
     >
       <option value="">{label}</option>
@@ -314,8 +314,8 @@ function BookmarkButton({
       data-tour-bookmark={campId}
       className={`rounded-full border px-2.5 py-1 text-sm leading-none transition active:scale-90 ${
         saved
-          ? "animate-pop border-amber-300 bg-amber-50 text-amber-600"
-          : "border-zinc-200 bg-white text-zinc-400 hover:border-amber-300 hover:text-amber-500"
+          ? "animate-pop border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400"
+          : "border-zinc-200 dark:border-[#332e27] bg-white dark:bg-[#1c1a17] text-zinc-400 dark:text-zinc-500 hover:border-amber-300 hover:text-amber-500"
       }`}
     >
       {saved ? "★" : "☆"}
@@ -336,24 +336,24 @@ function CampCard({
 }) {
   const closed = isPast(camp.deadline, today);
   return (
-    <article className="flex h-full flex-col rounded-2xl border border-[#ebe3d5] bg-white p-5 shadow-[0_6px_20px_-16px_rgba(72,50,24,0.4)] transition duration-300 hover:-translate-y-0.5 hover:border-[#ded2bd] hover:shadow-[0_14px_30px_-18px_rgba(72,50,24,0.4)]">
+    <article className="flex h-full flex-col rounded-2xl border border-[#ebe3d5] dark:border-[#332e27] bg-white dark:bg-[#1c1a17] p-5 shadow-[0_6px_20px_-16px_rgba(72,50,24,0.4)] transition duration-300 hover:-translate-y-0.5 hover:border-[#ded2bd] hover:shadow-[0_14px_30px_-18px_rgba(72,50,24,0.4)]">
       <div className="flex flex-wrap items-center gap-2">
         <span
           className={`rounded-full border px-2.5 py-1 text-xs font-medium ${typeBadge(camp.type)}`}
         >
           {camp.type}
         </span>
-        <span className="rounded-full border border-zinc-200 px-2.5 py-1 text-xs text-zinc-600">
+        <span className="rounded-full border border-zinc-200 dark:border-[#332e27] px-2.5 py-1 text-xs text-zinc-600 dark:text-zinc-300">
           {camp.field}
         </span>
         {camp.certificate ? (
-          <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs text-emerald-700">
+          <span className="rounded-full border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 text-xs text-emerald-700 dark:text-emerald-300">
             มีเกียรติบัตร
           </span>
         ) : null}
         <div className="ml-auto flex items-center gap-2">
           <span
-            className={`text-xs font-medium ${closed ? "text-zinc-400" : "text-emerald-600"}`}
+            className={`text-xs font-medium ${closed ? "text-zinc-400 dark:text-zinc-500" : "text-emerald-600 dark:text-emerald-400"}`}
           >
             {closed ? "ปิดรับแล้ว" : "เปิดรับสมัคร"}
           </span>
@@ -367,11 +367,11 @@ function CampCard({
       </div>
 
       <h3 className="mt-3 text-base font-semibold leading-snug">{camp.title}</h3>
-      <p className="mt-1 text-sm text-zinc-500">{camp.organizer || "ไม่ระบุผู้จัด"}</p>
+      <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{camp.organizer || "ไม่ระบุผู้จัด"}</p>
 
-      <dl className="mt-3 space-y-1.5 text-sm text-zinc-600">
+      <dl className="mt-3 space-y-1.5 text-sm text-zinc-600 dark:text-zinc-300">
         <div className="flex gap-2">
-          <dt className="w-16 shrink-0 text-zinc-400">วันจัด</dt>
+          <dt className="w-16 shrink-0 text-zinc-400 dark:text-zinc-500">วันจัด</dt>
           <dd>
             {camp.startDate && camp.endDate
               ? formatRange(camp.startDate, camp.endDate)
@@ -379,30 +379,30 @@ function CampCard({
           </dd>
         </div>
         <div className="flex gap-2">
-          <dt className="w-16 shrink-0 text-zinc-400">สถานที่</dt>
+          <dt className="w-16 shrink-0 text-zinc-400 dark:text-zinc-500">สถานที่</dt>
           <dd>
             {camp.location || "ไม่ระบุ"}
             {camp.online ? " · ออนไลน์" : ""}
           </dd>
         </div>
         <div className="flex gap-2">
-          <dt className="w-16 shrink-0 text-zinc-400">ค่าใช้จ่าย</dt>
+          <dt className="w-16 shrink-0 text-zinc-400 dark:text-zinc-500">ค่าใช้จ่าย</dt>
           <dd>{camp.fee || "ไม่ระบุ"}</dd>
         </div>
         {camp.levels && camp.levels.length > 0 ? (
           <div className="flex gap-2">
-            <dt className="w-16 shrink-0 text-zinc-400">ระดับชั้น</dt>
+            <dt className="w-16 shrink-0 text-zinc-400 dark:text-zinc-500">ระดับชั้น</dt>
             <dd>{camp.levels.join(", ")}</dd>
           </div>
         ) : null}
       </dl>
 
       <div className="mt-auto flex items-center justify-between gap-3 pt-4">
-        <p className="text-base font-medium text-zinc-500">
+        <p className="text-base font-medium text-zinc-500 dark:text-zinc-400">
           {camp.deadline ? `ปิดรับ ${formatDayFull(camp.deadline)}` : "ไม่ระบุวันปิดรับ"}
         </p>
         <a
-          className="rounded-full bg-orange-600 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-orange-700 active:scale-[0.98]"
+          className="rounded-full bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-700 active:scale-[0.98]"
           href={camp.sourceUrl}
           target="_blank"
           rel="noreferrer noopener"
@@ -429,7 +429,7 @@ function Pager({
   if (pageCount <= 1) return null;
 
   const buttonClass =
-    "rounded-full border border-zinc-300 bg-white px-3 py-1.5 text-sm text-zinc-700 transition hover:border-zinc-500 hover:shadow-sm active:scale-95 disabled:cursor-not-allowed disabled:opacity-40";
+    "rounded-full border border-zinc-300 dark:border-[#3b352d] bg-white dark:bg-[#1c1a17] px-3 py-1.5 text-sm text-zinc-700 dark:text-zinc-300 transition hover:border-zinc-500 dark:hover:border-zinc-400 hover:shadow-sm active:scale-95 disabled:cursor-not-allowed disabled:opacity-40";
 
   return (
     <div
@@ -447,8 +447,8 @@ function Pager({
       >
         ‹ ก่อนหน้า
       </button>
-      <p className="text-sm text-zinc-500">
-        หน้า <span className="font-semibold text-zinc-900">{page}</span> / {pageCount}
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        หน้า <span className="font-semibold text-zinc-900 dark:text-zinc-100">{page}</span> / {pageCount}
       </p>
       <button
         type="button"
@@ -946,11 +946,11 @@ export default function CampExplorer({
       <section className="space-y-3">
         {/* แถบค้นหาแบบย่อ: ปกติเห็นแค่ช่องค้นหา กด "ค้นหาละเอียด" ค่อยกางแผงตัวกรองออกมา */}
         <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
-          <label className="flex flex-1 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-4 transition focus-within:border-orange-400 focus-within:ring-4 focus-within:ring-orange-100/70" data-tour="search">
+          <label className="flex flex-1 items-center gap-2 rounded-xl border border-zinc-300 dark:border-[#3b352d] bg-white dark:bg-[#1c1a17] px-4 transition focus-within:border-emerald-400 focus-within:ring-4 focus-within:ring-emerald-100/70 dark:focus-within:ring-emerald-900/40" data-tour="search">
             <svg
               viewBox="0 0 24 24"
               aria-hidden="true"
-              className="size-5 shrink-0 text-zinc-400"
+              className="size-5 shrink-0 text-zinc-400 dark:text-zinc-500"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -971,7 +971,7 @@ export default function CampExplorer({
                 type="button"
                 onClick={() => setQuery("")}
                 aria-label="ล้างคำค้น"
-                className="shrink-0 rounded-full px-1 text-zinc-400 hover:text-zinc-700"
+                className="shrink-0 rounded-full px-1 text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-200"
               >
                 ✕
               </button>
@@ -985,8 +985,8 @@ export default function CampExplorer({
             data-tour="advanced"
             className={`flex items-center justify-center gap-2 rounded-xl border px-5 py-3 text-sm font-medium transition-all duration-200 active:scale-[0.98] ${
               showFilters || activeFilterCount > 0
-                ? "border-zinc-900 bg-zinc-900 text-white shadow-sm"
-                : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-500 hover:shadow-sm"
+                ? "border-zinc-900 bg-zinc-900 text-white shadow-sm dark:border-zinc-200 dark:bg-zinc-100 dark:text-zinc-900"
+                : "border-zinc-300 dark:border-[#3b352d] bg-white dark:bg-[#1c1a17] text-zinc-700 dark:text-zinc-300 hover:border-zinc-500 dark:hover:border-zinc-400 hover:shadow-sm"
             }`}
           >
             <svg
@@ -1015,7 +1015,7 @@ export default function CampExplorer({
                 key={chip.key}
                 type="button"
                 onClick={chip.clear}
-                className="animate-fade rounded-full border border-zinc-900 bg-zinc-900 px-3 py-1 text-sm text-white transition hover:bg-zinc-800 active:scale-95"
+                className="animate-fade rounded-full border border-zinc-900 bg-zinc-900 px-3 py-1 text-sm text-white transition hover:bg-zinc-800 dark:border-zinc-200 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 active:scale-95"
               >
                 {chip.label} ✕
               </button>
@@ -1023,7 +1023,7 @@ export default function CampExplorer({
             <button
               type="button"
               onClick={clearFilters}
-              className="rounded-full px-3 py-1 text-sm text-zinc-500 underline"
+              className="rounded-full px-3 py-1 text-sm text-zinc-500 dark:text-zinc-400 underline"
             >
               ล้างทั้งหมด
             </button>
@@ -1031,7 +1031,7 @@ export default function CampExplorer({
         ) : null}
 
         {showFilters ? (
-          <div className="animate-panel overflow-hidden rounded-2xl border border-zinc-200 bg-[#f6f4ef] shadow-sm" data-tour="filters">
+          <div className="animate-panel overflow-hidden rounded-2xl border border-zinc-200 dark:border-[#332e27] bg-[#f6f4ef] dark:bg-[#181614] shadow-sm" data-tour="filters">
             {/* แท็บเลือกชนิดกิจกรรม เหมือนหน้า search ของ CAMPHUB */}
             <div className="flex items-end gap-2 px-4 pt-3">
               {[
@@ -1053,8 +1053,8 @@ export default function CampExplorer({
                     aria-pressed={active}
                     className={`rounded-t-xl px-4 py-2 text-sm font-semibold transition-colors duration-200 ${
                       active
-                        ? "bg-zinc-900 text-white"
-                        : "bg-white/70 text-zinc-600 hover:bg-white"
+                        ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
+                        : "bg-white/70 dark:bg-[#24211d] text-zinc-600 dark:text-zinc-300 hover:bg-white dark:hover:bg-[#24211d]"
                     }`}
                   >
                     {tab.label}
@@ -1063,13 +1063,13 @@ export default function CampExplorer({
               })}
             </div>
 
-            <div className="space-y-5 border-t border-zinc-200 p-4">
+            <div className="space-y-5 border-t border-zinc-200 dark:border-[#332e27] p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <svg
                     viewBox="0 0 24 24"
                     aria-hidden="true"
-                    className="size-4 text-zinc-500"
+                    className="size-4 text-zinc-500 dark:text-zinc-400"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
@@ -1077,26 +1077,26 @@ export default function CampExplorer({
                   >
                     <path d="M4 6h16M7 12h10M10 18h4" />
                   </svg>
-                  <p className="text-sm font-semibold text-zinc-800">ตัวกรอง</p>
+                  <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">ตัวกรอง</p>
                   <button
                     type="button"
                     onClick={clearFilters}
                     data-tour="reset"
                     className={`rounded-full border px-3 py-1 text-xs ${
                       activeFilterCount > 0
-                        ? "border-zinc-400 bg-white text-zinc-800"
-                        : "border-zinc-300 bg-white/60 text-zinc-500"
+                        ? "border-zinc-400 bg-white text-zinc-800 dark:border-zinc-500 dark:bg-[#1c1a17] dark:text-zinc-200"
+                        : "border-zinc-300 dark:border-[#3b352d] bg-white/60 dark:bg-[#1c1a17]/60 text-zinc-500 dark:text-zinc-400"
                     }`}
                   >
                     ทั้งหมด
                   </button>
                 </div>
-                <p className="text-xs text-zinc-500">เลือกได้หลายระดับชั้น · ช่องอื่นเลือกได้ทีละอย่าง</p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">เลือกได้หลายระดับชั้น · ช่องอื่นเลือกได้ทีละอย่าง</p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
-                  <p className="mb-1.5 text-xs font-medium text-zinc-500">รูปแบบกิจกรรม</p>
+                  <p className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">รูปแบบกิจกรรม</p>
                   <SelectFilter
                     label="ทั้งหมด"
                     value={effType === "ทั้งหมด" ? "" : effType}
@@ -1109,7 +1109,7 @@ export default function CampExplorer({
                 </div>
 
                 <div>
-                  <p className="mb-1.5 text-xs font-medium text-zinc-500">หมวดหมู่/สาขา</p>
+                  <p className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">หมวดหมู่/สาขา</p>
                   <SelectFilter
                     label="ทั้งหมด"
                     value={effField === "ทั้งหมด" ? "" : effField}
@@ -1122,18 +1122,18 @@ export default function CampExplorer({
                 </div>
 
                 <div className="lg:row-span-2">
-                  <p className="mb-1.5 text-xs font-medium text-zinc-500">ระดับชั้นที่รับ</p>
-                  <div className="grid gap-1.5 rounded-lg border border-zinc-300 bg-white p-3">
+                  <p className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">ระดับชั้นที่รับ</p>
+                  <div className="grid gap-1.5 rounded-lg border border-zinc-300 dark:border-[#3b352d] bg-white dark:bg-[#1c1a17] p-3">
                     {levels.map((level) => (
                       <label
                         key={level}
-                        className="flex cursor-pointer items-center gap-2 text-sm text-zinc-700"
+                        className="flex cursor-pointer items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300"
                       >
                         <input
                           type="checkbox"
                           checked={effLevels.includes(level)}
                           onChange={() => toggleLevel(level)}
-                          className="size-4 accent-zinc-900"
+                          className="size-4 accent-emerald-600 dark:accent-emerald-400"
                         />
                         <span>{level}</span>
                       </label>
@@ -1142,7 +1142,7 @@ export default function CampExplorer({
                 </div>
 
                 <div>
-                  <p className="mb-1.5 text-xs font-medium text-zinc-500">จังหวัด/พื้นที่</p>
+                  <p className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">จังหวัด/พื้นที่</p>
                   <SelectFilter
                     label="ทั้งหมด"
                     value={effProvince === "ทั้งหมด" ? "" : effProvince}
@@ -1155,7 +1155,7 @@ export default function CampExplorer({
                 </div>
 
                 <div>
-                  <p className="mb-1.5 text-xs font-medium text-zinc-500">ช่วงค่าใช้จ่าย</p>
+                  <p className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">ช่วงค่าใช้จ่าย</p>
                   <SelectFilter
                     label="ทั้งหมด"
                     value={effPrice === "all" ? "" : effPrice}
@@ -1168,7 +1168,7 @@ export default function CampExplorer({
                 </div>
 
                 <div>
-                  <p className="mb-1.5 text-xs font-medium text-zinc-500">มหาวิทยาลัย</p>
+                  <p className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">มหาวิทยาลัย</p>
                   <SelectFilter
                     label="ทั้งหมด"
                     value={university === "all" ? "" : university}
@@ -1181,7 +1181,7 @@ export default function CampExplorer({
                 </div>
 
                 <div data-tour="organizer">
-                  <p className="mb-1.5 text-xs font-medium text-zinc-500">ผู้จัด</p>
+                  <p className="mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400">ผู้จัด</p>
                   <SelectFilter
                     label="ทั้งหมด"
                     value={effOrganizer === "all" ? "" : effOrganizer}
@@ -1198,7 +1198,7 @@ export default function CampExplorer({
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <p className="text-xs font-medium text-zinc-500">คุณสมบัติเพิ่มเติม:</p>
+                <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">คุณสมบัติเพิ่มเติม:</p>
                 {extraOptions.map((option) => (
                   <Chip
                     key={option.id}
@@ -1219,11 +1219,11 @@ export default function CampExplorer({
                 </Chip>
               </div>
 
-              <label className="flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3">
+              <label className="flex items-center gap-2 rounded-lg border border-zinc-300 dark:border-[#3b352d] bg-white dark:bg-[#1c1a17] px-3">
                 <svg
                   viewBox="0 0 24 24"
                   aria-hidden="true"
-                  className="size-4 shrink-0 text-zinc-400"
+                  className="size-4 shrink-0 text-zinc-400 dark:text-zinc-500"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -1242,16 +1242,16 @@ export default function CampExplorer({
               </label>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 px-4 py-3">
-              <p className="text-sm text-zinc-600">
-                พบ <span className="font-semibold text-orange-600">{filtered.length}</span>{" "}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-200 dark:border-[#332e27] px-4 py-3">
+              <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                พบ <span className="font-semibold text-emerald-600 dark:text-emerald-400">{filtered.length}</span>{" "}
                 กิจกรรม ที่ตรงเงื่อนไข
               </p>
               <div className="flex items-center gap-4">
                 <button
                   type="button"
                   onClick={() => setShowFilters(false)}
-                  className="text-sm text-zinc-500 underline-offset-2 transition hover:text-zinc-800 hover:underline"
+                  className="text-sm text-zinc-500 dark:text-zinc-400 underline-offset-2 transition hover:text-zinc-800 dark:hover:text-zinc-200 hover:underline"
                 >
                   ซ่อนตัวกรอง ⌃
                 </button>
@@ -1259,7 +1259,7 @@ export default function CampExplorer({
                   type="button"
                   onClick={() => setShowFilters(false)}
                   data-tour="apply"
-                  className="rounded-full bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 hover:shadow-md active:scale-[0.98]"
+                  className="rounded-full bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 hover:shadow-md active:scale-[0.98]"
                 >
                   ดูผลลัพธ์ทั้งหมด
                 </button>
@@ -1272,7 +1272,7 @@ export default function CampExplorer({
           ref={resultsTopRef}
           className="flex flex-wrap items-center justify-between gap-3"
         >
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
             {filtered.length > 0
               ? `แสดง ${pageStart + 1}–${pageStart + visibleCamps.length} จาก ${filtered.length} ค่าย`
               : "ไม่มีค่ายที่ตรงเงื่อนไข"}{" "}
@@ -1285,12 +1285,12 @@ export default function CampExplorer({
               onChange={goToPage}
               compact
             />
-            <div className="flex rounded-full border border-zinc-300 bg-white p-1 text-sm">
+            <div className="flex rounded-full border border-zinc-300 dark:border-[#3b352d] bg-white dark:bg-[#1c1a17] p-1 text-sm">
               <button
                 type="button"
                 onClick={() => setView("list")}
                 aria-pressed={view === "list"}
-                className={`rounded-full px-3 py-1 transition-colors duration-200 ${view === "list" ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"}`}
+                className={`rounded-full px-3 py-1 transition-colors duration-200 ${view === "list" ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" : "text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100"}`}
               >
                 รายการ
               </button>
@@ -1299,7 +1299,7 @@ export default function CampExplorer({
                 onClick={() => setView("calendar")}
                 aria-pressed={view === "calendar"}
                 data-tour="calendar"
-                className={`rounded-full px-3 py-1 transition-colors duration-200 ${view === "calendar" ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"}`}
+                className={`rounded-full px-3 py-1 transition-colors duration-200 ${view === "calendar" ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" : "text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100"}`}
               >
                 ปฏิทิน
               </button>
@@ -1311,8 +1311,8 @@ export default function CampExplorer({
           <p
             className={`rounded-xl border px-3 py-2 text-xs ${
               conflictCount > 0
-                ? "border-red-200 bg-red-50 text-red-700"
-                : "border-amber-200 bg-amber-50 text-amber-800"
+                ? "border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"
+                : "border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200"
             }`}
           >
             ★ มาร์กไว้ {bookmarkedCamps.length} ค่าย
@@ -1325,7 +1325,7 @@ export default function CampExplorer({
 
       {view === "list" ? (
         filtered.length === 0 ? (
-          <p className="mt-8 rounded-2xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500">
+          <p className="mt-8 rounded-2xl border border-dashed border-zinc-300 dark:border-[#3b352d] p-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
             ไม่พบค่ายที่ตรงกับเงื่อนไข ลองล้างตัวกรองหรือเปลี่ยนคำค้น
           </p>
         ) : (
@@ -1356,7 +1356,7 @@ export default function CampExplorer({
             <button
               type="button"
               onClick={() => moveMonth(-1)}
-              className="rounded-full border border-zinc-300 bg-white px-3 py-1.5 text-sm transition hover:border-zinc-500 hover:shadow-sm active:scale-95"
+              className="rounded-full border border-zinc-300 dark:border-[#3b352d] bg-white dark:bg-[#1c1a17] px-3 py-1.5 text-sm transition hover:border-zinc-500 dark:hover:border-zinc-400 hover:shadow-sm active:scale-95"
               aria-label="เดือนก่อนหน้า"
             >
               ‹
@@ -1367,14 +1367,14 @@ export default function CampExplorer({
             <button
               type="button"
               onClick={() => moveMonth(1)}
-              className="rounded-full border border-zinc-300 bg-white px-3 py-1.5 text-sm transition hover:border-zinc-500 hover:shadow-sm active:scale-95"
+              className="rounded-full border border-zinc-300 dark:border-[#3b352d] bg-white dark:bg-[#1c1a17] px-3 py-1.5 text-sm transition hover:border-zinc-500 dark:hover:border-zinc-400 hover:shadow-sm active:scale-95"
               aria-label="เดือนถัดไป"
             >
               ›
             </button>
           </div>
 
-          <div className="mt-4 grid grid-cols-7 gap-1 text-center text-xs text-zinc-500">
+          <div className="mt-4 grid grid-cols-7 gap-1 text-center text-xs text-zinc-500 dark:text-zinc-400">
             {["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"].map((label) => (
               <div key={label} className="py-1">
                 {label}
@@ -1402,14 +1402,14 @@ export default function CampExplorer({
                   data-tour-day={iso}
                   className={`relative flex h-14 flex-col items-center justify-center rounded-lg border text-sm transition duration-150 hover:scale-[1.04] hover:shadow-sm active:scale-95 ${
                     selected
-                      ? "border-zinc-900 bg-zinc-900 text-white"
+                      ? "border-zinc-900 bg-zinc-900 text-white dark:border-zinc-200 dark:bg-zinc-100 dark:text-zinc-900"
                       : hasConflict
-                        ? "border-red-300 bg-red-50 text-red-900"
+                        ? "border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 text-red-900 dark:text-red-100"
                         : savedCount > 0
-                          ? "border-amber-300 bg-amber-50 text-amber-900"
+                          ? "border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-100"
                           : count > 0
-                            ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-                            : "border-zinc-200 bg-white text-zinc-700"
+                            ? "border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-100"
+                            : "border-zinc-200 dark:border-[#332e27] bg-white dark:bg-[#1c1a17] text-zinc-700 dark:text-zinc-300"
                   }`}
                 >
                   <span className={isToday ? "font-bold" : ""}>
@@ -1421,8 +1421,8 @@ export default function CampExplorer({
                         selected
                           ? "text-white/80"
                           : hasConflict
-                            ? "text-red-600"
-                            : "text-emerald-700"
+                            ? "text-red-600 dark:text-red-400"
+                            : "text-emerald-700 dark:text-emerald-300"
                       }`}
                     >
                       {count} ค่าย
@@ -1442,17 +1442,17 @@ export default function CampExplorer({
             })}
           </div>
 
-          <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-zinc-500">
+          <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-zinc-500 dark:text-zinc-400">
             <span className="flex items-center gap-1.5">
-              <span className="size-2.5 rounded-full border border-amber-300 bg-amber-50" />
+              <span className="size-2.5 rounded-full border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40" />
               มาร์กไว้
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="size-2.5 rounded-full border border-red-300 bg-red-50" />
+              <span className="size-2.5 rounded-full border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40" />
               วันจัดชนกัน
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="size-2.5 rounded-full border border-emerald-200 bg-emerald-50" />
+              <span className="size-2.5 rounded-full border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950/40" />
               มีค่าย
             </span>
           </div>
@@ -1464,7 +1464,7 @@ export default function CampExplorer({
                 : `ค่ายในเดือน${formatMonthLabel(month.year, month.month)}`}
             </p>
             {(selectedDay ? dayCamps : monthCamps).length === 0 ? (
-              <p className="mt-2 rounded-xl border border-dashed border-zinc-300 p-4 text-sm text-zinc-500">
+              <p className="mt-2 rounded-xl border border-dashed border-zinc-300 dark:border-[#3b352d] p-4 text-sm text-zinc-500 dark:text-zinc-400">
                 ไม่มีค่ายในวันหรือเดือนนี้
               </p>
             ) : (
@@ -1474,7 +1474,7 @@ export default function CampExplorer({
                   return (
                     <li
                       key={camp.id}
-                      className="rounded-xl border border-zinc-200 bg-white p-3 text-sm"
+                      className="rounded-xl border border-zinc-200 dark:border-[#332e27] bg-white dark:bg-[#1c1a17] p-3 text-sm"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
@@ -1487,7 +1487,7 @@ export default function CampExplorer({
                               </span>
                             ) : null}
                           </p>
-                          <p className="mt-0.5 text-xs text-zinc-500">
+                          <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
                             {camp.startDate && camp.endDate
                               ? formatRange(camp.startDate, camp.endDate)
                               : "ยังไม่ระบุวันจัด"}{" "}
@@ -1505,7 +1505,7 @@ export default function CampExplorer({
                             href={camp.sourceUrl}
                             target="_blank"
                             rel="noreferrer noopener"
-                            className="text-xs font-medium text-orange-700 underline underline-offset-2"
+                            className="text-xs font-medium text-emerald-700 dark:text-emerald-300 underline underline-offset-2"
                           >
                             ต้นฉบับ
                           </a>
@@ -1520,7 +1520,7 @@ export default function CampExplorer({
         </section>
       )}
 
-      <p className="mt-8 text-xs text-zinc-400">
+      <p className="mt-8 text-xs text-zinc-400 dark:text-zinc-500">
         รอบนี้ดึงจาก {stats.sourcePages} หน้า CAMPHUB พบลิงก์ {stats.foundLinks} รายการ
         และเก็บเฉพาะที่ยังเปิดรับสมัคร {stats.keptCamps} ค่าย · รีเฟรชวันละครั้ง
       </p>
