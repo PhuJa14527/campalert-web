@@ -29,7 +29,7 @@ export function BotInviteSection() {
         href={BOT_INVITE_URL}
         target="_blank"
         rel="noreferrer noopener"
-        className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-emerald-700 underline underline-offset-2 transition hover:text-emerald-800"
+        className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-orange-700 underline underline-offset-2 transition hover:text-orange-800"
       >
         เพิ่มบอทเข้า Discord
         <span aria-hidden="true">↗</span>
@@ -123,11 +123,11 @@ export function BotInvitePopup() {
   return (
     <div
       role="status"
-      className="animate-rise fixed bottom-20 left-4 z-40 w-[calc(100vw-2rem)] max-w-xs rounded-2xl border border-emerald-200 bg-white p-4 shadow-[0_18px_45px_-15px_rgba(0,0,0,0.35)] sm:bottom-4"
+      className="animate-rise fixed bottom-20 left-4 z-40 w-[calc(100vw-2rem)] max-w-xs rounded-2xl border border-orange-200 bg-white p-4 shadow-[0_18px_45px_-15px_rgba(0,0,0,0.35)] sm:bottom-4"
     >
       <div className="flex items-start justify-between gap-2">
         <span className="flex items-center gap-2 text-sm font-semibold text-zinc-900">
-          <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-50 text-sm">
+          <span className="flex size-7 items-center justify-center rounded-lg bg-orange-50 text-sm">
             🤖
           </span>
           ทำให้บอทแจ้งเตือน
@@ -150,7 +150,7 @@ export function BotInvitePopup() {
       <Link
         href="/settings#bot"
         onClick={dismiss}
-        className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-500 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-emerald-600/25 transition hover:brightness-105 active:scale-[0.98]"
+        className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full bg-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-orange-600/20 transition hover:bg-orange-700 active:scale-[0.98]"
       >
         ไปตั้งค่าการแจ้งเตือน
         <span aria-hidden="true">→</span>

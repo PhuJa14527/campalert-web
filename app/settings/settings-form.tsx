@@ -126,7 +126,7 @@ export default function SettingsForm({ fields }: { fields: string[] }) {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-zinc-200 bg-white p-5">
+      <section className="rounded-2xl border border-[#ebe3d5] bg-white p-5">
         <p className="text-sm text-zinc-500">
           เข้าสู่ระบบในชื่อ <span className="font-medium text-zinc-800">{discordName || "ผู้ใช้ Discord"}</span>
           {" · "}
@@ -139,10 +139,10 @@ export default function SettingsForm({ fields }: { fields: string[] }) {
             {MODES.map((mode) => (
               <label
                 key={mode.id}
-                className={`cursor-pointer rounded-xl border p-3 text-sm ${
+                className={`cursor-pointer rounded-xl border p-3 text-sm transition ${
                   settings.mode === mode.id
-                    ? "border-zinc-900 bg-zinc-900 text-white"
-                    : "border-zinc-300 bg-white text-zinc-700"
+                    ? "border-orange-600 bg-orange-600 text-white"
+                    : "border-zinc-300 bg-white text-zinc-700 hover:border-orange-300"
                 }`}
               >
                 <input
@@ -196,7 +196,7 @@ export default function SettingsForm({ fields }: { fields: string[] }) {
                 onChange={(event) =>
                   setSettings((prev) => ({ ...prev, advance: Number(event.target.value) }))
                 }
-                className="w-full"
+                className="w-full accent-orange-600"
               />
               <span className="w-14 shrink-0 rounded-lg border border-zinc-200 px-2 py-1 text-center">
                 {settings.advance} วัน
@@ -210,7 +210,7 @@ export default function SettingsForm({ fields }: { fields: string[] }) {
             type="button"
             onClick={() => void save()}
             disabled={saving}
-            className="rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+            className="rounded-full bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:opacity-50"
           >
             {saving ? "กำลังบันทึก…" : "บันทึกการตั้งค่า"}
           </button>
@@ -218,11 +218,11 @@ export default function SettingsForm({ fields }: { fields: string[] }) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-zinc-200 bg-white p-5 text-sm leading-6 text-zinc-600">
+      <section className="rounded-2xl border border-[#ebe3d5] bg-white p-5 text-sm leading-6 text-zinc-600">
         <p className="font-semibold text-zinc-900">ค่ายที่มาร์กไว้</p>
         <p className="mt-1">
           กดดาวที่การ์ดค่ายในหน้าแรก ค่ายที่มาร์กจะขึ้นในปฏิทิน (จุดสีเหลือง) และส่งไปบอทเพื่อแจ้งเตือน
-          ถ้าอยากดูรายการทั้งหมด <Link href="/" className="text-emerald-700 underline">กลับไปหน้าแรก</Link>
+          ถ้าอยากดูรายการทั้งหมด <Link href="/" className="text-orange-700 underline underline-offset-2">กลับไปหน้าแรก</Link>
         </p>
       </section>
     </div>

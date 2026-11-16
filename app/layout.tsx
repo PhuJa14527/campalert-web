@@ -13,15 +13,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ค่ายไหนดี · รวมค่ายสำหรับนักเรียน",
+  title: "CampAlert · ค่ายไหนดี รวมค่ายที่ยังเปิดรับสมัคร",
   description:
-    "รวมค่ายวิทยาศาสตร์ เทคโนโลยี ดนตรี ภาษา และจิตอาสา พร้อมวันรับสมัครและค่าใช้จ่าย",
+    "CampAlert รวมค่ายและกิจกรรมจาก CAMPHUB ที่ยังเปิดรับสมัครไว้ในที่เดียว พร้อมวันจัด สถานที่ ค่าใช้จ่าย และกำหนดปิดรับสมัคร",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="en"
+      lang="th"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>

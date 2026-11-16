@@ -277,7 +277,7 @@ function SelectFilter({
     <select
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className={`w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 ${
+      className={`w-full rounded-lg border px-3 py-2.5 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 ${
         active
           ? "border-zinc-900 bg-white font-medium text-zinc-900"
           : "border-zinc-300 bg-white text-zinc-600"
@@ -336,7 +336,7 @@ function CampCard({
 }) {
   const closed = isPast(camp.deadline, today);
   return (
-    <article className="flex h-full flex-col rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md">
+    <article className="flex h-full flex-col rounded-2xl border border-[#ebe3d5] bg-white p-5 shadow-[0_6px_20px_-16px_rgba(72,50,24,0.4)] transition duration-300 hover:-translate-y-0.5 hover:border-[#ded2bd] hover:shadow-[0_14px_30px_-18px_rgba(72,50,24,0.4)]">
       <div className="flex flex-wrap items-center gap-2">
         <span
           className={`rounded-full border px-2.5 py-1 text-xs font-medium ${typeBadge(camp.type)}`}
@@ -402,12 +402,12 @@ function CampCard({
           {camp.deadline ? `ปิดรับ ${formatDayFull(camp.deadline)}` : "ไม่ระบุวันปิดรับ"}
         </p>
         <a
-          className="rounded-full bg-zinc-900 px-3.5 py-1.5 text-xs font-medium text-white"
+          className="rounded-full bg-orange-600 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-orange-700 active:scale-[0.98]"
           href={camp.sourceUrl}
           target="_blank"
           rel="noreferrer noopener"
         >
-          ดูรายละเอียดที่ Camphub
+          ดูรายละเอียดที่ CAMPHUB
         </a>
       </div>
     </article>
@@ -946,7 +946,7 @@ export default function CampExplorer({
       <section className="space-y-3">
         {/* แถบค้นหาแบบย่อ: ปกติเห็นแค่ช่องค้นหา กด "ค้นหาละเอียด" ค่อยกางแผงตัวกรองออกมา */}
         <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
-          <label className="flex flex-1 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-4 transition focus-within:border-emerald-400 focus-within:ring-4 focus-within:ring-emerald-100/70" data-tour="search">
+          <label className="flex flex-1 items-center gap-2 rounded-xl border border-zinc-300 bg-white px-4 transition focus-within:border-orange-400 focus-within:ring-4 focus-within:ring-orange-100/70" data-tour="search">
             <svg
               viewBox="0 0 24 24"
               aria-hidden="true"
@@ -1505,7 +1505,7 @@ export default function CampExplorer({
                             href={camp.sourceUrl}
                             target="_blank"
                             rel="noreferrer noopener"
-                            className="text-xs font-medium text-emerald-700 underline"
+                            className="text-xs font-medium text-orange-700 underline underline-offset-2"
                           >
                             ต้นฉบับ
                           </a>

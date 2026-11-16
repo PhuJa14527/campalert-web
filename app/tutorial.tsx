@@ -60,7 +60,7 @@ const STEPS: Step[] = [
   {
     id: "intro",
     title: "เว็บนี้คืออะไร",
-    body: "ค่ายไหนดี รวมค่ายที่ยังเปิดรับสมัครจาก CAMPHUB ไว้ที่เดียว แต่ละค่ายมีลิงก์กลับไปหน้าต้นฉบับให้กดสมัครเอง\n\nเว็บมีสามระบบหลัก ตัวกรองแบบเดียวกับหน้า search ของ CAMPHUB ที่เราเพิ่มผู้จัดเข้ามาว่าเป็นมหาวิทยาลัยหรือมูลนิธิ, ปฏิทินที่โชว์วันจัดจริงและเตือนวันที่ค่ายชนกัน, กับการแจ้งเตือนผ่าน Discord\n\nเดี๋ยวพาไล่กดทีละอัน ปุ่มที่ให้กดจะมีวงเขียว ๆ ส่วนอื่นล็อกไว้ก่อน ถ้ายังไม่สะดวกกด ✕ ปิดไว้ก่อนได้ กลับมาทำต่อทีหลังได้ตลอด",
+    body: "ค่ายไหนดี รวมค่ายที่ยังเปิดรับสมัครจาก CAMPHUB ไว้ที่เดียว แต่ละค่ายมีลิงก์กลับไปหน้าต้นฉบับให้กดสมัครเอง\n\nเว็บมีสามระบบหลัก ตัวกรองแบบเดียวกับหน้า search ของ CAMPHUB ที่เราเพิ่มผู้จัดเข้ามาว่าเป็นมหาวิทยาลัยหรือมูลนิธิ, ปฏิทินที่โชว์วันจัดจริงและเตือนวันที่ค่ายชนกัน, กับการแจ้งเตือนผ่าน Discord\n\nเดี๋ยวพาไล่กดทีละอัน ปุ่มที่ให้กดจะมีวงสีส้ม ๆ ส่วนอื่นล็อกไว้ก่อน ถ้ายังไม่สะดวกกด ✕ ปิดไว้ก่อนได้ กลับมาทำต่อทีหลังได้ตลอด",
     manualLabel: "เริ่มเลย",
   },
   {
@@ -524,10 +524,10 @@ export default function Tutorial({
   if (!open) {
     if (ask) {
       return (
-        <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-sm animate-rise rounded-2xl border border-emerald-200 bg-white p-4 shadow-[0_24px_70px_-20px_rgba(0,0,0,0.35)]">
+        <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-sm animate-rise rounded-2xl border border-orange-200 bg-white p-4 shadow-[0_24px_70px_-20px_rgba(0,0,0,0.35)]">
           <div className="flex items-start justify-between gap-3">
             <span className="flex items-center gap-2.5">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-base shadow-sm shadow-emerald-600/25">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-orange-600 text-base text-white shadow-sm shadow-orange-600/20">
                 🎓
               </span>
               <span className="text-sm font-semibold text-zinc-900">
@@ -554,7 +554,7 @@ export default function Tutorial({
             <button
               type="button"
               onClick={startTutorial}
-              className="flex-1 rounded-full bg-gradient-to-r from-emerald-600 to-teal-500 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-emerald-600/25 transition hover:brightness-105 active:scale-[0.98]"
+              className="flex-1 rounded-full bg-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-orange-600/20 transition hover:bg-orange-700 active:scale-[0.98]"
             >
               พาแนะนำหน่อย
             </button>
@@ -574,7 +574,7 @@ export default function Tutorial({
       <button
         type="button"
         onClick={startTutorial}
-        className="fixed bottom-4 right-4 z-50 flex items-center gap-2.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 transition hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0"
+        className="fixed bottom-4 right-4 z-50 flex items-center gap-2.5 rounded-full bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-orange-900/20 transition hover:-translate-y-0.5 hover:bg-orange-700 hover:shadow-xl active:translate-y-0"
       >
         <span className="flex size-6 items-center justify-center rounded-full bg-white/20 text-xs">
           🎓
@@ -609,12 +609,12 @@ export default function Tutorial({
               width: hole.width,
               height: hole.height,
               // เงาแผ่ครอบทั้งจอ เว้นรูปร่างของกรอบไว้เท่านั้น
-              // จุดสว่างจึงเท่ากับกรอบสีเขียวเป๊ะ ทั้งขนาดและมุมโค้ง
+              // จุดสว่างจึงเท่ากับกรอบสีส้มเป๊ะ ทั้งขนาดและมุมโค้ง
               boxShadow: "0 0 0 9999px rgba(9, 9, 11, 0.66)",
             }}
           >
             {currentDone ? (
-              <div className="absolute inset-0 rounded-xl border-2 border-emerald-300/70" />
+              <div className="absolute inset-0 rounded-xl border-2 border-orange-400/80" />
             ) : (
               <div className="absolute inset-0 animate-glow rounded-xl border-2" />
             )}
@@ -631,15 +631,15 @@ export default function Tutorial({
         style={cardStyle}
         className="animate-tour-in fixed z-[70] flex h-[28rem] max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-sm flex-col overflow-hidden rounded-2xl border border-white/70 bg-white/95 shadow-[0_24px_70px_-20px_rgba(0,0,0,0.5)] backdrop-blur-md"
       >
-        <div className="relative shrink-0 overflow-hidden border-b border-zinc-100 bg-gradient-to-br from-emerald-50 via-white to-white px-4 pb-3 pt-3.5">
+        <div className="relative shrink-0 overflow-hidden border-b border-orange-100 bg-orange-50 px-4 pb-3 pt-3.5">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-lg shadow-sm shadow-emerald-600/25">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-orange-600 text-lg text-white shadow-sm shadow-orange-600/20">
                 🎓
               </span>
               <div>
                 <p className="text-sm font-semibold text-zinc-900">มีอะไรในค่ายไหนดี</p>
-                <p className="text-[11px] font-medium text-emerald-700">
+                <p className="text-[11px] font-medium text-orange-700">
                   {finished
                     ? "ครบทุกขั้นแล้ว"
                     : `ขั้น ${Math.min(step + 1, STEPS.length)} จาก ${STEPS.length}`}
@@ -662,9 +662,9 @@ export default function Tutorial({
                 key={item.id}
                 className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${
                   finished || index < step
-                    ? "bg-emerald-500"
+                    ? "bg-orange-500"
                     : index === step
-                      ? "bg-emerald-300"
+                      ? "bg-orange-300"
                       : "bg-zinc-200"
                 }`}
               />
@@ -687,7 +687,7 @@ export default function Tutorial({
               <button
                 type="button"
                 onClick={restart}
-                className="w-full rounded-full bg-gradient-to-r from-emerald-600 to-teal-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/25 transition hover:brightness-105 active:scale-[0.98]"
+                className="w-full rounded-full bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-orange-600/20 transition hover:bg-orange-700 active:scale-[0.98]"
               >
                 เริ่มแนะนำใหม่
               </button>
@@ -695,12 +695,12 @@ export default function Tutorial({
           ) : currentDone ? (
             <div className="flex flex-col items-center gap-3 py-6">
               <span className="relative flex size-14 items-center justify-center">
-                <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/30" />
-                <span className="animate-check relative flex size-14 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-2xl text-white shadow-lg shadow-emerald-600/30">
+                <span className="absolute inset-0 animate-ping rounded-full bg-orange-400/30" />
+                <span className="animate-check relative flex size-14 items-center justify-center rounded-full bg-orange-600 text-2xl text-white shadow-lg shadow-orange-600/30">
                   ✓
                 </span>
               </span>
-              <p className="text-sm font-semibold text-emerald-700">ลองแล้ว ไปขั้นถัดไป...</p>
+              <p className="text-sm font-semibold text-orange-700">ลองแล้ว ไปขั้นถัดไป...</p>
             </div>
           ) : current ? (
             <div className="space-y-3">
@@ -719,15 +719,15 @@ export default function Tutorial({
               <button
                 type="button"
                 onClick={advance}
-                className="w-full rounded-full bg-gradient-to-r from-emerald-600 to-teal-500 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/25 transition hover:brightness-105 active:scale-[0.98]"
+                className="w-full rounded-full bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-orange-600/20 transition hover:bg-orange-700 active:scale-[0.98]"
               >
                 {current.manualLabel}
               </button>
             ) : (
               <div className="flex items-center gap-2">
-                <span className="size-1.5 shrink-0 animate-hint rounded-full bg-emerald-500" />
+                <span className="size-1.5 shrink-0 animate-hint rounded-full bg-orange-500" />
                 <p className="text-xs text-zinc-500">
-                  กดปุ่มที่วงเขียวไว้ แล้วติ๊กถูกจะขึ้นเอง
+                  กดปุ่มที่วงสีส้มไว้ แล้วติ๊กถูกจะขึ้นเอง
                 </p>
               </div>
             )}

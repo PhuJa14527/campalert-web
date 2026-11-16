@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function SettingsPage() {
   return (
-    <div className="flex flex-1 flex-col bg-[#faf9f6] text-zinc-900">
+    <div className="flex flex-1 flex-col bg-[#fbf8f2] text-zinc-900">
       <SiteHeader />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-5 pb-16">
@@ -18,7 +18,7 @@ export default function SettingsPage() {
         <div className="pt-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-full border border-zinc-300 bg-white px-5 py-3 text-sm font-semibold text-zinc-700 shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-400 hover:text-zinc-900 hover:shadow-md active:translate-y-0 active:scale-[0.98]"
+            className="inline-flex items-center gap-2 rounded-full border border-zinc-300 bg-white px-5 py-3 text-sm font-semibold text-zinc-700 shadow-sm transition hover:-translate-y-0.5 hover:border-orange-400 hover:text-orange-700 hover:shadow-md active:translate-y-0 active:scale-[0.98]"
           >
             <span aria-hidden="true" className="text-base leading-none">
               ←
