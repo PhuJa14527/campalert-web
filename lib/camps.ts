@@ -30,6 +30,9 @@ export type Camp = {
 
 export const camps: Camp[] = raw.camps as Camp[];
 
+/** จำนวนค่ายต่อหน้าในมุมมองรายการ (ใช้ร่วมกับทัวร์เพื่อให้คู่ตัวอย่างอยู่หน้าเดียวกัน) */
+export const CAMPS_PER_PAGE = 12;
+
 export const dataFetchedAt: string = raw.fetchedAt;
 
 export const dataSource: string = raw.sourceUrl;

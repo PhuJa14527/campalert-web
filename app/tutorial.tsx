@@ -10,6 +10,7 @@ import {
   type CSSProperties,
 } from "react";
 import type { Camp } from "@/lib/camps";
+import { CAMPS_PER_PAGE } from "@/lib/camps";
 
 const TUTORIAL_KEY = "campalert.tutorial.v1";
 
@@ -29,6 +30,7 @@ type Props = {
   onSetView: (view: ViewMode) => void;
   onSetShowFilters: (open: boolean) => void;
   onFocusMonth: (iso: string) => void;
+  onRevealCamp: (id: string) => void;
 };
 
 type StepState = {
@@ -162,6 +164,12 @@ function pickSample(camps: Camp[], saved: Set<string>): Sample | null {
     (camp) => camp.startDate && camp.endDate && camp.startDate <= camp.endDate,
   );
 
+  // หน้ารายการแบ่งหน้าละ CAMPS_PER_PAGE ค่าย ถ้าคู่ตัวอย่างอยู่คนละหน้า
+  // ผู้ใช้จะกดดาวไม่เจอ เลยให้คะแนนเพิ่มเป็นตัวเลือกสุดท้าย
+  const pageOf = new Map(
+    camps.map((camp, index) => [camp.id, Math.floor(index / CAMPS_PER_PAGE)]),
+  );
+
   let best: Sample | null = null;
   let bestScore = Number.POSITIVE_INFINITY;
 
@@ -176,6 +184,7 @@ function pickSample(camps: Camp[], saved: Set<string>): Sample | null {
       const score =
         daysInclusive(a.startDate!, a.endDate!) +
         daysInclusive(b.startDate!, b.endDate!) +
+        (pageOf.get(a.id) !== pageOf.get(b.id) ? 50 : 0) +
         (saved.has(a.id) ? 100 : 0) +
         (saved.has(b.id) ? 100 : 0);
 
@@ -234,6 +243,7 @@ export default function Tutorial({
   onSetView,
   onSetShowFilters,
   onFocusMonth,
+  onRevealCamp,
 }: Props) {
   // ให้ prerender กับ render แรกตรงกัน (ฝั่งเซิร์ฟเวอร์ไม่รู้ค่า localStorage)
   const mounted = useSyncExternalStore(
@@ -375,6 +385,21 @@ export default function Tutorial({
       onSetView("calendar");
     }
   }, [open, finished, step, sample, onResetFilters, onSetView, onSetShowFilters, onFocusMonth]);
+
+  // ปุ่มดาวของค่ายตัวอย่างอาจอยู่คนละหน้า ถ้ายังไม่ถูกเรนเดอร์ให้กระโดดไปหน้านั้น
+  // หน่วงนิดหนึ่งให้ผลจากการล้างตัวกรอง (ที่ทำให้กลับหน้า 1) ทำงานจบก่อน
+  useEffect(() => {
+    if (!open || finished || !targetSelector) return;
+    if (!targetSelector.startsWith('[data-tour-bookmark="')) return;
+
+    const timer = window.setTimeout(() => {
+      if (document.querySelector(targetSelector)) return;
+      const id = targetSelector.slice('[data-tour-bookmark="'.length, -2);
+      if (id) onRevealCamp(id);
+    }, 80);
+
+    return () => window.clearTimeout(timer);
+  }, [open, finished, targetSelector, onRevealCamp]);
 
   // ตามตำแหน่งปุ่มเป้าหมายทุกเฟรม รองรับการเลื่อนจอและแผงที่กางออก
   useEffect(() => {

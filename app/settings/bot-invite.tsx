@@ -123,7 +123,7 @@ export function BotInvitePopup() {
   return (
     <div
       role="status"
-      className="animate-rise fixed bottom-4 left-4 z-40 w-[calc(100vw-2rem)] max-w-xs rounded-2xl border border-emerald-200 bg-white p-4 shadow-[0_18px_45px_-15px_rgba(0,0,0,0.35)]"
+      className="animate-rise fixed bottom-20 left-4 z-40 w-[calc(100vw-2rem)] max-w-xs rounded-2xl border border-emerald-200 bg-white p-4 shadow-[0_18px_45px_-15px_rgba(0,0,0,0.35)] sm:bottom-4"
     >
       <div className="flex items-start justify-between gap-2">
         <span className="flex items-center gap-2 text-sm font-semibold text-zinc-900">

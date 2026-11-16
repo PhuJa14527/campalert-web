@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
 import type { Camp } from "@/lib/camps";
-import { organizerKind, universityLabels, universityOf } from "@/lib/camps";
+import { CAMPS_PER_PAGE, organizerKind, universityLabels, universityOf } from "@/lib/camps";
 import { getSupabase } from "@/lib/supabase";
 import Tutorial from "@/app/tutorial";
 import {
@@ -414,6 +414,54 @@ function CampCard({
   );
 }
 
+/** ปุ่มเลื่อนหน้า แสดงเฉพาะตอนมีมากกว่าหนึ่งหน้า */
+function Pager({
+  page,
+  pageCount,
+  onChange,
+  compact = false,
+}: {
+  page: number;
+  pageCount: number;
+  onChange: (page: number) => void;
+  compact?: boolean;
+}) {
+  if (pageCount <= 1) return null;
+
+  const buttonClass =
+    "rounded-full border border-zinc-300 bg-white px-3 py-1.5 text-sm text-zinc-700 transition hover:border-zinc-500 hover:shadow-sm active:scale-95 disabled:cursor-not-allowed disabled:opacity-40";
+
+  return (
+    <div
+      className={
+        compact
+          ? "flex items-center gap-2"
+          : "mt-8 flex flex-wrap items-center justify-center gap-3"
+      }
+    >
+      <button
+        type="button"
+        onClick={() => onChange(page - 1)}
+        disabled={page <= 1}
+        className={buttonClass}
+      >
+        ‹ ก่อนหน้า
+      </button>
+      <p className="text-sm text-zinc-500">
+        หน้า <span className="font-semibold text-zinc-900">{page}</span> / {pageCount}
+      </p>
+      <button
+        type="button"
+        onClick={() => onChange(page + 1)}
+        disabled={page >= pageCount}
+        className={buttonClass}
+      >
+        ถัดไป ›
+      </button>
+    </div>
+  );
+}
+
 export default function CampExplorer({
   camps,
   types,
@@ -618,6 +666,64 @@ export default function CampExplorer({
     bookmarked,
     today,
   ]);
+
+  // แบ่งหน้าฝั่งเบราว์เซอร์ เพราะข้อมูลทั้งชุดอยู่ในไฟล์เดียว ไม่ต้องยิงเซิร์ฟเวอร์ใหม่
+  const pageCount = Math.max(1, Math.ceil(filtered.length / CAMPS_PER_PAGE));
+
+  // ลายเซ็นของเงื่อนไข ไม่นับการกดดาว ถ้าผู้ใช้เปลี่ยนเงื่อนไขจริงค่อยกลับหน้า 1
+  const filterKey = [
+    query,
+    effType,
+    effField,
+    effProvince,
+    effPrice,
+    university,
+    effOrganizer,
+    effLevels.join(","),
+    extras.join(","),
+    effStatus,
+    bookmarkedOnly ? bookmarked.join(",") : "",
+  ].join("|");
+
+  // เปลี่ยนเงื่อนไขแล้วให้กลับไปหน้าแรกเสมอ ไม่งั้นอาจค้างอยู่หน้าที่ว่างไปแล้ว
+  // เทียบลายเซ็นของเงื่อนไขแล้วปรับเลขหน้าตอน render
+  // เป็นวิธีที่ React แนะนำสำหรับ state ที่ขึ้นกับค่าใหม่ ไม่ต้องใช้ effect
+  const [page, setPage] = useState(1);
+  const [lastFilterKey, setLastFilterKey] = useState(filterKey);
+  if (filterKey !== lastFilterKey) {
+    setLastFilterKey(filterKey);
+    setPage(1);
+  }
+
+  const currentPage = Math.min(page, pageCount);
+  const pageStart = (currentPage - 1) * CAMPS_PER_PAGE;
+  const visibleCamps = filtered.slice(pageStart, pageStart + CAMPS_PER_PAGE);
+
+  const resultsTopRef = useRef<HTMLDivElement | null>(null);
+
+  const goToPage = useCallback(
+    (next: number) => {
+      setPage(next);
+      const node = resultsTopRef.current;
+      if (!node) return;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({
+        top: node.getBoundingClientRect().top + window.scrollY - 80,
+        behavior: reduce ? "auto" : "smooth",
+      });
+    },
+    [setPage],
+  );
+
+  // ให้ทัวร์เรียกได้: กระโดดไปหน้าที่มีค่ายนั้น เพราะคู่ตัวอย่างอาจอยู่คนละหน้า
+  const revealCamp = useCallback(
+    (id: string) => {
+      const index = filtered.findIndex((camp) => camp.id === id);
+      if (index < 0) return;
+      setPage(Math.floor(index / CAMPS_PER_PAGE) + 1);
+    },
+    [filtered, setPage],
+  );
 
   const activeFilterCount =
     (effType !== "ทั้งหมด" ? 1 : 0) +
@@ -1162,28 +1268,42 @@ export default function CampExplorer({
           </div>
         ) : null}
 
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div
+          ref={resultsTopRef}
+          className="flex flex-wrap items-center justify-between gap-3"
+        >
           <p className="text-sm text-zinc-500">
-            พบ {filtered.length} ค่าย · ข้อมูล ณ {fetchedLabel}
+            {filtered.length > 0
+              ? `แสดง ${pageStart + 1}–${pageStart + visibleCamps.length} จาก ${filtered.length} ค่าย`
+              : "ไม่มีค่ายที่ตรงเงื่อนไข"}{" "}
+            · ข้อมูล ณ {fetchedLabel}
           </p>
-          <div className="flex rounded-full border border-zinc-300 bg-white p-1 text-sm">
-            <button
-              type="button"
-              onClick={() => setView("list")}
-              aria-pressed={view === "list"}
-              className={`rounded-full px-3 py-1 transition-colors duration-200 ${view === "list" ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"}`}
-            >
-              รายการ
-            </button>
-            <button
-              type="button"
-              onClick={() => setView("calendar")}
-              aria-pressed={view === "calendar"}
-              data-tour="calendar"
-              className={`rounded-full px-3 py-1 transition-colors duration-200 ${view === "calendar" ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"}`}
-            >
-              ปฏิทิน
-            </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <Pager
+              page={currentPage}
+              pageCount={pageCount}
+              onChange={goToPage}
+              compact
+            />
+            <div className="flex rounded-full border border-zinc-300 bg-white p-1 text-sm">
+              <button
+                type="button"
+                onClick={() => setView("list")}
+                aria-pressed={view === "list"}
+                className={`rounded-full px-3 py-1 transition-colors duration-200 ${view === "list" ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"}`}
+              >
+                รายการ
+              </button>
+              <button
+                type="button"
+                onClick={() => setView("calendar")}
+                aria-pressed={view === "calendar"}
+                data-tour="calendar"
+                className={`rounded-full px-3 py-1 transition-colors duration-200 ${view === "calendar" ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"}`}
+              >
+                ปฏิทิน
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1209,22 +1329,26 @@ export default function CampExplorer({
             ไม่พบค่ายที่ตรงกับเงื่อนไข ลองล้างตัวกรองหรือเปลี่ยนคำค้น
           </p>
         ) : (
-          <ul className="mt-6 grid animate-view gap-4 sm:grid-cols-2">
-            {filtered.map((camp, index) => (
-              <li
-                key={camp.id}
-                className="animate-rise"
-                style={{ animationDelay: `${Math.min(index, 12) * 35}ms` }}
-              >
-                <CampCard
-                  camp={camp}
-                  today={today}
-                  saved={bookmarked.includes(camp.id)}
-                  onBookmark={() => toggleBookmark(camp.id)}
-                />
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="mt-6 grid animate-view gap-4 sm:grid-cols-2">
+              {visibleCamps.map((camp, index) => (
+                <li
+                  key={camp.id}
+                  className="animate-rise"
+                  style={{ animationDelay: `${Math.min(index, 12) * 35}ms` }}
+                >
+                  <CampCard
+                    camp={camp}
+                    today={today}
+                    saved={bookmarked.includes(camp.id)}
+                    onBookmark={() => toggleBookmark(camp.id)}
+                  />
+                </li>
+              ))}
+            </ul>
+
+            <Pager page={currentPage} pageCount={pageCount} onChange={goToPage} />
+          </>
         )
       ) : (
         <section className="mt-6 animate-view">
@@ -1415,6 +1539,7 @@ export default function CampExplorer({
         onSetView={setView}
         onSetShowFilters={setShowFilters}
         onFocusMonth={focusMonthOf}
+        onRevealCamp={revealCamp}
       />
     </div>
   );
