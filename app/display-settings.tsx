@@ -104,7 +104,7 @@ export default function DisplaySettings() {
   }
 
   return (
-    <div ref={wrapRef} className="relative">
+    <div ref={wrapRef} className="static sm:relative">
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
@@ -120,7 +120,7 @@ export default function DisplaySettings() {
       </button>
 
       {open ? (
-        <div className="animate-panel absolute right-0 top-full z-50 mt-2 w-64 rounded-2xl border border-[#e7ddcd] bg-white p-4 text-left shadow-[0_18px_45px_-15px_rgba(0,0,0,0.35)] dark:border-[#332e27] dark:bg-[#1c1a17]">
+        <div className="animate-panel absolute left-4 right-4 top-full z-50 mt-2 w-auto rounded-2xl border border-[#e7ddcd] bg-white p-4 text-left shadow-[0_18px_45px_-15px_rgba(0,0,0,0.35)] sm:left-auto sm:right-0 sm:w-64 dark:border-[#332e27] dark:bg-[#1c1a17]">
           <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">การแสดงผล</p>
 
           <p className="mt-3 text-xs font-medium text-zinc-500 dark:text-zinc-400">ธีม</p>

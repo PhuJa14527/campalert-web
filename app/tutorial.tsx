@@ -570,20 +570,26 @@ export default function Tutorial({
       );
     }
 
+    // ข้อความบนปุ่ม ใช้ทั้งเป็น aria-label ตอนมือถือที่ซ่อนข้อความเหลือแต่ไอคอน
+    const resumeLabel = finished
+      ? "ดูแนะนำเว็บอีกครั้ง"
+      : step > 0 && step < STEPS.length
+        ? `ทำต่อ ขั้น ${step + 1}/${STEPS.length}`
+        : "รู้จักเว็บนี้";
+
     return (
       <button
         type="button"
         onClick={startTutorial}
+        aria-label={resumeLabel}
+        title={resumeLabel}
         className="fixed bottom-4 right-4 z-50 flex items-center gap-2.5 rounded-full bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 transition hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-xl active:translate-y-0"
       >
         <span className="flex size-6 items-center justify-center rounded-full bg-white/20 text-xs">
           🎓
         </span>
-        {finished
-          ? "ดูแนะนำเว็บอีกครั้ง"
-          : step > 0 && step < STEPS.length
-            ? `ทำต่อ ขั้น ${step + 1}/${STEPS.length}`
-            : "รู้จักเว็บนี้"}
+        {/* มือถือเหลือแต่ไอคอน จะได้ไม่บังปุ่มเลื่อนหน้าด้านหลัง */}
+        <span className="hidden sm:inline">{resumeLabel}</span>
       </button>
     );
   }

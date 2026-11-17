@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import type { ReactNode } from "react";
+import type { FormEvent, ReactNode } from "react";
 import type { Camp } from "@/lib/camps";
 import { CAMPS_PER_PAGE, organizerKind, universityLabels, universityOf } from "@/lib/camps";
 import { getSupabase } from "@/lib/supabase";
@@ -426,7 +426,29 @@ function Pager({
   onChange: (page: number) => void;
   compact?: boolean;
 }) {
+  // ช่องพิมพ์เลขหน้า: เก็บข้อความที่พิมพ์ไว้ก่อน ทยอยแก้ได้ ไม่กระโดดทุกตัวอักษร
+  const [draft, setDraft] = useState(String(page));
+  const [lastPage, setLastPage] = useState(page);
+
+  // เปลี่ยนหน้าจากปุ่มหรือจากทัวร์ ให้ช่องพิมพ์ตามเลขหน้าใหม่ตอน render
+  if (page !== lastPage) {
+    setLastPage(page);
+    setDraft(String(page));
+  }
+
   if (pageCount <= 1) return null;
+
+  function submit(event: FormEvent) {
+    event.preventDefault();
+    const typed = Number(draft);
+    if (!draft.trim() || !Number.isFinite(typed)) {
+      setDraft(String(page));
+      return;
+    }
+    const next = Math.min(pageCount, Math.max(1, Math.trunc(typed)));
+    setDraft(String(next));
+    if (next !== page) onChange(next);
+  }
 
   const buttonClass =
     "rounded-full border border-zinc-300 dark:border-[#3b352d] bg-white dark:bg-[#1c1a17] px-3 py-1.5 text-sm text-zinc-700 dark:text-zinc-300 transition hover:border-zinc-500 dark:hover:border-zinc-400 hover:shadow-sm active:scale-95 disabled:cursor-not-allowed disabled:opacity-40";
@@ -435,28 +457,52 @@ function Pager({
     <div
       className={
         compact
-          ? "flex items-center gap-2"
-          : "mt-8 flex flex-wrap items-center justify-center gap-3"
+          ? "flex flex-wrap items-center gap-2 text-sm"
+          : "mt-8 flex flex-wrap items-center justify-center gap-3 text-sm"
       }
     >
       <button
         type="button"
         onClick={() => onChange(page - 1)}
         disabled={page <= 1}
+        aria-label="ก่อนหน้า"
+        title="ก่อนหน้า"
         className={buttonClass}
       >
-        ‹ ก่อนหน้า
+        {compact ? "‹" : "‹ ก่อนหน้า"}
       </button>
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
-        หน้า <span className="font-semibold text-zinc-900 dark:text-zinc-100">{page}</span> / {pageCount}
-      </p>
+
+      <form onSubmit={submit} className="flex items-center gap-1.5">
+        <span className="text-sm text-zinc-500 dark:text-zinc-400">หน้า</span>
+        {/* แตะแล้วเลือกเลขเดิมทั้งก้อน พิมพ์เลขใหม่ทับได้เลย ไม่ต้องลบก่อน */}
+        <input
+          value={draft}
+          onChange={(event) => setDraft(event.target.value.replace(/[^0-9]/g, "").slice(0, 3))}
+          onFocus={(event) => event.currentTarget.select()}
+          inputMode="numeric"
+          pattern="[0-9]*"
+          aria-label="พิมพ์เลขหน้าที่ต้องการไป"
+          title="พิมพ์เลขหน้าแล้วกด Enter"
+          className="w-12 rounded-lg border border-zinc-300 bg-white px-1.5 py-1 text-center text-sm text-zinc-900 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 dark:border-[#3b352d] dark:bg-[#1c1a17] dark:text-zinc-100 dark:focus:ring-emerald-900/50"
+        />
+        <span className="text-sm text-zinc-500 dark:text-zinc-400">/ {pageCount}</span>
+        <button
+          type="submit"
+          className="rounded-lg border border-zinc-300 bg-white px-2 py-1 text-xs font-medium text-zinc-700 transition hover:border-emerald-400 hover:text-emerald-700 active:scale-95 dark:border-[#3b352d] dark:bg-[#1c1a17] dark:text-zinc-300 dark:hover:border-emerald-500 dark:hover:text-emerald-300"
+        >
+          ไป
+        </button>
+      </form>
+
       <button
         type="button"
         onClick={() => onChange(page + 1)}
         disabled={page >= pageCount}
+        aria-label="ถัดไป"
+        title="ถัดไป"
         className={buttonClass}
       >
-        ถัดไป ›
+        {compact ? "›" : "ถัดไป ›"}
       </button>
     </div>
   );

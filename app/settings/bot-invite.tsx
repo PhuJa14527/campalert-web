@@ -123,38 +123,53 @@ export function BotInvitePopup() {
   return (
     <div
       role="status"
-      className="animate-rise fixed bottom-20 left-4 z-40 w-[calc(100vw-2rem)] max-w-xs rounded-2xl border border-emerald-200 dark:border-emerald-900 bg-white dark:bg-[#1c1a17] p-4 shadow-[0_18px_45px_-15px_rgba(0,0,0,0.35)] sm:bottom-4"
+      className="animate-rise fixed bottom-16 left-3 z-40 rounded-full border border-emerald-200 bg-white px-3 py-1.5 shadow-[0_18px_45px_-15px_rgba(0,0,0,0.35)] dark:border-emerald-900 dark:bg-[#1c1a17] sm:bottom-4 sm:left-4 sm:w-[calc(100vw-2rem)] sm:max-w-xs sm:rounded-2xl sm:p-4"
     >
-      <div className="flex items-start justify-between gap-2">
-        <span className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-          <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-sm">
-            🤖
-          </span>
-          ทำให้บอทแจ้งเตือน
-        </span>
-        <button
-          type="button"
-          onClick={dismiss}
-          aria-label="ปิดข้อความ"
-          className="rounded-full p-1 text-zinc-400 dark:text-zinc-500 transition hover:bg-zinc-100 dark:hover:bg-[#2a2620] hover:text-zinc-700 dark:hover:text-zinc-200"
-        >
-          ✕
-        </button>
-      </div>
-
-      <p className="mt-2 text-xs leading-5 text-zinc-600 dark:text-zinc-300">
-        เพิ่มบอท CampAlert แล้วตั้งค่าที่หน้าตั้งค่า บอทจะทัก DM
-        เมื่อมีค่ายใหม่ตรงสายที่สนใจ หรือใกล้วันปิดรับของค่ายที่มาร์กไว้
-      </p>
-
+      {/* มือถือ: เป็นแถบเล็กบรรทัดเดียว ไม่บังปุ่มเลื่อนหน้าด้านบน */}
       <Link
         href="/settings#bot"
         onClick={dismiss}
-        className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-emerald-600/20 transition hover:bg-emerald-700 active:scale-[0.98]"
+        aria-label="ทำให้บอทแจ้งเตือน ไปที่หน้าตั้งค่า"
+        className="flex items-center gap-2 text-sm font-semibold text-zinc-900 transition active:scale-[0.98] dark:text-zinc-100 sm:hidden"
       >
-        ไปตั้งค่าการแจ้งเตือน
-        <span aria-hidden="true">→</span>
+        <span aria-hidden="true">🤖</span>
+        ทำให้บอทแจ้งเตือน
+        <span aria-hidden="true" className="text-emerald-700 dark:text-emerald-300">→</span>
       </Link>
+
+      {/* จอใหญ่: กล่องเดิมที่มีคำอธิบาย */}
+      <div className="hidden sm:block">
+        <div className="flex items-start justify-between gap-2">
+          <span className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-50 text-sm dark:bg-emerald-950/40">
+              🤖
+            </span>
+            ทำให้บอทแจ้งเตือน
+          </span>
+          <button
+            type="button"
+            onClick={dismiss}
+            aria-label="ปิดข้อความ"
+            className="rounded-full p-1 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-500 dark:hover:bg-[#2a2620] dark:hover:text-zinc-200"
+          >
+            ✕
+          </button>
+        </div>
+
+        <p className="mt-2 text-xs leading-5 text-zinc-600 dark:text-zinc-300">
+          เพิ่มบอท CampAlert แล้วตั้งค่าที่หน้าตั้งค่า บอทจะทัก DM
+          เมื่อมีค่ายใหม่ตรงสายที่สนใจ หรือใกล้วันปิดรับของค่ายที่มาร์กไว้
+        </p>
+
+        <Link
+          href="/settings#bot"
+          onClick={dismiss}
+          className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-emerald-600/20 transition hover:bg-emerald-700 active:scale-[0.98]"
+        >
+          ไปตั้งค่าการแจ้งเตือน
+          <span aria-hidden="true">→</span>
+        </Link>
+      </div>
     </div>
   );
 }
