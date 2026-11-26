@@ -1,9 +1,9 @@
 {
   "source": "CAMPHUB",
   "sourceUrl": "https://www.camphub.in.th/",
-  "fetchedAt": "2026-11-25T10:17:04.705Z",
+  "fetchedAt": "2026-11-26T05:47:22.692Z",
   "sourcePages": 36,
-  "foundLinks": 349,
+  "foundLinks": 350,
   "keptCamps": 135,
   "note": "รวบรวมจากหน้า list สาธารณะของ CAMPHUB (หน้าแรก + หมวดหมู่) เฉพาะค่ายที่ยังเปิดรับสมัคร ข้อมูลเป็นของผู้จัดและ CAMPHUB ควรตรวจสอบกับต้นฉบับก่อนสมัคร",
   "camps": [
@@ -320,38 +320,6 @@
     },
     {
       "startDate": "2026-11-28",
-      "endDate": "2026-11-28",
-      "deadline": "2026-11-25",
-      "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส.",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช.",
-        "ปวส."
-      ],
-      "location": "Innogineer Studio, คณะวิศวกรรมศาสตร์ มหาวิทยาลัยมหิดล เปิดแผนที่",
-      "province": "",
-      "fee": "1,200 บาท จ่ายตอนสมัคร · มีส่วนลดให้ 10% ในกรณีสมัคร เป็นกลุ่ม 10 คนขึ้นไป",
-      "price": 1200,
-      "seats": "80 คน",
-      "organizer": "คณะวิศวกรรมชีวการแพทย์ มหาวิทยาลัยมหิดล",
-      "registration": "",
-      "dateText": "28 พฤศจิกายน 2569",
-      "certificate": false,
-      "overnight": false,
-      "online": false,
-      "id": "ai-series-floaino-starter-logic-flow-programming",
-      "title": "AI Series #1 : Floaino Starter Logic & Flow Programming",
-      "type": "พัฒนาทักษะ/เวิร์กชอป",
-      "field": "คอม/ไอที",
-      "slugs": [
-        "computer",
-        "skills-workshop"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/ai-series-floaino-starter-logic-flow-programming/"
-    },
-    {
-      "startDate": "2026-11-28",
       "endDate": "2026-11-29",
       "deadline": "2026-11-26",
       "level": "ป.5-ป.6 · ม.1-ม.6 ปีการศึกษา 2569 · 12 ปี ขึ้นไป, มหาวิทยาลัย, บุคคลทั่วไป, ปวช., ปวส., Homeschool",
@@ -612,6 +580,35 @@
     {
       "startDate": "2026-11-28",
       "endDate": "2026-11-28",
+      "deadline": "2026-11-27",
+      "level": "ม.ปลาย ปีการศึกษา 2570",
+      "levels": [
+        "ม.ปลาย"
+      ],
+      "location": "ออนไลน์",
+      "province": "ออนไลน์",
+      "fee": "599 บาท จ่ายตอนสมัคร",
+      "price": 599,
+      "seats": "ไม่จำกัดจำนวน",
+      "organizer": "Terbto Camp",
+      "registration": "",
+      "dateText": "28 พฤศจิกายน 2569",
+      "certificate": false,
+      "overnight": false,
+      "online": true,
+      "id": "young-leader-camp-8",
+      "title": "Young Leader Camp ค่ายผู้นำเยาวชนรุ่นใหม่",
+      "type": "พัฒนาทักษะ/เวิร์กชอป",
+      "field": "ทั่วไป",
+      "slugs": [
+        "online",
+        "skills-workshop"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/young-leader-camp-8/"
+    },
+    {
+      "startDate": "2026-11-28",
+      "endDate": "2026-11-28",
       "deadline": "2026-11-28",
       "level": "ม.3-ม.5 ปีการศึกษา 2569 · บุคคลทั่วไป, GED , ผู้ปกครอง",
       "levels": [
@@ -640,35 +637,6 @@
         "guidance"
       ],
       "sourceUrl": "https://www.camphub.in.th/the-ai-future-engineering-open-house/"
-    },
-    {
-      "startDate": "2026-11-28",
-      "endDate": "2026-11-28",
-      "deadline": "2026-11-27",
-      "level": "ม.ปลาย ปีการศึกษา 2570",
-      "levels": [
-        "ม.ปลาย"
-      ],
-      "location": "ออนไลน์",
-      "province": "ออนไลน์",
-      "fee": "599 บาท จ่ายตอนสมัคร",
-      "price": 599,
-      "seats": "ไม่จำกัดจำนวน",
-      "organizer": "Terbto Camp",
-      "registration": "",
-      "dateText": "28 พฤศจิกายน 2569",
-      "certificate": false,
-      "overnight": false,
-      "online": true,
-      "id": "young-leader-camp-8",
-      "title": "Young Leader Camp ค่ายผู้นำเยาวชนรุ่นใหม่",
-      "type": "พัฒนาทักษะ/เวิร์กชอป",
-      "field": "ทั่วไป",
-      "slugs": [
-        "online",
-        "skills-workshop"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/young-leader-camp-8/"
     },
     {
       "startDate": "2026-11-28",
@@ -704,37 +672,6 @@
         "skills-workshop"
       ],
       "sourceUrl": "https://www.camphub.in.th/afterklass-creative-journal/"
-    },
-    {
-      "startDate": "2026-11-29",
-      "endDate": "2026-11-29",
-      "deadline": "2026-11-25",
-      "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., GED, Homeschool",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "ปวช."
-      ],
-      "location": "The Knowledge Exchange: KX เปิดแผนที่",
-      "province": "กรุงเทพฯ",
-      "fee": "1,700 บาท จ่ายตอนสมัคร · สำหรับน้องๆ ที่เคยเข้าร่วมกิจกรรมกับ ONCEs Thailand รับส่วนลด 5 % ทันที เมื่อสมัครค่ายครั้งที่ 2",
-      "price": 1700,
-      "seats": "36 คน",
-      "organizer": "ONCEs Thailand พื้นที่เรียนรู้สำหรับเยาวชนไทย",
-      "registration": "",
-      "dateText": "29 พฤศจิกายน 2569",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "forensic-science",
-      "title": "ห้องเรียนจำลองนิติวิทยาศาสตร์ (Forensic Science) ครั้งที่ 7",
-      "type": "แนะแนวเรียนต่อ/อาชีพ",
-      "field": "วิทยาศาสตร์",
-      "slugs": [
-        "science",
-        "guidance"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/forensic-science/"
     },
     {
       "startDate": "2026-11-29",
@@ -1437,6 +1374,37 @@
     {
       "startDate": "2026-12-12",
       "endDate": "2026-12-12",
+      "deadline": "2026-12-01",
+      "level": "ม.1-ม.6 ปีการศึกษา 2569 · บุคคลทั่วไป",
+      "levels": [
+        "ม.ต้น",
+        "ม.ปลาย",
+        "บุคคลทั่วไป"
+      ],
+      "location": "อาคารสิริพีรศิลป์ มหาวิทยาลัยศิลปากร ซิตี้ แคมปัส เมืองทองธานี เปิดแผนที่",
+      "province": "",
+      "fee": "900 บาท จ่ายหลังประกาศรายชื่อผู้มีสิทธิ์เข้าร่วม",
+      "price": 900,
+      "seats": "ไม่จำกัดจำนวน",
+      "organizer": "Franco-Thai Hotel & Tourism Prep School - โรงเรียนเตรียมการโรงแรมและการท่องเที่ยวไทย-ฝรั่งเศส ดำเนินการโดย วิทยาลัยนานาชาติ มหาวิทยาลัยศิลปากร และ Bizlab Camp",
+      "registration": "",
+      "dateText": "12 ธันวาคม 2569 จัด 2 รอบ: 12 ธ.ค. 69 (แคมป์การโรงแรม) และ 27 ก.พ. 70 (แคมป์การท่องเที่ยว) สมัครครั้งเดียวเข้าร่วมได้ทั้ง 2 รอบ",
+      "certificate": true,
+      "overnight": false,
+      "online": false,
+      "id": "young-hospitality-talent-camps",
+      "title": "Young Hospitality Talent Camps",
+      "type": "พัฒนาทักษะ/เวิร์กชอป",
+      "field": "การโรงแรม/ท่องเที่ยว",
+      "slugs": [
+        "hospitality",
+        "skills-workshop"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/young-hospitality-talent-camps/"
+    },
+    {
+      "startDate": "2026-12-12",
+      "endDate": "2026-12-12",
       "deadline": "2026-12-02",
       "level": "ป.3-ป.6 · ม.1-ม.2 ปีการศึกษา 2569",
       "levels": [
@@ -1649,6 +1617,39 @@
         "guidance"
       ],
       "sourceUrl": "https://www.camphub.in.th/engineering-camp-dolphincamp/"
+    },
+    {
+      "startDate": "2026-12-12",
+      "endDate": "2026-12-12",
+      "deadline": "2026-12-11",
+      "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส.",
+      "levels": [
+        "ม.ต้น",
+        "ม.ปลาย",
+        "ปวช.",
+        "ปวส."
+      ],
+      "location": "ออนไลน์",
+      "province": "ออนไลน์",
+      "fee": "899 บาท จ่ายตอนสมัคร · พาเพื่อนมาสมัครด้วย ค่าร่วมกิจกรรมคนละ 799 บาท",
+      "price": 899,
+      "seats": "30 คน",
+      "organizer": "Seek Education",
+      "registration": "",
+      "dateText": "12 ธันวาคม 2569 เวลา 09.00-12.00น.",
+      "certificate": true,
+      "overnight": false,
+      "online": true,
+      "id": "seek-mechanical-engineering-open-house",
+      "title": "เปิดบ้านวิศวกรรมเครื่องกล",
+      "type": "แนะแนวเรียนต่อ/อาชีพ",
+      "field": "วิศวกรรม",
+      "slugs": [
+        "online",
+        "engineer",
+        "guidance"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/seek-mechanical-engineering-open-house/"
     },
     {
       "startDate": "2026-12-12",
@@ -1907,37 +1908,6 @@
       "sourceUrl": "https://www.camphub.in.th/trux-shortfilm-camp-9/"
     },
     {
-      "startDate": "2026-12-12",
-      "endDate": "2026-12-12",
-      "deadline": "2026-12-01",
-      "level": "ม.1-ม.6 ปีการศึกษา 2569 · บุคคลทั่วไป",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย",
-        "บุคคลทั่วไป"
-      ],
-      "location": "อาคารสิริพีรศิลป์ มหาวิทยาลัยศิลปากร ซิตี้ แคมปัส เมืองทองธานี เปิดแผนที่",
-      "province": "",
-      "fee": "900 บาท จ่ายหลังประกาศรายชื่อผู้มีสิทธิ์เข้าร่วม",
-      "price": 900,
-      "seats": "ไม่จำกัดจำนวน",
-      "organizer": "Franco-Thai Hotel & Tourism Prep School - โรงเรียนเตรียมการโรงแรมและการท่องเที่ยวไทย-ฝรั่งเศส ดำเนินการโดย วิทยาลัยนานาชาติ มหาวิทยาลัยศิลปากร และ Bizlab Camp",
-      "registration": "",
-      "dateText": "12 ธันวาคม 2569 จัด 2 รอบ: 12 ธ.ค. 69 (แคมป์การโรงแรม) และ 27 ก.พ. 70 (แคมป์การท่องเที่ยว) สมัครครั้งเดียวเข้าร่วมได้ทั้ง 2 รอบ",
-      "certificate": true,
-      "overnight": false,
-      "online": false,
-      "id": "young-hospitality-talent-camps",
-      "title": "Young Hospitality Talent Camps",
-      "type": "พัฒนาทักษะ/เวิร์กชอป",
-      "field": "การโรงแรม/ท่องเที่ยว",
-      "slugs": [
-        "hospitality",
-        "skills-workshop"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/young-hospitality-talent-camps/"
-    },
-    {
       "startDate": "2026-12-13",
       "endDate": "2026-12-13",
       "deadline": "2026-11-27",
@@ -2128,6 +2098,36 @@
     {
       "startDate": "2026-12-18",
       "endDate": "2026-12-20",
+      "deadline": "2026-11-27",
+      "level": "ม.ปลาย ปีการศึกษา 2569 · ปวช., GED",
+      "levels": [
+        "ม.ปลาย",
+        "ปวช."
+      ],
+      "location": "สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง เปิดแผนที่",
+      "province": "กรุงเทพฯ",
+      "fee": "1,000 บาท จ่ายหลังประกาศรายชื่อผู้มีสิทธิ์เข้าร่วม",
+      "price": 1000,
+      "seats": "150 คน",
+      "organizer": "Robotics & AI Engineering, KMITL",
+      "registration": "",
+      "dateText": "18 – 20 ธันวาคม 2569 ค้างคืน",
+      "certificate": true,
+      "overnight": true,
+      "online": false,
+      "id": "kmitl-rai-camp-2027-awaken-the-arcane",
+      "title": "RAI CAMP 2027 : Awaken the Arcane",
+      "type": "พัฒนาทักษะ/เวิร์กชอป",
+      "field": "วิศวกรรม",
+      "slugs": [
+        "skills-workshop",
+        "engineer"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/kmitl-rai-camp-2027-awaken-the-arcane/"
+    },
+    {
+      "startDate": "2026-12-18",
+      "endDate": "2026-12-20",
       "deadline": "2026-11-30",
       "level": "ม.5-ม.6 ปีการศึกษา 2569",
       "levels": [
@@ -2181,36 +2181,6 @@
         "contest"
       ],
       "sourceUrl": "https://www.camphub.in.th/abac-junior-sci-conference-2026/"
-    },
-    {
-      "startDate": "2026-12-18",
-      "endDate": "2026-12-20",
-      "deadline": "2026-11-27",
-      "level": "ม.ปลาย ปีการศึกษา 2569 · ปวช., GED",
-      "levels": [
-        "ม.ปลาย",
-        "ปวช."
-      ],
-      "location": "สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง เปิดแผนที่",
-      "province": "กรุงเทพฯ",
-      "fee": "1,000 บาท จ่ายหลังประกาศรายชื่อผู้มีสิทธิ์เข้าร่วม",
-      "price": 1000,
-      "seats": "150 คน",
-      "organizer": "Robotics & AI Engineering, KMITL",
-      "registration": "",
-      "dateText": "18 – 20 ธันวาคม 2569 ค้างคืน",
-      "certificate": true,
-      "overnight": true,
-      "online": false,
-      "id": "kmitl-rai-camp-2027-awaken-the-arcane",
-      "title": "RAI CAMP 2027 : Awaken the Arcane",
-      "type": "พัฒนาทักษะ/เวิร์กชอป",
-      "field": "วิศวกรรม",
-      "slugs": [
-        "skills-workshop",
-        "engineer"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/kmitl-rai-camp-2027-awaken-the-arcane/"
     },
     {
       "startDate": "2026-12-18",
@@ -2816,6 +2786,39 @@
       "sourceUrl": "https://www.camphub.in.th/word-puzzle-volunteer-27dec69/"
     },
     {
+      "startDate": "2027-01-05",
+      "endDate": "2027-03-25",
+      "deadline": "2026-11-27",
+      "level": "ม.3-ม.6 ปีการศึกษา 2569 · ปวช., ปวส., มหาวิทยาลัย, บุคคลทั่วไป, GED, Homeschool",
+      "levels": [
+        "ม.ต้น",
+        "ม.ปลาย",
+        "ปวช.",
+        "ปวส.",
+        "มหาวิทยาลัย",
+        "บุคคลทั่วไป"
+      ],
+      "location": "Entrance Coffeehouse & Studio เปิดแผนที่",
+      "province": "กรุงเทพฯ",
+      "fee": "เข้าร่วมฟรี",
+      "price": 0,
+      "seats": "ไม่จำกัดจำนวน",
+      "organizer": "Samyan NewGen",
+      "registration": "",
+      "dateText": "5 มกราคม – 25 มีนาคม 2570 ไม่ค้างคืน สอนสัปดาห์ละ 1 วัน ตามวิชาที่เลือก",
+      "certificate": true,
+      "overnight": true,
+      "online": false,
+      "id": "samyan-newgen-volunteer-teacher-2027-1",
+      "title": "ครูอาสาสามย่านนิวเจน 2027/1",
+      "type": "อาสา/อนุรักษ์",
+      "field": "ทั่วไป",
+      "slugs": [
+        "volunteer"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/samyan-newgen-volunteer-teacher-2027-1/"
+    },
+    {
       "startDate": "2027-01-09",
       "endDate": "2027-01-09",
       "deadline": "2026-12-10",
@@ -3267,6 +3270,35 @@
     },
     {
       "startDate": "2027-01-22",
+      "endDate": "2027-01-22",
+      "deadline": "2026-12-09",
+      "level": "ม.ปลาย ปีการศึกษา 2569 · ปวช., GED",
+      "levels": [
+        "ม.ปลาย",
+        "ปวช."
+      ],
+      "location": "โรงเรียนเลิร์นสาธิตพัฒนา มีทั้งออนไลน์และออนไซต์ · เปิดแผนที่",
+      "province": "",
+      "fee": "เข้าร่วมฟรี",
+      "price": 0,
+      "seats": "ไม่จำกัดจำนวน",
+      "organizer": "ชมรม LSP Case club",
+      "registration": "",
+      "dateText": "22 มกราคม 2570",
+      "certificate": true,
+      "overnight": false,
+      "online": true,
+      "id": "lsp-case-competition-2026",
+      "title": "LSP Case Competition 2026",
+      "type": "ประกวดแข่งขัน",
+      "field": "ทั่วไป",
+      "slugs": [
+        "contest"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/lsp-case-competition-2026/"
+    },
+    {
+      "startDate": "2027-01-22",
       "endDate": "2027-01-24",
       "deadline": "2026-12-05",
       "level": "ม.1-ม.6 ปีการศึกษา 2569 · ปวช., ปวส., GED, Homeschool",
@@ -3449,35 +3481,6 @@
         "guidance"
       ],
       "sourceUrl": "https://www.camphub.in.th/pharmacy-day-camp/"
-    },
-    {
-      "startDate": "2027-01-24",
-      "endDate": "2027-01-24",
-      "deadline": "2026-12-30",
-      "level": "ม.1-ม.6",
-      "levels": [
-        "ม.ต้น",
-        "ม.ปลาย"
-      ],
-      "location": "มหาวิทยาลัยเกษตรศาสตร์ วิทยาเขตบางเขน (หรือสอบออนไลน์จากที่บ้าน) เปิดแผนที่",
-      "province": "กรุงเทพฯ",
-      "fee": "Part A 999 บาท · Part A + Part B 1,299 บาท",
-      "price": 999,
-      "seats": "200 คน",
-      "organizer": "บริษัท เมดโค้ช อินเตอร์เนชั่นแนล คอนซัลติ้ง จำกัด",
-      "registration": "",
-      "dateText": "24 มกราคม 2570 สอบเวลา 09.30–12.30 น. · เลือกสอบ on-site หรือ online",
-      "certificate": true,
-      "overnight": false,
-      "online": true,
-      "id": "canadian-chemistry-contest-2027",
-      "title": "Canadian Chemistry Contest (CCC) 2027",
-      "type": "ประกวดแข่งขัน",
-      "field": "ทั่วไป",
-      "slugs": [
-        "contest"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/canadian-chemistry-contest-2027/"
     },
     {
       "startDate": "2027-01-27",
@@ -3783,37 +3786,6 @@
       "sourceUrl": "https://www.camphub.in.th/money-adventure-camp-2027/"
     },
     {
-      "startDate": "2027-02-20",
-      "endDate": "2027-02-22",
-      "deadline": "2026-11-25",
-      "level": "ม.ปลาย ปีการศึกษา 2569 · ปวช. TCAS1",
-      "levels": [
-        "ม.ปลาย",
-        "ปวช."
-      ],
-      "location": "คณะวิศวกรรมศาสตร์ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง เปิดแผนที่",
-      "province": "กรุงเทพฯ",
-      "fee": "เข้าร่วมฟรี",
-      "price": 0,
-      "seats": "120 คน",
-      "organizer": "ภาควิชาชีวการแพทย์ คณะวิศวกรรมศาสตร์ สถาบันเทคโนโลยีเจ้าคุณทหารลาดกระบัง",
-      "registration": "",
-      "dateText": "20 – 22 กุมภาพันธ์ 2570 ค้างคืน",
-      "certificate": true,
-      "overnight": true,
-      "online": false,
-      "id": "beam-camp-11",
-      "title": "BEAM CAMP 11",
-      "type": "แนะแนวเรียนต่อ/อาชีพ",
-      "field": "วิศวกรรม",
-      "slugs": [
-        "engineer",
-        "health-other",
-        "guidance"
-      ],
-      "sourceUrl": "https://www.camphub.in.th/beam-camp-11/"
-    },
-    {
       "startDate": "2027-02-21",
       "endDate": "2027-02-21",
       "deadline": "2027-02-18",
@@ -3905,6 +3877,39 @@
         "engineer"
       ],
       "sourceUrl": "https://www.camphub.in.th/2b-kmutt-21-future-leader-camp/"
+    },
+    {
+      "startDate": "2027-03-20",
+      "endDate": "2027-03-21",
+      "deadline": "2027-03-18",
+      "level": "ม.ปลาย ปีการศึกษา 2570 · บุคคลทั่วไปสมัครได้, บุคคลทั่วไป, มหาวิทยาลัย, ปวส., ปวช.",
+      "levels": [
+        "ม.ปลาย",
+        "ปวช.",
+        "ปวส.",
+        "มหาวิทยาลัย",
+        "บุคคลทั่วไป"
+      ],
+      "location": "สถาบันชีววิทยาศาสตร์โมเลกุล เปิดแผนที่",
+      "province": "",
+      "fee": "9,600 บาท จ่ายตอนสมัคร",
+      "price": 9600,
+      "seats": "24 คน",
+      "organizer": "สถาบันชีววิทยาศาสตร์โมเลกุล",
+      "registration": "",
+      "dateText": "20 – 21 มีนาคม 2570 ไม่ค้างคืน",
+      "certificate": true,
+      "overnight": true,
+      "online": false,
+      "id": "workshop-dna-dna-cloning-10",
+      "title": "Workshop DNA & DNA CLONING (รุ่นที่ 10)",
+      "type": "พัฒนาทักษะ/เวิร์กชอป",
+      "field": "วิทยาศาสตร์",
+      "slugs": [
+        "skills-workshop",
+        "science"
+      ],
+      "sourceUrl": "https://www.camphub.in.th/workshop-dna-dna-cloning-10/"
     },
     {
       "startDate": "2027-03-21",
